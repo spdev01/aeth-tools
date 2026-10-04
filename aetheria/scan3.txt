@@ -1,0 +1,90 @@
+##### joinOrCreate call context #####
+--- m1 ---
+d(i.map((e,t)=>e.getLatency(r).then(e=>{let n=i[t].settings;return console.log(`?? Endpoint Latency: ${e}ms - ${n.hostname}:${n.port}${n.pathname}`),[t,e]})))).filter(e=>e.status===`fulfilled`).map(e=>e.value);if(a.length===0)throw Error(`All endpoints failed to respond`);return i[a.sort((e,t)=>e[1]-t[1])[0][0]]}async joinOrCreate(e,t={},n){return await this.createMatchMakeRequest(`joinOrCreate`,e,t,n)}async create(e,t={},n){return await this.createMatchMakeRequest(`create`,e,t,n)}async join(e,t={},n){return await this.createMatchMakeRequest(`join`,e,t,n)}async joinById(e,t={},n){return await this.createMatchMakeRequest(`joinById`,e
+
+##### dynamic import chunks #####
+
+##### assets path strings #####
+
+##### game Scene classes #####
+--- m1 ---
+r=e[n-1],i=e[n];if(t>=r.t){if(t>=i.t)return i;let e=(t-r.t)/(i.t-r.t);return{x:r.x+(i.x-r.x)*e,y:r.y+(i.y-r.y)*e}}}return e[0]}var aS=class extends $.Scene{room;classSprites;monsterArt;skillArt;players=new Map;monsters=new Map;killed=new Set;npcs=new Map;traps=new Map;tilt=wh.til
+--- m2 ---
+storm":320,"lord-of-vermilion":200},WO={"endow-blaze":`fire`,"endow-tsunami":`water`,"endow-tornado":`wind`,"endow-quake":`earth`},GO=class extends $.Scene{sprites;art;settings;skillArt;stages=[];advancedLabel;skillCaster;skillCasterShadow;skillFoes=[];shout;autoLoop=!0;construct
+
+##### new Game( #####
+--- m1 ---
+turn Promise.all([dS(),a]).then(([[a,o,s]])=>{if(n)return;let c=new aS(e,a,o,s,i);if(sS)window.clearTimeout(sS.destroyTimer),t.current.appendChild(sS.game.canvas),sS.game.scene.add(i,c,!0);else{let e=new $.Game({type:$.AUTO,parent:t.current,backgroundColor:`#3d6b35`,scale:{mode:$.Scale.NONE,width:Math.round(window.innerWidth*wh.settings.render),height:Math.round(window.innerHeight*wh.settings.rend
+--- m2 ---
+t p=(0,_.useRef)(t);p.current=t;let m=(0,_.useRef)(null),[h,g]=(0,_.useState)([]);return(0,_.useEffect)(()=>{let t=null,n=!1;return Promise.all([zp(`dragon-knight`),Ou(),zv()]).then(([r,i,a])=>{n||(t=new $.Game({type:$.AUTO,render:{preserveDrawingBuffer:!0},parent:e.current,width:1e3,height:LO,backgroundColor:`#3d6b35`,scene:[new GO(r,i,()=>p.current,a)]}),m.current=t,window.__fxlab=t)}),()=>{n=!0
+
+##### quoted endpoints #####
+
+##### send contexts #####
+--- m1 ---
+th;(this._framed===null||this._framed.byteLength!==l)&&(this._framed=this._scratch.subarray(0,l));let u=this._framed,d;return n?(e.send(u),d=++this._sentCount):(e.sendUnreliable(u),d=this._sentCount=this._encoder.seq),this._recordSent(d),d}_writeRingStamps(e){
+--- m2 ---
+ect`)}}))(),1),co=globalThis.WebSocket||so.default,lo=!1,uo=class{ws;protocols;events;constructor(e){this.events=e}send(e){this.ws.send(e)}sendUnreliable(e){lo||(lo=!0,console.warn('@colyseus/sdk: the WebSocket transport has no unreliable channel — sending `mo
+--- m3 ---
+l — sending `mode:"unreliable"` traffic reliably instead. Use @colyseus/h3-transport (WebTransport) for datagram delivery.')),this.send(e)}connect(e,t){try{this.ws=new co(e,{headers:t,protocols:this.protocols})}catch{this.ws=new co(e,this.protocols)}this.ws.bi
+--- m4 ---
+.onclose=e=>{fo.splice(fo.indexOf(this.#e),1),t?.(e)}}this.url=e,this.options=t,this.transport.connect(e,t)}send(e){this.transport.send(e)}sendUnreliable(e){this.transport.sendUnreliable(e)}reconnect(e){if(this.transport instanceof oo){this.transport.connect(t
+--- m5 ---
+`,n)}leave(e=!0){return new Promise(t=>{this.onLeave(e=>t(e)),this.connection?e?(this.sharedBuffer[0]=y.LEAVE_ROOM,this.connection.send(this.sharedBuffer.subarray(0,1))):this.connection.close():this.onLeave.invoke(w.CONSENTED)})}onMessage(e,t){return this.onMe
+--- m6 ---
+is.getMessageHandlerKey(e),t)}ping(e){this.connection?.isOpen&&(this.#e=hi(),this.#t=e,this.sharedBuffer[0]=y.PING,this.connection.send(this.sharedBuffer.subarray(0,1)))}send(e,t,n){if(n!==void 0){this.request(e,t).then(e=>n(e,void 0),e=>n(void 0,e));return}le
+--- m7 ---
+edBuffer.subarray(0,i):(a=this.packr.pack(t,no|i),a.set(this.sharedBuffer.subarray(0,i),0)),this.connection.isOpen?this.connection.send(a):wo(this,new Uint8Array(a))}request(t,n,r){if(!this.connection.isOpen)return Promise.reject(Error(`cannot send request "${
+--- m8 ---
+===`unreliable`){if(!this.connection.isOpen)return-1;this.connection.sendUnreliable(o)}else this.connection.isOpen?this.connection.send(o):wo(this,new Uint8Array(o));return this.#r.set(a,{onReply:r,onClose:i}),a}cancelRequest(e){this.#r.delete(e)}#c(e){if(this
+--- m9 ---
+ngth);e.set(this.sharedBuffer.subarray(0,r)),this.sharedBuffer=e}this.sharedBuffer.set(t,r),this.connection.isOpen?this.connection.send(this.sharedBuffer.subarray(0,r+t.byteLength)):wo(this,this.sharedBuffer.subarray(0,r+t.byteLength))}input(e){return(this.#i?
+--- m10 ---
+ecting=!1,this.onReconnect.invoke()),this.reconnectionToken=`${this.roomId}:${n}`,this.sharedBuffer[0]=y.JOIN_ROOM,this.connection.send(this.sharedBuffer.subarray(0,1)),this.reconnection.enqueuedMessages.length>0){for(let e of this.reconnection.enqueuedMessage
+--- m11 ---
+Buffer.subarray(0,1)),this.reconnection.enqueuedMessages.length>0){for(let e of this.reconnection.enqueuedMessages)this.connection.send(e.data);this.reconnection.enqueuedMessages=[]}}else if(r===y.ERROR){let n=lt.number(e,t),r=lt.string(e,t);this.onError.invok
+--- m12 ---
+ext,headers:e}))},i.onerror=()=>r(TypeError(`Network request failed`)),i.ontimeout=()=>r(TypeError(`Network request timed out`)),i.send(t?.body??null)})}var Oo=class{status;statusText;headers;ok;body;constructor(e,t){this.body=e,this.status=t.status,this.statu
+--- m13 ---
+ORMAL_CLOSURE,`Failed to get latency: ${e}`)));l=setTimeout(()=>d(`timed out after ${r}ms`),r),a.events.onopen=()=>{s=Date.now(),a.send(new Uint8Array([y.PING]))},a.events.onmessage=t=>{if(o.push(Date.now()-s),o.length<n)s=Date.now(),a.send(new Uint8Array([y.P
+--- m14 ---
+nopen=()=>{s=Date.now(),a.send(new Uint8Array([y.PING]))},a.events.onmessage=t=>{if(o.push(Date.now()-s),o.length<n)s=Date.now(),a.send(new Uint8Array([y.PING]));else{let t=o.reduce((e,t)=>e+t,0)/o.length;u(()=>e(t))}},a.events.onclose=e=>d(`connection closed$
+--- m15 ---
+up,...e},this.emit()}),e.onMessage(`skill_fx`,e=>Ts(this.skillFxListeners,e)),e.onMessage(`item_used`,()=>{})}talkTo(e){this.room?.send(`npc_talk`,{npcKey:e})}talkToNpc(e){let t=[...this.room?.state.npcs.entries()??[]].find(([,t])=>t.name===e)?.[0];return t&&t
+--- m16 ---
+ntries()??[]].find(([,t])=>t.name===e)?.[0];return t&&this.talkTo(t),!!t}walkTo(e,t){this.stopFollow(),this.stopRoute(),this.room?.send(`move_to`,{x:e,y:t})}guideSkip(){this.room?.send(`guide_skip`)}warpTo(e){this.room?.send(`npc_warp`,{mapId:e})}chooseOption(
+--- m17 ---
+n t&&this.talkTo(t),!!t}walkTo(e,t){this.stopFollow(),this.stopRoute(),this.room?.send(`move_to`,{x:e,y:t})}guideSkip(){this.room?.send(`guide_skip`)}warpTo(e){this.room?.send(`npc_warp`,{mapId:e})}chooseOption(e){this.room?.send(`npc_option`,{index:e})}openMa
+--- m18 ---
+.stopFollow(),this.stopRoute(),this.room?.send(`move_to`,{x:e,y:t})}guideSkip(){this.room?.send(`guide_skip`)}warpTo(e){this.room?.send(`npc_warp`,{mapId:e})}chooseOption(e){this.room?.send(`npc_option`,{index:e})}openMarket(){this.setMarket({open:!0,busy:!1})
+--- m19 ---
+o`,{x:e,y:t})}guideSkip(){this.room?.send(`guide_skip`)}warpTo(e){this.room?.send(`npc_warp`,{mapId:e})}chooseOption(e){this.room?.send(`npc_option`,{index:e})}openMarket(){this.setMarket({open:!0,busy:!1})}closeNpc(){this.market={...this.market,open:!1},this.
+--- m20 ---
+s.socketResult=null,this.gacha=null,this.gachaResult=null,this.enchantResult=null,this.arenaWindow=!1,this.storage=null,this.room?.send(`npc_close`,{}),this.emit()}rollGacha(e){this.room?.send(`gacha_roll`,{count:e})}closeShop(){this.shop=null,this.emit()}buy(
+
+##### fetch/XHR usage #####
+--- m1 ---
+===`use-credentials`?`include`:e.crossOrigin===`anonymous`?`omit`:`same-origin`,t}function n(e){if(e.ep)return;e.ep=!0;let n=t(e);fetch(e.href,n)}})();var l=o((e=>{function t(e,t){var n=e.length;e.push(t);a:for(;0<n;){var r=n-1>>>1,a=e[r];if(0<i(a,t))e[r]=t,e[
+--- m2 ---
+oken.split(`:`)[1],skipHandshake:!0})}catch{this.retryReconnection()}},e)}};function Do(e,t){return new Promise((n,r)=>{let i=new XMLHttpRequest,a=t?.method||`GET`;i.open(a,e.toString()),i.withCredentials=t?.credentials===`include`,t?.headers&&(t.headers insta
+--- m3 ---
+.view(),monsters:W.map(Wo).view(),npcs:W.map(Go),drops:W.map(Ko).view(),traps:W.map(qo).view()},`FieldState`),Xo=null,Zo=()=>Xo??=fetch(`/world/atlas`).then(e=>{if(!e.ok)throw Xo=null,Error(`world atlas: HTTP ${e.status}`);return e.json()});function Qo(e,t,n){
+--- m4 ---
+(){this.loading&&(this.loading=null,this.emit())}async loadEvents(e){this.eventsHiddenKey=`webgame.eventsHidden:${e}`;let t=await fetch(`/world/events`);if(!t.ok)throw Error(`events: HTTP ${t.status}`);if(this.events=await t.json(),this.emit(),!this.events.len
+--- m5 ---
+tItem(this.eventsHiddenKey)===Ys()}catch{return!1}}async loadPatchNotes(e){this.patchSeenKey=`webgame.patchSeen:${e}`;let t=await fetch(`/patch-notes`);if(!t.ok)throw Error(`patch notes: HTTP ${t.status}`);let n=await t.json(),r=null;try{r=localStorage.getItem
+--- m6 ---
+????? {path} (HTTP {status}) — ??????? server ??????? ???????????`,{path:t,status:e.status}))}}async function Kc(e,t){let n=await fetch(e,{method:`POST`,headers:{"Content-Type":`application/json`},body:t===void 0?void 0:JSON.stringify(t)}),r=await Gc(n,e);if(!
+--- m7 ---
+?????????????????????? ??????????????????????????????????? ({why})`,{why:e instanceof Error?e.message:String(e)}))):e}let t=await fetch(`/auth/guest`,{method:`POST`,headers:{"Content-Type":`application/json`},body:`{}`}),n=await Gc(t,`/auth/guest`);if(!t.ok)th
+--- m8 ---
+ON.parse(atob(e.split(`.`)[1].replace(/-/g,`+`).replace(/_/g,`/`))).guest===!0}catch{return!1}}async function tl(e,t){let n=await fetch(`/auth/upgrade-google`,{method:`POST`,headers:{Authorization:`Bearer ${e}`,"Content-Type":`application/json`},body:JSON.stri
+--- m9 ---
+Gc(n,`/auth/upgrade-google`);if(!n.ok)throw Error(r.error??n.statusText);return Zc(),r.token}async function nl(e,t,n){let r=await fetch(`/auth/upgrade`,{method:`POST`,headers:{Authorization:`Bearer ${e}`,"Content-Type":`application/json`},body:JSON.stringify({
+--- m10 ---
+await Gc(r,`/auth/upgrade`);if(!r.ok)throw Error(i.error??r.statusText);return Zc(),i.token}var rl=null;function il(){return rl??=fetch(`/auth/config`).then(e=>e.ok?e.json():null).then(e=>({googleClientId:e?.googleClientId??null,allowGuest:!!e?.allowGuest})).c
+--- m11 ---
+oogle`,{credential:e}),ol=class extends Error{status;constructor(e,t){super(e),this.status=t}};async function sl(e,t){let n=await fetch(`/world/enter`,{method:`POST`,headers:{Authorization:`Bearer ${e}`,"Content-Type":`application/json`},body:JSON.stringify({c
+--- m12 ---
+})}),r=await Gc(n,`/world/enter`);if(!n.ok)throw new ol(r.error??n.statusText,n.status);return r}async function cl(e){let t=await fetch(`/characters`,{headers:{Authorization:`Bearer ${e}`}}),n=await Gc(t,`/characters`);if(!t.ok)throw new ol(n.error??t.statusTe
+

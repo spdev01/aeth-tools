@@ -1,0 +1,14 @@
+HTTP/1.1 200 OK
+Accept-Ranges: bytes
+Alt-Svc: h3=":443"; ma=2592000
+Cache-Control: no-cache
+Content-Length: 1087
+Content-Type: text/html; charset=utf-8
+Etag: "dlvelja1o64gu7"
+Last-Modified: Sat, 03 Oct 2026 18:10:19 GMT
+Referrer-Policy: strict-origin-when-cross-origin
+Vary: Accept-Encoding
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+Date: Sun, 04 Oct 2026 08:46:56 GMT
+

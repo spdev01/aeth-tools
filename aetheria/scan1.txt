@@ -1,0 +1,27 @@
+=== ws/wss URLs ===
+ws://127.0.0.1:2567
+
+=== /api|/ws|/socket paths ===
+
+=== framework markers ===
+react: 95
+react-dom: 1
+preact: 0
+vue: 0
+svelte: 0
+solid-js: 0
+phaser: 174
+pixi: 0
+three: 3
+babylon: 0
+kaboom: 0
+bitECS: 0
+colyseus: 38
+socket.io: 0
+supabase: 0
+firebase: 0
+trpc: 0
+
+=== version strings ===
+
+=== message type candidates ===
