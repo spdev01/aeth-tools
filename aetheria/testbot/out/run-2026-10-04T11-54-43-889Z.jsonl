@@ -1,0 +1,37 @@
+{"t":"2026-10-04T11:54:43.891Z","evt":"run_start","data":{"upto":26,"logFile":"E:\\GitHub\\lumivaraonline\\aetheria\\testbot\\out\\run-2026-10-04T11-54-43-889Z.jsonl","cursor":22,"char":"ScoutA1"}}
+{"t":"2026-10-04T11:54:44.072Z","evt":"character","data":{"id":10011810,"name":"ScoutA1"}}
+{"t":"2026-10-04T11:54:44.930Z","evt":"CHARACTER","data":{"base":24,"job":34,"skillPts":13,"statPts":3,"zeny":2205,"classId":"swordsman"}}
+{"t":"2026-10-04T11:54:44.931Z","evt":"message:mailbox","data":{"mails":[],"unread":0}}
+{"t":"2026-10-04T11:54:44.931Z","evt":"message:arena_status","data":{"queued":null,"waitingMs":0,"queueSize":{"1v1":0,"3v3":0}}}
+{"t":"2026-10-04T11:54:44.931Z","evt":"message:party","data":null}
+{"t":"2026-10-04T11:54:44.932Z","evt":"message:guild","data":null}
+{"t":"2026-10-04T11:54:44.932Z","evt":"message:friends","data":{"friends":[],"max":100,"hideOnline":false}}
+{"t":"2026-10-04T11:54:44.932Z","evt":"message:market_badge","data":{"pending":0}}
+{"t":"2026-10-04T11:54:47.038Z","evt":"joined","data":{"map":"goblin_trail"}}
+{"t":"2026-10-04T11:54:47.201Z","evt":"HEARTBEAT","data":{"step":null,"selfId":"d0_AZrA-_","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[0,0],"hp":600,"maxHp":600,"sp":134,"maxSp":134,"bashLv":10,"hpItems":0,"weaves":0,"pots":0,"bag":{"used":22,"free":78,"weight":909,"weightLimit":2780},"zeny":2205,"base":24,"job":34,"classId":"swordsman","auto":false,"dead":false,"killsTotal":0,"hitsInTotal":0}}
+{"t":"2026-10-04T11:54:47.201Z","evt":"STEP_START","data":{"step":"23-farm-j50-stats"}}
+{"t":"2026-10-04T11:54:48.077Z","evt":"setAuto","data":{"skills":["bash"],"radius":"all","monsters":0,"hpItems":0,"hpPercent":75,"bashLv":10,"enabled":true,"map":"goblin_trail"}}
+{"t":"2026-10-04T11:54:48.356Z","evt":"message:skill_fx","data":{"casterId":"d0_AZrA-_","skillId":"bash","name":"Bash","vfx":"bash","x":1459.5355227276075,"y":2403.806054839997,"tx":1457.549936130877,"ty":2344.180468535471,"targets":["m55"],"hits":1}}
+{"t":"2026-10-04T11:54:48.356Z","evt":"mob_hit_seen","data":{"id":"m55","x":1457.549936130877,"y":2344.180468535471,"dmg":1163}}
+{"t":"2026-10-04T11:54:48.359Z","evt":"message:died","data":{"id":"m55","x":1457.549936130877,"y":2344.180468535471}}
+{"t":"2026-10-04T11:54:48.359Z","evt":"kill","data":{"m":"Bat","base":800,"job":600}}
+{"t":"2026-10-04T11:54:48.678Z","evt":"setAuto","data":{"skills":["bash"],"radius":"all","monsters":0,"hpItems":0,"hpPercent":75,"bashLv":10,"enabled":true,"map":"goblin_trail"}}
+{"t":"2026-10-04T11:54:48.706Z","evt":"route","data":{"from":"goblin_trail","to":"capital","route":["clover_meadow","capital"]}}
+{"t":"2026-10-04T11:54:49.512Z","evt":"auto_off_for_travel","data":{}}
+{"t":"2026-10-04T11:54:51.952Z","evt":"mob_hit_seen","data":{"id":"m71","x":710.8242062552865,"y":912.8600817512238,"dmg":215}}
+{"t":"2026-10-04T11:54:51.952Z","evt":"mob_hit_seen","data":{"id":"m71","x":710.8242062552865,"y":912.8600817512238,"dmg":1560}}
+{"t":"2026-10-04T11:54:52.155Z","evt":"incoming_hit_sample","data":{"targetId":"sVQoOJ6xL","attackerId":"m34","damage":22,"x":2889,"y":1383,"onPlayer":true,"ranged":true}}
+{"t":"2026-10-04T11:54:52.155Z","evt":"message:boss_cast","data":{"monsterId":"m71","skill":"bomb-rain","name":"Bomb Rain","castMs":1500,"x":710.8242062552865,"y":912.8600817512238,"areas":[{"x":767.6816059310512,"y":884.6771373945003,"radiusPx":128},{"x":807.7441297787968,"y":946.5522885886605,"radiusPx":128},{"x":832.5183761314372,"y":827.4076844621375,"radiusPx":128},{"x":815.8516606076169,"y":798.5955281951666,"radiusPx":128},{"x":679.7421592916663,"y":777.5539311540259,"radiusPx":128},{"x":604.6533141670279,"y":816.1160100632052,"radiusPx":128},{"x":694.1626667241061,"y":914.5863951774894,"radiusPx":128}]}}
+{"t":"2026-10-04T11:54:52.257Z","evt":"mob_hit_seen","data":{"id":"m71","x":710.8242062552865,"y":912.8600817512238,"dmg":324}}
+{"t":"2026-10-04T11:54:52.257Z","evt":"message:cast","data":{"casterId":"7zDVBob8v","skillId":"cold-bolt","durationMs":300,"targetId":"m71"}}
+{"t":"2026-10-04T11:54:52.558Z","evt":"mob_hit_seen","data":{"id":"m71","x":710.8242062552865,"y":912.8600817512238,"dmg":215}}
+{"t":"2026-10-04T11:54:52.559Z","evt":"mob_hit_seen","data":{"id":"m71","x":710.8242062552865,"y":912.8600817512238,"dmg":3756}}
+{"t":"2026-10-04T11:54:52.908Z","evt":"mob_hit_seen","data":{"id":"m71","x":710.8242062552865,"y":912.8600817512238,"dmg":215}}
+{"t":"2026-10-04T11:54:53.209Z","evt":"mob_hit_seen","data":{"id":"m71","x":710.8242062552865,"y":912.8600817512238,"dmg":215}}
+{"t":"2026-10-04T11:54:53.663Z","evt":"message:boss_fx","data":{"monsterId":"m71","skill":"bomb-rain","hit":1,"hits":1,"x":710.8242062552865,"y":912.8600817512238,"areas":[{"x":767.6816059310512,"y":884.6771373945003,"radiusPx":128},{"x":807.7441297787968,"y":946.5522885886605,"radiusPx":128},{"x":832.5183761314372,"y":827.4076844621375,"radiusPx":128},{"x":815.8516606076169,"y":798.5955281951666,"radiusPx":128},{"x":679.7421592916663,"y":777.5539311540259,"radiusPx":128},{"x":604.6533141670279,"y":816.1160100632052,"radiusPx":128},{"x":694.1626667241061,"y":914.5863951774894,"radiusPx":128}]}}
+{"t":"2026-10-04T11:55:02.254Z","evt":"travel_msg","data":{"mapId":"clover_meadow","roomId":"abMnCvA0c","channel":1,"endpoint":"https://g5.aetheria-online.in.th","displayName":"ทุ่งโคลเวอร์"}}
+{"t":"2026-10-04T11:55:02.265Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T11:55:04.481Z","evt":"traveled","data":{"now":"clover_meadow"}}
+{"t":"2026-10-04T11:55:07.202Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"3M4cwyL3M","weapon":"Ring Pommel Saber","map":"clover_meadow","lastMoveTile":[61.5,4],"lastMoveAgeSec":3,"anchorTile":[0,0],"hp":220,"maxHp":600,"sp":134,"maxSp":134,"bashLv":10,"hpItems":0,"weaves":0,"pots":0,"bag":{"used":22,"free":78,"weight":909,"weightLimit":2780},"zeny":2205,"base":24,"job":34,"classId":"swordsman","auto":false,"dead":false,"killsTotal":1,"hitsInTotal":11}}
+{"t":"2026-10-04T11:55:19.198Z","evt":"travel_msg","data":{"mapId":"capital","roomId":"Dmd652p0D","channel":2,"endpoint":"https://g7.aetheria-online.in.th","displayName":"เมืองหลวงโซลเฮเวน"}}
+{"t":"2026-10-04T11:55:19.210Z","evt":"ws_close","data":{"code":4000,"reason":""}}

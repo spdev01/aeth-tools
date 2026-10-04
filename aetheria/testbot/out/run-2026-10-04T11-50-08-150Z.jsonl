@@ -1,0 +1,33 @@
+{"t":"2026-10-04T11:50:08.151Z","evt":"run_start","data":{"upto":26,"logFile":"E:\\GitHub\\lumivaraonline\\aetheria\\testbot\\out\\run-2026-10-04T11-50-08-150Z.jsonl","cursor":22,"char":"ScoutA1"}}
+{"t":"2026-10-04T11:50:08.512Z","evt":"character","data":{"id":10011810,"name":"ScoutA1"}}
+{"t":"2026-10-04T11:50:10.443Z","evt":"CHARACTER","data":{"base":23,"job":33,"skillPts":12,"statPts":0,"zeny":2205,"classId":"swordsman"}}
+{"t":"2026-10-04T11:50:10.444Z","evt":"message:mailbox","data":{"mails":[],"unread":0}}
+{"t":"2026-10-04T11:50:10.444Z","evt":"message:server_notice","data":{"kind":"restart","inMs":181473}}
+{"t":"2026-10-04T11:50:10.444Z","evt":"message:arena_status","data":{"queued":null,"waitingMs":0,"queueSize":{"1v1":0,"3v3":0}}}
+{"t":"2026-10-04T11:50:10.444Z","evt":"message:party","data":null}
+{"t":"2026-10-04T11:50:10.444Z","evt":"message:guild","data":null}
+{"t":"2026-10-04T11:50:10.445Z","evt":"message:friends","data":{"friends":[],"max":100,"hideOnline":false}}
+{"t":"2026-10-04T11:50:10.445Z","evt":"message:market_badge","data":{"pending":0}}
+{"t":"2026-10-04T11:50:10.563Z","evt":"message:died","data":{"id":"m131497","x":1203.3180957298016,"y":915.3357792112733}}
+{"t":"2026-10-04T11:50:10.564Z","evt":"incoming_hit_sample","data":{"targetId":"36V4W7jGz","damage":2,"x":1260.3166140656867,"y":1127.1974917986724,"onPlayer":true,"heal":true}}
+{"t":"2026-10-04T11:50:10.626Z","evt":"message:pet_fetch","data":{"ownerId":"36V4W7jGz","dropId":"d79147","x":1176.235060853086,"y":931.7544780312655,"ms":591}}
+{"t":"2026-10-04T11:50:12.211Z","evt":"message:cast","data":{"casterId":"jPqnhIi8T","skillId":"fire-bolt","durationMs":1198,"targetId":"m131501"}}
+{"t":"2026-10-04T11:50:12.886Z","evt":"joined","data":{"map":"goblin_trail"}}
+{"t":"2026-10-04T11:50:13.438Z","evt":"HEARTBEAT","data":{"step":null,"selfId":"q-oOOvAf-","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[0,0],"hp":580,"maxHp":580,"sp":130,"maxSp":130,"bashLv":10,"hpItems":0,"weaves":0,"bag":{"used":21,"free":79,"weight":898,"weightLimit":2750},"zeny":2205,"base":23,"job":33,"classId":"swordsman","auto":false,"dead":false,"killsTotal":0,"hitsInTotal":0}}
+{"t":"2026-10-04T11:50:13.438Z","evt":"STEP_START","data":{"step":"23-farm-j50-stats"}}
+{"t":"2026-10-04T11:50:13.476Z","evt":"message:skill_fx","data":{"casterId":"jPqnhIi8T","skillId":"fire-bolt","name":"Fire Bolt","vfx":"fire-bolt","x":944.4436327475086,"y":1937.062559165808,"tx":971.131769720967,"ty":1964.672400615659,"targets":["m131501"],"hits":10}}
+{"t":"2026-10-04T11:50:14.313Z","evt":"setAuto","data":{"skills":["bash"],"radius":"all","monsters":0,"hpItems":0,"hpPercent":75,"bashLv":10,"enabled":true,"map":"goblin_trail"}}
+{"t":"2026-10-04T11:50:14.313Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":23,"jobLevel":33,"exp":"9854/21610","job":"2550/10817","weight":"898/2750","autoEnabled":true,"dead":false,"statPts":0}}
+{"t":"2026-10-04T11:50:14.314Z","evt":"weave","data":{"skill":"bash","target":"m131502","sp":130}}
+{"t":"2026-10-04T11:50:15.012Z","evt":"kill","data":{"m":"Mandragora","base":741,"job":556}}
+{"t":"2026-10-04T11:50:16.299Z","evt":"kill","data":{"m":"Mandragora","base":741,"job":556}}
+{"t":"2026-10-04T11:50:16.976Z","evt":"drop","data":{"name":"Mandragora Root","qty":1}}
+{"t":"2026-10-04T11:50:19.512Z","evt":"kill","data":{"m":"Wolf","base":403,"job":302}}
+{"t":"2026-10-04T11:50:19.855Z","evt":"drop","data":{"name":"Storm Gust Gem 3%","qty":1}}
+{"t":"2026-10-04T11:50:22.166Z","evt":"kill","data":{"m":"Wolf","base":403,"job":302}}
+{"t":"2026-10-04T11:50:23.369Z","evt":"kill","data":{"m":"Mandragora","base":741,"job":556}}
+{"t":"2026-10-04T11:50:23.678Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T11:50:26.847Z","evt":"kill","data":{"m":"Bat","base":800,"job":600}}
+{"t":"2026-10-04T11:50:29.767Z","evt":"levelup","data":{"sessionId":"jPqnhIi8T","base":true,"job":false}}
+{"t":"2026-10-04T11:50:30.374Z","evt":"kill","data":{"m":"Wolf","base":403,"job":302}}
+{"t":"2026-10-04T11:50:32.053Z","evt":"DEATH","data":{"savePointName":"เมืองหลวงโซลเฮเวน","capitalName":"เมืองหลวงโซลเฮเวน","autoReleaseSeconds":300}}

@@ -1,0 +1,970 @@
+{
+ "capital": {
+  "width": 104,
+  "height": 104,
+  "exits": [
+   {
+    "type": "portal",
+    "name": "to_field_01",
+    "cx": 3280,
+    "cy": 1728,
+    "toMap": "field_01",
+    "props": [
+     {
+      "name": "toMap",
+      "type": "string",
+      "value": "field_01"
+     },
+     {
+      "name": "toSpawn",
+      "type": "string",
+      "value": "west_entry"
+     },
+     {
+      "name": "label",
+      "type": "string",
+      "value": "ทุ่งหญ้าตะวันออก"
+     }
+    ]
+   },
+   {
+    "type": "portal",
+    "name": "to_novice_garden",
+    "cx": 48,
+    "cy": 1728,
+    "toMap": "novice_garden",
+    "props": [
+     {
+      "name": "toMap",
+      "type": "string",
+      "value": "novice_garden"
+     },
+     {
+      "name": "toSpawn",
+      "type": "string",
+      "value": "east_entry"
+     },
+     {
+      "name": "label",
+      "type": "string",
+      "value": "สวนนักผจญภัยมือใหม่"
+     }
+    ]
+   },
+   {
+    "type": "portal",
+    "name": "to_clover_meadow",
+    "cx": 1664,
+    "cy": 3280,
+    "toMap": "clover_meadow",
+    "props": [
+     {
+      "name": "toMap",
+      "type": "string",
+      "value": "clover_meadow"
+     },
+     {
+      "name": "toSpawn",
+      "type": "string",
+      "value": "north_entry"
+     },
+     {
+      "name": "label",
+      "type": "string",
+      "value": "ทุ่งโคลเวอร์"
+     }
+    ]
+   }
+  ],
+  "allTypes": [
+   "prop",
+   "spawn",
+   "portal",
+   "npc",
+   "fixedMonster"
+  ],
+  "allNames": [
+   "wall-h",
+   "gatehouse",
+   "wall-v",
+   "wall-dr",
+   "wall-ur",
+   "tower",
+   "bridge-h",
+   "bridge-v",
+   "castle",
+   "royal-garden",
+   "statue",
+   "banner",
+   "goddess-fountain",
+   "lamp",
+   "bench",
+   "flowerbed",
+   "auction-house",
+   "cathedral",
+   "general-store",
+   "smithy",
+   "weapon-rack",
+   "crates",
+   "notice-board",
+   "inn",
+   "arena-gate"
+  ]
+ },
+ "clover_meadow": {
+  "width": 125,
+  "height": 94,
+  "exits": [
+   {
+    "type": "portal",
+    "name": "to_capital",
+    "cx": 1968,
+    "cy": 128,
+    "toMap": "capital",
+    "props": [
+     {
+      "name": "toMap",
+      "type": "string",
+      "value": "capital"
+     },
+     {
+      "name": "toSpawn",
+      "type": "string",
+      "value": "south_gate"
+     },
+     {
+      "name": "label",
+      "type": "string",
+      "value": "เมืองหลวงโซลเฮเวน"
+     }
+    ]
+   },
+   {
+    "type": "portal",
+    "name": "to_goblin_trail",
+    "cx": 1968,
+    "cy": 2880,
+    "toMap": "goblin_trail",
+    "props": [
+     {
+      "name": "toMap",
+      "type": "string",
+      "value": "goblin_trail"
+     },
+     {
+      "name": "toSpawn",
+      "type": "string",
+      "value": "north_entry"
+     },
+     {
+      "name": "label",
+      "type": "string",
+      "value": "เส้นทางก็อบลิน"
+     }
+    ]
+   },
+   {
+    "type": "portal",
+    "name": "to_orc_camp",
+    "cx": 128,
+    "cy": 1520,
+    "toMap": "orc_camp",
+    "props": [
+     {
+      "name": "toMap",
+      "type": "string",
+      "value": "orc_camp"
+     },
+     {
+      "name": "toSpawn",
+      "type": "string",
+      "value": "east_entry"
+     },
+     {
+      "name": "label",
+      "type": "string",
+      "value": "ค่ายออร์ค"
+     }
+    ]
+   }
+  ],
+  "allTypes": [
+   "prop",
+   "spawn",
+   "portal",
+   "monsterArea"
+  ],
+  "allNames": [
+   "poring-shrine",
+   "banner-poring",
+   "dock",
+   "clily",
+   "ctree-orange",
+   "ctree-pink",
+   "cbush",
+   "cflowers-red",
+   "cflowers-pink",
+   "cgrass",
+   "creeds",
+   "signpost",
+   "north_entry",
+   "to_capital",
+   "south_entry",
+   "to_goblin_trail",
+   "west_entry",
+   "to_orc_camp",
+   "default",
+   "west",
+   "east"
+  ]
+ },
+ "novice_garden": {
+  "width": 112,
+  "height": 87,
+  "exits": [
+   {
+    "type": "portal",
+    "name": "to_capital",
+    "cx": 3456,
+    "cy": 1424,
+    "toMap": "capital",
+    "props": [
+     {
+      "name": "toMap",
+      "type": "string",
+      "value": "capital"
+     },
+     {
+      "name": "toSpawn",
+      "type": "string",
+      "value": "west_gate"
+     },
+     {
+      "name": "label",
+      "type": "string",
+      "value": "เมืองหลวงโซลเฮเวน"
+     }
+    ]
+   },
+   {
+    "type": "portal",
+    "name": "to_sun_farm",
+    "cx": 1776,
+    "cy": 128,
+    "toMap": "sun_farm",
+    "props": [
+     {
+      "name": "toMap",
+      "type": "string",
+      "value": "sun_farm"
+     },
+     {
+      "name": "toSpawn",
+      "type": "string",
+      "value": "south_entry"
+     },
+     {
+      "name": "label",
+      "type": "string",
+      "value": "ไร่ซันเกรน"
+     }
+    ]
+   }
+  ],
+  "allTypes": [
+   "prop",
+   "spawn",
+   "portal",
+   "monsterArea"
+  ],
+  "allNames": [
+   "haystack",
+   "cart",
+   "windmill",
+   "oak",
+   "bush",
+   "sakura",
+   "cypress",
+   "wildflowers",
+   "stump",
+   "tallgrass",
+   "log",
+   "mushrooms",
+   "rocks",
+   "boulder",
+   "rock-s",
+   "reeds",
+   "signpost",
+   "campfire",
+   "east_entry",
+   "to_capital",
+   "north_entry",
+   "to_sun_farm",
+   "default",
+   "garden",
+   "farm"
+  ]
+ },
+ "sun_farm": {
+  "width": 112,
+  "height": 87,
+  "exits": [
+   {
+    "type": "portal",
+    "name": "to_novice_garden",
+    "cx": 1776,
+    "cy": 2656,
+    "toMap": "novice_garden",
+    "props": [
+     {
+      "name": "toMap",
+      "type": "string",
+      "value": "novice_garden"
+     },
+     {
+      "name": "toSpawn",
+      "type": "string",
+      "value": "north_entry"
+     },
+     {
+      "name": "label",
+      "type": "string",
+      "value": "สวนมือใหม่"
+     }
+    ]
+   },
+   {
+    "type": "portal",
+    "name": "to_willow_road",
+    "cx": 1808,
+    "cy": 128,
+    "toMap": "willow_road",
+    "props": [
+     {
+      "name": "toMap",
+      "type": "string",
+      "value": "willow_road"
+     },
+     {
+      "name": "toSpawn",
+      "type": "string",
+      "value": "south_entry"
+     },
+     {
+      "name": "label",
+      "type": "string",
+      "value": "ถนนต้นหลิว"
+     }
+    ]
+   }
+  ],
+  "allTypes": [
+   "prop",
+   "spawn",
+   "portal",
+   "monsterArea",
+   "npc"
+  ],
+  "allNames": [
+   "windmill",
+   "haystack",
+   "cart",
+   "oak",
+   "cypress",
+   "autumn-tree",
+   "bush",
+   "wildflowers",
+   "tallgrass",
+   "boulder",
+   "rocks",
+   "stump",
+   "log",
+   "reeds",
+   "signpost",
+   "campfire",
+   "south_entry",
+   "to_novice_garden",
+   "north_entry",
+   "to_willow_road",
+   "default",
+   "north",
+   "south",
+   "Farmer Ploy"
+  ]
+ },
+ "willow_road": {
+  "width": 112,
+  "height": 87,
+  "exits": [
+   {
+    "type": "portal",
+    "name": "to_sun_farm",
+    "cx": 1808,
+    "cy": 2656,
+    "toMap": "sun_farm",
+    "props": [
+     {
+      "name": "toMap",
+      "type": "string",
+      "value": "sun_farm"
+     },
+     {
+      "name": "toSpawn",
+      "type": "string",
+      "value": "north_entry"
+     },
+     {
+      "name": "label",
+      "type": "string",
+      "value": "ไร่ซันเกรน"
+     }
+    ]
+   },
+   {
+    "type": "portal",
+    "name": "to_gale_high",
+    "cx": 1808,
+    "cy": 128,
+    "toMap": "gale_high",
+    "props": [
+     {
+      "name": "toMap",
+      "type": "string",
+      "value": "gale_high"
+     },
+     {
+      "name": "toSpawn",
+      "type": "string",
+      "value": "south_entry"
+     },
+     {
+      "name": "label",
+      "type": "string",
+      "value": "ที่ราบสูงเกล"
+     }
+    ]
+   }
+  ],
+  "allTypes": [
+   "prop",
+   "spawn",
+   "portal",
+   "monsterArea"
+  ],
+  "allNames": [
+   "cart",
+   "haystack",
+   "mossy-oak",
+   "bush",
+   "cypress",
+   "oak",
+   "tallgrass",
+   "wildflowers",
+   "stump",
+   "mushrooms",
+   "rocks",
+   "boulder",
+   "rock-s",
+   "log",
+   "reeds",
+   "signpost",
+   "campfire",
+   "south_entry",
+   "to_sun_farm",
+   "north_entry",
+   "to_gale_high",
+   "default",
+   "near",
+   "far"
+  ]
+ },
+ "goblin_trail": {
+  "width": 125,
+  "height": 94,
+  "exits": [
+   {
+    "type": "portal",
+    "name": "to_clover_meadow",
+    "cx": 1968,
+    "cy": 128,
+    "toMap": "clover_meadow",
+    "props": [
+     {
+      "name": "toMap",
+      "type": "string",
+      "value": "clover_meadow"
+     },
+     {
+      "name": "toSpawn",
+      "type": "string",
+      "value": "south_entry"
+     },
+     {
+      "name": "label",
+      "type": "string",
+      "value": "ทุ่งโคลเวอร์"
+     }
+    ]
+   },
+   {
+    "type": "portal",
+    "name": "to_verdant_basin",
+    "cx": 3872,
+    "cy": 1520,
+    "toMap": "verdant_basin",
+    "props": [
+     {
+      "name": "toMap",
+      "type": "string",
+      "value": "verdant_basin"
+     },
+     {
+      "name": "toSpawn",
+      "type": "string",
+      "value": "west_entry"
+     },
+     {
+      "name": "label",
+      "type": "string",
+      "value": "แอ่งเวอร์แดนท์"
+     }
+    ]
+   },
+   {
+    "type": "portal",
+    "name": "to_ember_cavern",
+    "cx": 2000,
+    "cy": 2880,
+    "toMap": "ember_cavern",
+    "props": [
+     {
+      "name": "toMap",
+      "type": "string",
+      "value": "ember_cavern"
+     },
+     {
+      "name": "toSpawn",
+      "type": "string",
+      "value": "north_entry"
+     },
+     {
+      "name": "label",
+      "type": "string",
+      "value": "ถ้ำเอมเบอร์"
+     }
+    ]
+   }
+  ],
+  "allTypes": [
+   "prop",
+   "spawn",
+   "portal",
+   "monsterArea",
+   "fixedMonster"
+  ],
+  "allNames": [
+   "pillar",
+   "bones",
+   "campfire",
+   "pine",
+   "deadtree",
+   "autumn-tree",
+   "tallgrass",
+   "mushrooms",
+   "rocks",
+   "boulder",
+   "log",
+   "rock-s",
+   "signpost",
+   "north_entry",
+   "to_clover_meadow",
+   "east_entry",
+   "to_verdant_basin",
+   "south_entry",
+   "to_ember_cavern",
+   "default",
+   "upper",
+   "lower",
+   "goblin_chieftain"
+  ]
+ },
+ "gale_high": {
+  "width": 112,
+  "height": 87,
+  "exits": [
+   {
+    "type": "portal",
+    "name": "to_willow_road",
+    "cx": 1808,
+    "cy": 2656,
+    "toMap": "willow_road",
+    "props": [
+     {
+      "name": "toMap",
+      "type": "string",
+      "value": "willow_road"
+     },
+     {
+      "name": "toSpawn",
+      "type": "string",
+      "value": "north_entry"
+     },
+     {
+      "name": "label",
+      "type": "string",
+      "value": "ถนนต้นหลิว"
+     }
+    ]
+   },
+   {
+    "type": "portal",
+    "name": "to_frost_pass",
+    "cx": 128,
+    "cy": 1392,
+    "toMap": "frost_pass",
+    "props": [
+     {
+      "name": "toMap",
+      "type": "string",
+      "value": "frost_pass"
+     },
+     {
+      "name": "toSpawn",
+      "type": "string",
+      "value": "east_entry"
+     },
+     {
+      "name": "label",
+      "type": "string",
+      "value": "ช่องเขาฟรอสต์พีค"
+     }
+    ]
+   },
+   {
+    "type": "portal",
+    "name": "to_crystal_mine",
+    "cx": 3456,
+    "cy": 1392,
+    "toMap": "crystal_mine",
+    "props": [
+     {
+      "name": "toMap",
+      "type": "string",
+      "value": "crystal_mine"
+     },
+     {
+      "name": "toSpawn",
+      "type": "string",
+      "value": "west_entry"
+     },
+     {
+      "name": "label",
+      "type": "string",
+      "value": "เหมืองคริสตัลเก่า"
+     }
+    ]
+   }
+  ],
+  "allTypes": [
+   "prop",
+   "spawn",
+   "portal",
+   "monsterArea"
+  ],
+  "allNames": [
+   "griffin-nest",
+   "watchtower",
+   "rock-pillar",
+   "pine",
+   "bent-pine",
+   "tallgrass",
+   "rock-s",
+   "boulder",
+   "sandrock",
+   "wildflowers",
+   "rocks",
+   "signpost",
+   "campfire",
+   "south_entry",
+   "to_willow_road",
+   "west_entry",
+   "to_frost_pass",
+   "east_entry",
+   "to_crystal_mine",
+   "default",
+   "west",
+   "east"
+  ]
+ },
+ "frost_pass": {
+  "width": 112,
+  "height": 87,
+  "exits": [
+   {
+    "type": "portal",
+    "name": "to_gale_high",
+    "cx": 3456,
+    "cy": 1392,
+    "toMap": "gale_high",
+    "props": [
+     {
+      "name": "toMap",
+      "type": "string",
+      "value": "gale_high"
+     },
+     {
+      "name": "toSpawn",
+      "type": "string",
+      "value": "west_entry"
+     },
+     {
+      "name": "label",
+      "type": "string",
+      "value": "ที่ราบสูงเกล"
+     }
+    ]
+   }
+  ],
+  "allTypes": [
+   "prop",
+   "spawn",
+   "portal",
+   "monsterArea",
+   "fixedMonster"
+  ],
+  "allNames": [
+   "frozen-tree",
+   "ice-crystal",
+   "snow-pine",
+   "snow-rock",
+   "bones",
+   "rock-s",
+   "signpost",
+   "bonfire",
+   "east_entry",
+   "to_gale_high",
+   "default",
+   "lower",
+   "upper",
+   "prismatic_golem"
+  ]
+ },
+ "crystal_mine": {
+  "width": 112,
+  "height": 87,
+  "exits": [
+   {
+    "type": "portal",
+    "name": "to_gale_high",
+    "cx": 128,
+    "cy": 1392,
+    "toMap": "gale_high",
+    "props": [
+     {
+      "name": "toMap",
+      "type": "string",
+      "value": "gale_high"
+     },
+     {
+      "name": "toSpawn",
+      "type": "string",
+      "value": "east_entry"
+     },
+     {
+      "name": "label",
+      "type": "string",
+      "value": "ที่ราบสูงเกล"
+     }
+    ]
+   },
+   {
+    "type": "portal",
+    "name": "to_moon_forest",
+    "cx": 3456,
+    "cy": 1392,
+    "toMap": "moon_forest",
+    "props": [
+     {
+      "name": "toMap",
+      "type": "string",
+      "value": "moon_forest"
+     },
+     {
+      "name": "toSpawn",
+      "type": "string",
+      "value": "west_entry"
+     },
+     {
+      "name": "label",
+      "type": "string",
+      "value": "ป่ามูนลีฟ"
+     }
+    ]
+   },
+   {
+    "type": "portal",
+    "name": "to_capital",
+    "cx": 1808,
+    "cy": 2656,
+    "toMap": "capital",
+    "props": [
+     {
+      "name": "toMap",
+      "type": "string",
+      "value": "capital"
+     },
+     {
+      "name": "toSpawn",
+      "type": "string",
+      "value": "default"
+     },
+     {
+      "name": "label",
+      "type": "string",
+      "value": "เมืองหลวงโซลเฮเวน"
+     }
+    ]
+   }
+  ],
+  "allTypes": [
+   "prop",
+   "spawn",
+   "portal",
+   "monsterArea"
+  ],
+  "allNames": [
+   "minecart",
+   "mine-frame",
+   "brazier",
+   "chest",
+   "stalagmite",
+   "rock-pillar",
+   "crystal-blue",
+   "crystal-purple",
+   "rock-s",
+   "bones",
+   "rocks",
+   "boulder",
+   "signpost",
+   "west_entry",
+   "to_gale_high",
+   "east_entry",
+   "to_moon_forest",
+   "south_entry",
+   "to_capital",
+   "default",
+   "upper",
+   "lower"
+  ]
+ },
+ "verdant_basin": {
+  "width": 112,
+  "height": 87,
+  "exits": [
+   {
+    "type": "portal",
+    "name": "to_field_01",
+    "cx": 1808,
+    "cy": 128,
+    "toMap": "field_01",
+    "props": [
+     {
+      "name": "toMap",
+      "type": "string",
+      "value": "field_01"
+     },
+     {
+      "name": "toSpawn",
+      "type": "string",
+      "value": "south_entry"
+     },
+     {
+      "name": "label",
+      "type": "string",
+      "value": "ทุ่งหญ้าตะวันออก"
+     }
+    ]
+   },
+   {
+    "type": "portal",
+    "name": "to_venom_swamp",
+    "cx": 3456,
+    "cy": 1392,
+    "toMap": "venom_swamp",
+    "props": [
+     {
+      "name": "toMap",
+      "type": "string",
+      "value": "venom_swamp"
+     },
+     {
+      "name": "toSpawn",
+      "type": "string",
+      "value": "west_entry"
+     },
+     {
+      "name": "label",
+      "type": "string",
+      "value": "หนองพิษ"
+     }
+    ]
+   },
+   {
+    "type": "portal",
+    "name": "to_goblin_trail",
+    "cx": 128,
+    "cy": 1392,
+    "toMap": "goblin_trail",
+    "props": [
+     {
+      "name": "toMap",
+      "type": "string",
+      "value": "goblin_trail"
+     },
+     {
+      "name": "toSpawn",
+      "type": "string",
+      "value": "east_entry"
+     },
+     {
+      "name": "label",
+      "type": "string",
+      "value": "เส้นทางก็อบลิน"
+     }
+    ]
+   }
+  ],
+  "allTypes": [
+   "prop",
+   "spawn",
+   "portal",
+   "monsterArea"
+  ],
+  "allNames": [
+   "cypress",
+   "bush",
+   "oak",
+   "mossy-oak",
+   "tallgrass",
+   "wildflowers",
+   "mushrooms",
+   "log",
+   "rocks",
+   "boulder",
+   "rock-s",
+   "stump",
+   "reeds",
+   "signpost",
+   "campfire",
+   "north_entry",
+   "to_field_01",
+   "east_entry",
+   "to_venom_swamp",
+   "west_entry",
+   "to_goblin_trail",
+   "default",
+   "canopy",
+   "floor"
+  ]
+ }
+}

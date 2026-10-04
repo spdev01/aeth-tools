@@ -1,0 +1,31 @@
+{"t":"2026-10-04T10:48:40.613Z","evt":"run_start","data":{"upto":3,"logFile":"E:\\GitHub\\lumivaraonline\\aetheria\\testbot\\out\\run-2026-10-04T10-48-40-612Z.jsonl","cursor":1,"char":"ScoutA1"}}
+{"t":"2026-10-04T10:48:40.889Z","evt":"character","data":{"id":10011810,"name":"ScoutA1"}}
+{"t":"2026-10-04T10:48:49.131Z","evt":"message:mailbox","data":{"mails":[],"unread":0}}
+{"t":"2026-10-04T10:48:49.132Z","evt":"message:arena_status","data":{"queued":null,"waitingMs":0,"queueSize":{"1v1":0,"3v3":0}}}
+{"t":"2026-10-04T10:48:49.132Z","evt":"message:party","data":null}
+{"t":"2026-10-04T10:48:49.133Z","evt":"message:guild","data":null}
+{"t":"2026-10-04T10:48:49.133Z","evt":"message:friends","data":{"friends":[],"max":100,"hideOnline":false}}
+{"t":"2026-10-04T10:48:49.133Z","evt":"message:market_badge","data":{"pending":0}}
+{"t":"2026-10-04T10:48:51.513Z","evt":"joined","data":{"map":"capital"}}
+{"t":"2026-10-04T10:48:51.513Z","evt":"STEP_START","data":{"step":"02-travel-east-meadow"}}
+{"t":"2026-10-04T10:48:51.517Z","evt":"route","data":{"from":"capital","to":"field_01","route":["field_01"]}}
+{"t":"2026-10-04T10:48:52.034Z","evt":"travel_msg","data":{"mapId":"field_01","roomId":"j4Vg77CVd","channel":2,"endpoint":"https://g5.aetheria-online.in.th","displayName":"ทุ่งหญ้าตะวันออก"}}
+{"t":"2026-10-04T10:48:52.278Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T10:48:55.173Z","evt":"traveled","data":{"now":"field_01"}}
+{"t":"2026-10-04T10:48:55.174Z","evt":"STEP_DONE","data":{"step":"02-travel-east-meadow"}}
+{"t":"2026-10-04T10:48:55.174Z","evt":"STEP_START","data":{"step":"03-farm-job10"}}
+{"t":"2026-10-04T10:48:55.843Z","evt":"message:b","data":[["hit",{"targetId":"m24531","attackerId":"fPCbB1mpP","damage":52,"x":1261.3532015750661,"y":1666.0663140511092,"onPlayer":false,"miss":false,"crit":false,"hits":1,"swingMs":1076,"element":"neutral","elementMul":1}],["died",{"id":"m24531","x":1261.3532015750661,"y":1666.0663140511092}]]}
+{"t":"2026-10-04T10:48:56.051Z","evt":"setAuto","data":{"cfg":{"skills":0,"monsters":0,"hpPercent":60,"spPercent":40,"pickupLoot":true,"huntRadiusTiles":"all"},"enabled":true}}
+{"t":"2026-10-04T10:48:56.051Z","evt":"farm_status","data":{"label":"field_01 job10","baseLevel":1,"jobLevel":1,"exp":"0/120","job":"0/20","weight":"275/2300","autoEnabled":true,"dead":false}}
+{"t":"2026-10-04T10:48:58.106Z","evt":"message:exp_gain","data":{"base":25,"job":19,"monster":"Slime","partyBonusPercent":0,"sharedWith":1}}
+{"t":"2026-10-04T10:48:58.570Z","evt":"message:item_gain","data":{"itemId":90101,"name":"Jellopy","qty":1}}
+{"t":"2026-10-04T10:49:21.590Z","evt":"message:center_notice","data":{"text":"สำเร็จ: ออกไปตี Slime"}}
+{"t":"2026-10-04T10:49:26.107Z","evt":"farm_status","data":{"label":"field_01 job10","baseLevel":2,"jobLevel":4,"exp":"155/363","job":"88/90","weight":"451/2300","autoEnabled":true,"dead":false}}
+{"t":"2026-10-04T10:49:38.961Z","evt":"message:item_used","data":{"itemId":90104,"cooldownGroup":"Food","cooldownSeconds":1}}
+{"t":"2026-10-04T10:49:56.207Z","evt":"farm_status","data":{"label":"field_01 job10","baseLevel":3,"jobLevel":6,"exp":"67/700","job":"84/157","weight":"652/2300","autoEnabled":true,"dead":false}}
+{"t":"2026-10-04T10:50:26.264Z","evt":"farm_status","data":{"label":"field_01 job10","baseLevel":3,"jobLevel":7,"exp":"417/700","job":"191/195","weight":"652/2300","autoEnabled":true,"dead":false}}
+{"t":"2026-10-04T10:50:56.335Z","evt":"farm_status","data":{"label":"field_01 job10","baseLevel":3,"jobLevel":8,"exp":"697/700","job":"208/236","weight":"645/2300","autoEnabled":true,"dead":false}}
+{"t":"2026-10-04T10:51:26.399Z","evt":"farm_status","data":{"label":"field_01 job10","baseLevel":4,"jobLevel":9,"exp":"337/1120","job":"229/280","weight":"766/2300","autoEnabled":true,"dead":false}}
+{"t":"2026-10-04T10:51:35.430Z","evt":"farm_done","data":{"label":"field_01 job10","baseLevel":4,"jobLevel":10}}
+{"t":"2026-10-04T10:51:35.431Z","evt":"STEP_DONE","data":{"step":"03-farm-job10"}}
+{"t":"2026-10-04T10:51:35.431Z","evt":"run_end","data":{"cursor":3,"char":"ScoutA1","map":"field_01"}}

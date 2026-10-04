@@ -1,0 +1,191 @@
+{
+  "profileId": "novice-to-knight-99",
+  "version": 1,
+  "description": "Full-loop scenario: create -> STR10/DEX10 -> east meadow Job10 -> Basic Skill 9/9 -> Swordsman -> willow road Lv12 Bash10 SwordMastery10 -> market/blacksmith -> goblins Job50 -> Knight -> gear Broad Sword +4 -> Scales highland skills -> Peco -> Frost Peak 60-65 -> Dawbreaker +7 -> Poison marsh 99 -> STR90 AGI70 DEX40 VIT30 LUK40",
+  "character": { "nameTemplate": "FarmBot%03d" },
+
+  "policies": {
+    "sell": {
+      "protect": { "types": ["Card", "Enchantment"], "nameMatches": ["Enchant Rune"] },
+      "sellIf": { "sellPrice": ">0" },
+      "neverSell": ["Butterfly Wing"],
+      "minBagFree": 10,
+      "maxWeightPct": 85
+    },
+    "storage": { "npc": "n6", "option": 2, "put": ["protected"], "feeZeny": 40 },
+    "death": { "respawn": { "to": "capital" }, "then": "resumeStage" },
+    "reconnect": { "maxRetries": 5, "backoffSec": 15 },
+    "autoDefaults": {
+      "huntRadiusTiles": "all",
+      "pickupLoot": true,
+      "flyWing": true,
+      "maxWeightPct": 85
+    }
+  },
+
+  "stages": [
+    {
+      "id": "s01-create-char",
+      "map": null,
+      "steps": [
+        { "op": "createCharacter", "nameFromTemplate": true },
+        { "op": "waitFor", "condition": { "map": "capital" } }
+      ],
+      "_todo": "POST /characters {name} verified; enter capital via world/enter"
+    },
+    {
+      "id": "s02-initial-stats",
+      "map": "capital",
+      "steps": [
+        { "op": "stats", "plan": { "STR": 10, "DEX": 10 } },
+        { "op": "sellStore", "policy": "default" }
+      ]
+    },
+    {
+      "id": "s03-east-meadow-job10",
+      "map": "east-meadow",
+      "steps": [
+        { "op": "travel", "to": "east-meadow", "_todo": "mapId + route capture (portal scan)" },
+        { "op": "skills", "plan": { "basic-skill": 9 } },
+        { "op": "farm", "until": { "jobLevel": 10 },
+          "auto": { "monsters": ["*"], "skills": [{ "id": "basic-attack", "level": 1 }] } },
+        { "op": "sellStore", "policy": "default" }
+      ],
+      "_todo": "auto refused in city; ensure map out of capital before farm"
+    },
+    {
+      "id": "s05-class-change-swordsman",
+      "map": "capital",
+      "steps": [
+        { "op": "gotoNpc", "npc": "n5", "at": [52, 30] },
+        { "op": "npc", "npc": "n5", "options": [0], "expect": { "jobChangeOptions": true }, "capture": "class-change-dialog" },
+        { "op": "npc", "npc": "n5", "options": ["AUTO_CLASS:swordsman"], "capture": "class-change-confirm" },
+        { "op": "waitFor", "condition": { "classId": "swordsman" } }
+      ],
+      "_todo": "gate verified (Job10 + Basic Skill 9). Capture exact option indices at eligibility."
+    },
+    {
+      "id": "s06-willow-road",
+      "map": "willow-road",
+      "steps": [
+        { "op": "travel", "to": "willow-road", "_todo": "mapId + route capture" }
+      ]
+    },
+    {
+      "id": "s07-lv12-bash-swordmastery",
+      "map": "willow-road",
+      "steps": [
+        { "op": "skills", "plan": { "bash": 10, "sword-mastery": 10 } },
+        { "op": "farm", "until": { "baseLevel": 12 },
+          "auto": { "skills": [{ "id": "bash", "level": 10 }] } },
+        { "op": "sellStore", "policy": "default" }
+      ]
+    },
+    {
+      "id": "s08-market-blacksmith",
+      "map": "capital",
+      "steps": [
+        { "op": "travel", "to": "capital" },
+        { "op": "buy", "shop": { "npc": "n2", "option": 0, "items": [{ "name": "sword", "qty": 1, "_todo": "blacksmith sword itemId" }] } },
+        { "op": "gotoNpc", "npc": "n3", "at": [77.5, 48.5] },
+        { "op": "refine", "item": "sword", "targetLevel": 1, "blessing": false, "capture": "refine-dialog" }
+      ],
+      "_todo": "blacksmith dialog indices; refine{source,blessing} semantics; ore requirements"
+    },
+    {
+      "id": "s09-goblins-job50",
+      "map": "goblin-camp",
+      "steps": [
+        { "op": "travel", "to": "goblin-camp", "_todo": "mapId + route capture" },
+        { "op": "farm", "until": { "jobLevel": 50 },
+          "auto": { "skills": [{ "id": "bash", "level": 10 }] } },
+        { "op": "sellStore", "policy": "default" }
+      ]
+    },
+    {
+      "id": "s10-class-change-knight",
+      "map": "capital",
+      "steps": [
+        { "op": "gotoNpc", "npc": "n5", "at": [52, 30] },
+        { "op": "npc", "npc": "n5", "options": [0], "expect": { "jobChangeOptions": true }, "capture": "class-change-knight" },
+        { "op": "waitFor", "condition": { "classId": "knight" } }
+      ],
+      "_todo": "Knight requirement value (catalog jobChangeRequirement) - capture"
+    },
+    {
+      "id": "s11-stat-plans",
+      "map": "any",
+      "steps": [
+        { "op": "stats", "plan": { "STR": 40, "AGI": 30, "DEX": 20, "VIT": 10, "LUK": 10 }, "_todo": "mid-game split: tune for survivability on Frost Peak" }
+      ]
+    },
+    {
+      "id": "s12-gear-broadsword4",
+      "map": "capital",
+      "steps": [
+        { "op": "buy", "market": { "op": "search", "filters": { "q": "Broad Sword" }, "_todo": "verify + listingId" } },
+        { "op": "equip", "item": "Broad Sword" },
+        { "op": "refine", "item": "Broad Sword", "targetLevel": 4, "capture": "refine-broadsword" }
+      ],
+      "_todo": "Broad Sword itemId; refine loop x4 (+blessing policy)"
+    },
+    {
+      "id": "s13-scales-highland",
+      "map": "scales-highland",
+      "steps": [
+        { "op": "travel", "to": "scales-highland", "_todo": "mapId + route capture" },
+        { "op": "skills", "plan": { "spear-mastery": 10, "pierce": 10, "bowling-bash": 10 }, "_todo": "allocate as job points come; adjust order" },
+        { "op": "farm", "until": { "baseLevel": 60 },
+          "auto": { "skills": [{ "id": "bowling-bash", "level": 10 }] } },
+        { "op": "sellStore", "policy": "default" }
+      ]
+    },
+    {
+      "id": "s14-peco-rental",
+      "map": "capital",
+      "steps": [
+        { "op": "capture", "tag": "peco-rental-discovery", "_todo": "scan capital NPC dialogs for Peco rental; then npc_talk/npc_option + skill_up peco-peco-ride" },
+        { "op": "skills", "plan": { "peco-peco-ride": 1 } }
+      ],
+      "_todo": "rental NPC unidentified"
+    },
+    {
+      "id": "s15-frost-peak-65",
+      "map": "frost-peak",
+      "steps": [
+        { "op": "travel", "to": "frost-peak", "_todo": "mapId + route capture" },
+        { "op": "farm", "until": { "baseLevel": 65 }, "auto": {} },
+        { "op": "sellStore", "policy": "default" }
+      ]
+    },
+    {
+      "id": "s16-dawbreaker7",
+      "map": "capital",
+      "steps": [
+        { "op": "buy", "market": { "op": "search", "filters": { "q": "Dawbreaker" }, "_todo": "verify + itemId" } },
+        { "op": "equip", "item": "Dawbreaker" },
+        { "op": "refine", "item": "Dawbreaker", "targetLevel": 7, "capture": "refine-dawbreaker" }
+      ],
+      "_todo": "Dawbreaker itemId; refine x7 + failure policy (downgrade/break?)"
+    },
+    {
+      "id": "s17-poison-marsh-99",
+      "map": "poison-marsh",
+      "steps": [
+        { "op": "travel", "to": "poison-marsh", "_todo": "mapId + route capture" },
+        { "op": "farm", "until": { "baseLevel": 99 }, "auto": {} },
+        { "op": "sellStore", "policy": "default" }
+      ]
+    },
+    {
+      "id": "s18-final-stats",
+      "map": "any",
+      "steps": [
+        { "op": "stats", "plan": { "STR": 90, "AGI": 70, "DEX": 40, "VIT": 30, "LUK": 40 } }
+      ]
+    }
+  ],
+
+  "captures": ["class-change-dialog", "class-change-confirm", "refine-dialog", "market-search-response", "peco-rental-discovery"],
+  "runtime": { "stateFile": "../out/run-<botId>.json" }
+}

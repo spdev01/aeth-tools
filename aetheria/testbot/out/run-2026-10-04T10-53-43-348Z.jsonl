@@ -1,0 +1,39 @@
+{"t":"2026-10-04T10:53:43.349Z","evt":"run_start","data":{"upto":11,"logFile":"e:\\GitHub\\lumivaraonline\\aetheria\\testbot\\out\\run-2026-10-04T10-53-43-348Z.jsonl","cursor":7,"char":"ScoutA1"}}
+{"t":"2026-10-04T10:53:43.633Z","evt":"character","data":{"id":10011810,"name":"ScoutA1"}}
+{"t":"2026-10-04T10:53:49.751Z","evt":"message:mailbox","data":{"mails":[],"unread":0}}
+{"t":"2026-10-04T10:53:49.752Z","evt":"message:arena_status","data":{"queued":null,"waitingMs":0,"queueSize":{"1v1":0,"3v3":0}}}
+{"t":"2026-10-04T10:53:49.752Z","evt":"message:party","data":null}
+{"t":"2026-10-04T10:53:49.753Z","evt":"message:guild","data":null}
+{"t":"2026-10-04T10:53:49.753Z","evt":"message:friends","data":{"friends":[],"max":100,"hideOnline":false}}
+{"t":"2026-10-04T10:53:49.753Z","evt":"message:market_badge","data":{"pending":0}}
+{"t":"2026-10-04T10:53:52.168Z","evt":"joined","data":{"map":"capital"}}
+{"t":"2026-10-04T10:53:52.168Z","evt":"STEP_START","data":{"step":"08-travel-willow-road"}}
+{"t":"2026-10-04T10:53:52.277Z","evt":"route","data":{"from":"capital","to":"willow_road","route":["novice_garden","sun_farm","willow_road"]}}
+{"t":"2026-10-04T10:54:02.882Z","evt":"travel_msg","data":{"mapId":"novice_garden","roomId":"tkD2PyWyT","channel":1,"endpoint":"https://g3.aetheria-online.in.th","displayName":"สวนนักผจญภัยมือใหม่"}}
+{"t":"2026-10-04T10:54:02.987Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T10:54:05.548Z","evt":"traveled","data":{"now":"novice_garden"}}
+{"t":"2026-10-04T10:54:17.312Z","evt":"travel_msg","data":{"mapId":"sun_farm","roomId":"7re34frbs","channel":2,"endpoint":"https://g8.aetheria-online.in.th","displayName":"ไร่ซันเกรน"}}
+{"t":"2026-10-04T10:54:17.357Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T10:54:20.269Z","evt":"traveled","data":{"now":"sun_farm"}}
+{"t":"2026-10-04T10:54:23.853Z","evt":"message:b","data":[["skill_fx",{"casterId":"XS5XGKQRr","skillId":"improve-concentration","name":"Improve Concentration","vfx":"improve-concentration","x":1803.5876925564237,"y":1238.4307066332713,"tx":1803.5876925564237,"ty":1238.4307066332713,"targets":[],"hits":1}]]}
+{"t":"2026-10-04T10:54:34.010Z","evt":"travel_msg","data":{"mapId":"willow_road","roomId":"ZeP2aDJU2","channel":3,"endpoint":"https://g3.aetheria-online.in.th","displayName":"ถนนต้นหลิว"}}
+{"t":"2026-10-04T10:54:34.092Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T10:54:36.524Z","evt":"traveled","data":{"now":"willow_road"}}
+{"t":"2026-10-04T10:54:36.525Z","evt":"STEP_DONE","data":{"step":"08-travel-willow-road"}}
+{"t":"2026-10-04T10:54:36.525Z","evt":"STEP_START","data":{"step":"09-farm-lv12"}}
+{"t":"2026-10-04T10:54:37.392Z","evt":"setAuto","data":{"cfg":{"skills":0,"flyWing":false,"hpItems":[],"spItems":[],"lootWhen":"first","monsters":0,"buffItems":[],"buffParty":true,"hpPercent":60,"lootTypes":[],"spPercent":40,"pickupLoot":true,"basicAttack":true,"flyWingMobs":0,"defendOthers":false,"lootRarities":[],"huntRadiusTiles":"all","healPartyPercent":60,"lootRarityByType":{},"flyWingIdleSeconds":1},"enabled":true}}
+{"t":"2026-10-04T10:54:37.392Z","evt":"farm_status","data":{"label":"willow lv12","baseLevel":4,"jobLevel":2,"exp":"457/1120","job":"0/181","weight":"881/2510","autoEnabled":true,"dead":false}}
+{"t":"2026-10-04T10:54:40.390Z","evt":"message:exp_gain","data":{"base":224,"job":168,"monster":"Treant","partyBonusPercent":0,"sharedWith":1}}
+{"t":"2026-10-04T10:54:48.872Z","evt":"message:item_gain","data":{"itemId":90204,"name":"Rough Elunium","qty":1}}
+{"t":"2026-10-04T10:55:07.473Z","evt":"farm_status","data":{"label":"willow lv12","baseLevel":6,"jobLevel":6,"exp":"143/2190","job":"332/763","weight":"883/2510","autoEnabled":true,"dead":false}}
+{"t":"2026-10-04T10:55:21.571Z","evt":"message:item_used","data":{"itemId":90104,"cooldownGroup":"Food","cooldownSeconds":1}}
+{"t":"2026-10-04T10:55:37.531Z","evt":"farm_status","data":{"label":"willow lv12","baseLevel":7,"jobLevel":8,"exp":"49/2832","job":"181/1174","weight":"876/2510","autoEnabled":true,"dead":false}}
+{"t":"2026-10-04T10:56:07.610Z","evt":"farm_status","data":{"label":"willow lv12","baseLevel":7,"jobLevel":9,"exp":"1921/2832","job":"411/1405","weight":"881/2510","autoEnabled":true,"dead":false}}
+{"t":"2026-10-04T10:56:37.676Z","evt":"farm_status","data":{"label":"willow lv12","baseLevel":8,"jobLevel":10,"exp":"667/3543","job":"189/1652","weight":"883/2510","autoEnabled":true,"dead":false}}
+{"t":"2026-10-04T10:57:07.767Z","evt":"farm_status","data":{"label":"willow lv12","baseLevel":8,"jobLevel":10,"exp":"2615/3543","job":"1650/1652","weight":"886/2510","autoEnabled":true,"dead":false}}
+{"t":"2026-10-04T10:57:37.823Z","evt":"farm_status","data":{"label":"willow lv12","baseLevel":9,"jobLevel":11,"exp":"1168/4320","job":"1570/1915","weight":"895/2510","autoEnabled":true,"dead":false}}
+{"t":"2026-10-04T10:58:07.905Z","evt":"farm_status","data":{"label":"willow lv12","baseLevel":9,"jobLevel":12,"exp":"3040/4320","job":"1059/2192","weight":"897/2510","autoEnabled":true,"dead":false}}
+{"t":"2026-10-04T10:58:37.975Z","evt":"farm_status","data":{"label":"willow lv12","baseLevel":10,"jobLevel":13,"exp":"368/5162","job":"103/2483","weight":"903/2510","autoEnabled":true,"dead":false}}
+{"t":"2026-10-04T10:59:08.019Z","evt":"farm_status","data":{"label":"willow lv12","baseLevel":10,"jobLevel":13,"exp":"1841/5162","job":"1207/2483","weight":"1005/2510","autoEnabled":true,"dead":false}}
+{"t":"2026-10-04T10:59:38.113Z","evt":"farm_status","data":{"label":"willow lv12","baseLevel":10,"jobLevel":14,"exp":"4013/5162","job":"353/2788","weight":"1010/2510","autoEnabled":true,"dead":false}}
+{"t":"2026-10-04T11:00:08.154Z","evt":"farm_status","data":{"label":"willow lv12","baseLevel":11,"jobLevel":14,"exp":"1023/6068","job":"1982/2788","weight":"1015/2510","autoEnabled":true,"dead":false}}

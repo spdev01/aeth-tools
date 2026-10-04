@@ -1,0 +1,37 @@
+{"t":"2026-10-04T11:26:02.110Z","evt":"run_start","data":{"upto":21,"logFile":"e:\\GitHub\\lumivaraonline\\aetheria\\testbot\\out\\run-2026-10-04T11-26-02-109Z.jsonl","cursor":19,"char":"ScoutA1"}}
+{"t":"2026-10-04T11:26:02.496Z","evt":"character","data":{"id":10011810,"name":"ScoutA1"}}
+{"t":"2026-10-04T11:26:09.936Z","evt":"CHARACTER","data":{"base":15,"job":21,"skillPts":0,"statPts":52,"zeny":3129,"classId":"swordsman"}}
+{"t":"2026-10-04T11:26:09.937Z","evt":"message:mailbox","data":{"mails":[],"unread":0}}
+{"t":"2026-10-04T11:26:09.938Z","evt":"message:arena_status","data":{"queued":null,"waitingMs":0,"queueSize":{"1v1":0,"3v3":0}}}
+{"t":"2026-10-04T11:26:09.938Z","evt":"message:party","data":null}
+{"t":"2026-10-04T11:26:09.939Z","evt":"message:guild","data":null}
+{"t":"2026-10-04T11:26:09.939Z","evt":"message:friends","data":{"friends":[],"max":100,"hideOnline":false}}
+{"t":"2026-10-04T11:26:09.940Z","evt":"message:market_badge","data":{"pending":0}}
+{"t":"2026-10-04T11:26:12.404Z","evt":"joined","data":{"map":"capital"}}
+{"t":"2026-10-04T11:26:12.605Z","evt":"HEARTBEAT","data":{"step":null,"map":"capital","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[0,0],"hp":420,"maxHp":420,"sp":98,"maxSp":98,"bag":{"used":10,"free":90,"weight":570,"weightLimit":2510},"zeny":3129,"base":15,"job":21,"classId":"swordsman","auto":false,"dead":false,"killsTotal":0,"hitsInTotal":0}}
+{"t":"2026-10-04T11:26:12.606Z","evt":"STEP_START","data":{"step":"20-refine-saber"}}
+{"t":"2026-10-04T11:26:13.905Z","evt":"npc_dialog","data":{"npcKey":"n3","name":"Blacksmith Enok","art":"npc/blacksmith-enok","text":"ยินดีต้อนรับสู่โรงตีเหล็ก อยากดูของที่ตีได้ไหม?","options":["ตีบวกอุปกรณ์","เสริมพลังอุปกรณ์","ซื้อแร่ตีบวก","ซื้ออุปกรณ์ผจญภัย","ดูรายการของที่คราฟต์ได้","ไม่ล่ะ ขอบคุณ"]}}
+{"t":"2026-10-04T11:26:14.080Z","evt":"chose","data":{"keyword":"ตีบวกอุปกรณ์","index":0,"text":"ตีบวกอุปกรณ์"}}
+{"t":"2026-10-04T11:26:14.120Z","evt":"refine","data":{"mode":"refine","items":["Falchion->+1 (Phracon 20, 137z)","Bowling Bash Gem 3%->+1 (Rough Elunium 17, 137z)","Brandish Spear Gem 2%->+1 (Rough Elunium 17, 137z)","Ring Pommel Saber->+1 (Phracon 20, 275z)"]}}
+{"t":"2026-10-04T11:26:16.989Z","evt":"message:refine_fx","data":{"sessionId":"C4GSdYMRc","outcome":"success","to":1}}
+{"t":"2026-10-04T11:26:20.344Z","evt":"refine_send","data":{"source":{"kind":"bag","slot":9},"to":1,"cost":275,"mat":"Phracon 20"}}
+{"t":"2026-10-04T11:26:20.361Z","evt":"message:center_notice","data":{"text":"สำเร็จ: ตีบวกอาวุธ"}}
+{"t":"2026-10-04T11:26:20.364Z","evt":"CHARACTER","data":{"base":15,"job":21,"skillPts":0,"statPts":52,"zeny":3854,"classId":"swordsman"}}
+{"t":"2026-10-04T11:26:20.365Z","evt":"message:refine_result","data":{"outcome":"success","itemId":91016,"name":"Ring Pommel Saber","from":0,"to":1,"shards":0,"blessingUsed":false}}
+{"t":"2026-10-04T11:26:20.366Z","evt":"refine","data":{"mode":"refine","items":["Falchion->+1 (Phracon 19, 137z)","Bowling Bash Gem 3%->+1 (Rough Elunium 17, 137z)","Brandish Spear Gem 2%->+1 (Rough Elunium 17, 137z)","Ring Pommel Saber->+2 (Phracon 19, 386z)"]}}
+{"t":"2026-10-04T11:26:22.551Z","evt":"refine_send","data":{"source":{"kind":"bag","slot":9},"to":2,"cost":386,"mat":"Phracon 19"}}
+{"t":"2026-10-04T11:26:22.560Z","evt":"CHARACTER","data":{"base":15,"job":21,"skillPts":0,"statPts":52,"zeny":3468,"classId":"swordsman"}}
+{"t":"2026-10-04T11:26:22.561Z","evt":"refine","data":{"mode":"refine","items":["Falchion->+1 (Phracon 18, 137z)","Bowling Bash Gem 3%->+1 (Rough Elunium 17, 137z)","Brandish Spear Gem 2%->+1 (Rough Elunium 17, 137z)","Ring Pommel Saber->+3 (Phracon 18, 538z)"]}}
+{"t":"2026-10-04T11:26:24.760Z","evt":"refine_send","data":{"source":{"kind":"bag","slot":9},"to":3,"cost":538,"mat":"Phracon 18"}}
+{"t":"2026-10-04T11:26:24.789Z","evt":"CHARACTER","data":{"base":15,"job":21,"skillPts":0,"statPts":52,"zeny":2930,"classId":"swordsman"}}
+{"t":"2026-10-04T11:26:24.791Z","evt":"refine","data":{"mode":"refine","items":["Falchion->+1 (Phracon 17, 137z)","Bowling Bash Gem 3%->+1 (Rough Elunium 17, 137z)","Brandish Spear Gem 2%->+1 (Rough Elunium 17, 137z)","Ring Pommel Saber->+4 (Phracon 17, 725z)"]}}
+{"t":"2026-10-04T11:26:26.963Z","evt":"refine_send","data":{"source":{"kind":"bag","slot":9},"to":4,"cost":725,"mat":"Phracon 17"}}
+{"t":"2026-10-04T11:26:26.992Z","evt":"CHARACTER","data":{"base":15,"job":21,"skillPts":0,"statPts":52,"zeny":2205,"classId":"swordsman"}}
+{"t":"2026-10-04T11:26:26.993Z","evt":"refine","data":{"mode":"refine","items":["Falchion->+1 (Phracon 16, 137z)","Bowling Bash Gem 3%->+1 (Rough Elunium 17, 137z)","Brandish Spear Gem 2%->+1 (Rough Elunium 17, 137z)","Ring Pommel Saber->+5 (Emveretarcon 0, 942z)"]}}
+{"t":"2026-10-04T11:26:29.167Z","evt":"refine_done","data":{"nextTo":5}}
+{"t":"2026-10-04T11:26:30.371Z","evt":"STEP_DONE","data":{"step":"20-refine-saber"}}
+{"t":"2026-10-04T11:26:30.371Z","evt":"STEP_START","data":{"step":"21-equip-saber"}}
+{"t":"2026-10-04T11:26:31.278Z","evt":"equip_send","data":{"slot":4,"refine":4}}
+{"t":"2026-10-04T11:26:32.621Z","evt":"HEARTBEAT","data":{"step":"21-equip-saber","map":"capital","lastMoveTile":[77.5,48.5],"lastMoveAgeSec":20,"anchorTile":[0,0],"hp":420,"maxHp":420,"sp":98,"maxSp":98,"bag":{"used":9,"free":91,"weight":566,"weightLimit":2510},"zeny":2205,"base":15,"job":21,"classId":"swordsman","auto":false,"dead":false,"killsTotal":0,"hitsInTotal":0}}
+{"t":"2026-10-04T11:26:32.682Z","evt":"STEP_DONE","data":{"step":"21-equip-saber"}}
+{"t":"2026-10-04T11:26:32.683Z","evt":"run_end","data":{"cursor":21,"char":"ScoutA1","map":"capital"}}

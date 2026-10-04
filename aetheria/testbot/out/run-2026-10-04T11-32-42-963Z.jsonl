@@ -1,0 +1,274 @@
+{"t":"2026-10-04T11:32:42.965Z","evt":"run_start","data":{"upto":26,"logFile":"e:\\GitHub\\lumivaraonline\\aetheria\\testbot\\out\\run-2026-10-04T11-32-42-963Z.jsonl","cursor":22,"char":"ScoutA1"}}
+{"t":"2026-10-04T11:32:43.279Z","evt":"character","data":{"id":10011810,"name":"ScoutA1"}}
+{"t":"2026-10-04T11:32:45.631Z","evt":"CHARACTER","data":{"base":17,"job":24,"skillPts":3,"statPts":0,"zeny":2205,"classId":"swordsman"}}
+{"t":"2026-10-04T11:32:45.632Z","evt":"message:mailbox","data":{"mails":[],"unread":0}}
+{"t":"2026-10-04T11:32:45.632Z","evt":"message:arena_status","data":{"queued":null,"waitingMs":0,"queueSize":{"1v1":0,"3v3":0}}}
+{"t":"2026-10-04T11:32:45.633Z","evt":"message:party","data":null}
+{"t":"2026-10-04T11:32:45.633Z","evt":"message:guild","data":null}
+{"t":"2026-10-04T11:32:45.633Z","evt":"message:friends","data":{"friends":[],"max":100,"hideOnline":false}}
+{"t":"2026-10-04T11:32:45.634Z","evt":"message:market_badge","data":{"pending":0}}
+{"t":"2026-10-04T11:32:45.646Z","evt":"incoming_hit_sample","data":{"targetId":"CZXpQcypr","damage":0,"x":1769.5538942643848,"y":2580.282398933831,"onPlayer":true,"heal":true}}
+{"t":"2026-10-04T11:32:45.839Z","evt":"message:skill_fx","data":{"casterId":"bXZoufD8W","skillId":"cold-bolt","name":"Cold Bolt","vfx":"cold-bolt","x":2275.5390322283047,"y":1919.7940436286087,"tx":2221.242695492353,"ty":1950.3663476588324,"targets":["m128039"],"hits":4}}
+{"t":"2026-10-04T11:32:45.839Z","evt":"message:died","data":{"id":"m128039","x":2221.242695492353,"y":1950.3663476588324}}
+{"t":"2026-10-04T11:32:46.153Z","evt":"message:pet_fetch","data":{"ownerId":"z1PZmhSat","dropId":"d77122","x":1672.246976076126,"y":1733.8400145804248,"ms":708}}
+{"t":"2026-10-04T11:32:46.284Z","evt":"message:cast","data":{"casterId":"Oo43CUY_w","skillId":"fire-bolt","durationMs":1174,"targetId":"m127983"}}
+{"t":"2026-10-04T11:32:46.720Z","evt":"levelup","data":{"sessionId":"5qvE8YsS1","base":false,"job":true}}
+{"t":"2026-10-04T11:32:48.042Z","evt":"joined","data":{"map":"goblin_trail"}}
+{"t":"2026-10-04T11:32:48.489Z","evt":"HEARTBEAT","data":{"step":null,"map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[0,0],"hp":460,"maxHp":460,"sp":106,"maxSp":106,"bag":{"used":18,"free":82,"weight":433,"weightLimit":2510},"zeny":2205,"base":17,"job":24,"classId":"swordsman","auto":false,"dead":false,"killsTotal":0,"hitsInTotal":0}}
+{"t":"2026-10-04T11:32:48.489Z","evt":"STEP_START","data":{"step":"23-farm-j50-stats"}}
+{"t":"2026-10-04T11:32:49.194Z","evt":"message:item_used","data":{"itemId":90305,"cooldownGroup":"HpPotion","cooldownSeconds":1}}
+{"t":"2026-10-04T11:32:49.363Z","evt":"setAuto","data":{"cfg":{"skills":1,"flyWing":false,"hpItems":[],"spItems":[],"lootWhen":"first","monsters":0,"buffItems":[],"buffParty":true,"hpPercent":60,"lootTypes":[],"spPercent":40,"pickupLoot":true,"basicAttack":true,"flyWingMobs":0,"defendOthers":false,"lootRarities":[],"huntRadiusTiles":"all","healPartyPercent":60,"lootRarityByType":{},"flyWingIdleSeconds":1},"enabled":true}}
+{"t":"2026-10-04T11:32:49.363Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":17,"jobLevel":24,"exp":"9838/12789","job":"4027/6522","weight":"433/2510","autoEnabled":true,"dead":false,"statPts":0}}
+{"t":"2026-10-04T11:32:53.943Z","evt":"kill","data":{"m":"Bat","base":800,"job":600}}
+{"t":"2026-10-04T11:32:58.537Z","evt":"kill","data":{"m":"Bat","base":800,"job":600}}
+{"t":"2026-10-04T11:33:03.006Z","evt":"kill","data":{"m":"Mandragora","base":741,"job":556}}
+{"t":"2026-10-04T11:33:03.411Z","evt":"drop","data":{"name":"Phracon","qty":1}}
+{"t":"2026-10-04T11:33:06.083Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:33:06.624Z","evt":"levelup","data":{"sessionId":"5qvE8YsS1","base":true,"job":false}}
+{"t":"2026-10-04T11:33:07.328Z","evt":"levelup","data":{"sessionId":"3eSl8ZjYd","base":false,"job":true}}
+{"t":"2026-10-04T11:33:08.504Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[25.6,49.5],"hp":403,"maxHp":460,"sp":106,"maxSp":106,"bag":{"used":18,"free":82,"weight":434,"weightLimit":2510},"zeny":2205,"base":17,"job":24,"classId":"swordsman","auto":true,"dead":false,"killsTotal":4,"hitsInTotal":11}}
+{"t":"2026-10-04T11:33:09.597Z","evt":"levelup","data":{"sessionId":"Oo43CUY_w","base":false,"job":true}}
+{"t":"2026-10-04T11:33:10.302Z","evt":"kill","data":{"m":"Mandragora","base":741,"job":556}}
+{"t":"2026-10-04T11:33:10.302Z","evt":"levelup","data":{"sessionId":"OvbqFo8_M","base":true,"job":true}}
+{"t":"2026-10-04T11:33:10.302Z","evt":"CHARACTER","data":{"base":18,"job":25,"skillPts":4,"statPts":6,"zeny":2205,"classId":"swordsman"}}
+{"t":"2026-10-04T11:33:12.596Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:33:13.453Z","evt":"CHARACTER","data":{"base":18,"job":25,"skillPts":4,"statPts":3,"zeny":2205,"classId":"swordsman"}}
+{"t":"2026-10-04T11:33:13.836Z","evt":"CHARACTER","data":{"base":18,"job":25,"skillPts":4,"statPts":0,"zeny":2205,"classId":"swordsman"}}
+{"t":"2026-10-04T11:33:15.581Z","evt":"kill","data":{"m":"Mandragora","base":741,"job":556}}
+{"t":"2026-10-04T11:33:18.552Z","evt":"kill","data":{"m":"Mandragora","base":741,"job":556}}
+{"t":"2026-10-04T11:33:20.136Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":18,"jobLevel":25,"exp":"2765/14117","job":"1793/6959","weight":"434/2510","autoEnabled":true,"dead":false,"statPts":0}}
+{"t":"2026-10-04T11:33:21.546Z","evt":"kill","data":{"m":"Mandragora","base":741,"job":556}}
+{"t":"2026-10-04T11:33:25.261Z","evt":"kill","data":{"m":"Mandragora","base":741,"job":556}}
+{"t":"2026-10-04T11:33:28.508Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[25.6,49.5],"hp":141,"maxHp":480,"sp":106,"maxSp":110,"bag":{"used":18,"free":82,"weight":434,"weightLimit":2510},"zeny":2205,"base":18,"job":25,"classId":"swordsman","auto":true,"dead":false,"killsTotal":10,"hitsInTotal":35}}
+{"t":"2026-10-04T11:33:29.147Z","evt":"kill","data":{"m":"Mandragora","base":741,"job":556}}
+{"t":"2026-10-04T11:33:31.054Z","evt":"levelup","data":{"sessionId":"5qvE8YsS1","base":false,"job":true}}
+{"t":"2026-10-04T11:33:32.162Z","evt":"kill","data":{"m":"Mandragora","base":741,"job":556}}
+{"t":"2026-10-04T11:33:32.244Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T11:33:32.884Z","evt":"drop","data":{"name":"Mandragora Root","qty":1}}
+{"t":"2026-10-04T11:33:35.450Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:33:38.817Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:33:39.250Z","evt":"drop","data":{"name":"Wolf Claw","qty":1}}
+{"t":"2026-10-04T11:33:39.572Z","evt":"levelup","data":{"sessionId":"espe4asG9","base":false,"job":true}}
+{"t":"2026-10-04T11:33:41.967Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:33:44.926Z","evt":"kill","data":{"m":"Mandragora","base":741,"job":556}}
+{"t":"2026-10-04T11:33:45.121Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T11:33:45.439Z","evt":"drop","data":{"name":"Wolf Claw","qty":1}}
+{"t":"2026-10-04T11:33:46.583Z","evt":"levelup","data":{"sessionId":"z1PZmhSat","base":false,"job":true}}
+{"t":"2026-10-04T11:33:48.520Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[25.6,49.5],"hp":271,"maxHp":480,"sp":106,"maxSp":110,"bag":{"used":18,"free":82,"weight":439,"weightLimit":2510},"zeny":2205,"base":18,"job":25,"classId":"swordsman","auto":true,"dead":false,"killsTotal":16,"hitsInTotal":48}}
+{"t":"2026-10-04T11:33:49.318Z","evt":"kill","data":{"m":"Mandragora","base":383,"job":287}}
+{"t":"2026-10-04T11:33:49.808Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T11:33:50.217Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":18,"jobLevel":25,"exp":"8581/14117","job":"6156/6959","weight":"440/2510","autoEnabled":true,"dead":false,"statPts":0}}
+{"t":"2026-10-04T11:33:52.338Z","evt":"kill","data":{"m":"Mandragora","base":214,"job":160}}
+{"t":"2026-10-04T11:33:54.703Z","evt":"kill","data":{"m":"Wolf","base":218,"job":164}}
+{"t":"2026-10-04T11:33:58.281Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:33:58.597Z","evt":"drop","data":{"name":"Phracon","qty":1}}
+{"t":"2026-10-04T11:34:00.501Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:34:00.501Z","evt":"levelup","data":{"sessionId":"OvbqFo8_M","base":false,"job":true}}
+{"t":"2026-10-04T11:34:00.501Z","evt":"CHARACTER","data":{"base":18,"job":26,"skillPts":5,"statPts":0,"zeny":2205,"classId":"swordsman"}}
+{"t":"2026-10-04T11:34:00.786Z","evt":"drop","data":{"name":"Rod","qty":1}}
+{"t":"2026-10-04T11:34:01.207Z","evt":"drop","data":{"name":"Wolf Pelt","qty":1}}
+{"t":"2026-10-04T11:34:02.749Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:34:06.383Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:34:06.747Z","evt":"drop","data":{"name":"Phracon","qty":1}}
+{"t":"2026-10-04T11:34:08.534Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[25.6,49.5],"hp":460,"maxHp":480,"sp":110,"maxSp":110,"bag":{"used":20,"free":80,"weight":543,"weightLimit":2510},"zeny":2205,"base":18,"job":26,"classId":"swordsman","auto":true,"dead":false,"killsTotal":23,"hitsInTotal":55}}
+{"t":"2026-10-04T11:34:09.504Z","evt":"kill","data":{"m":"Mandragora","base":428,"job":321}}
+{"t":"2026-10-04T11:34:10.872Z","evt":"levelup","data":{"sessionId":"espe4asG9","base":true,"job":false}}
+{"t":"2026-10-04T11:34:11.792Z","evt":"levelup","data":{"sessionId":"PkvXGgaBV","base":true,"job":false}}
+{"t":"2026-10-04T11:34:13.397Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:34:15.970Z","evt":"levelup","data":{"sessionId":"5qvE8YsS1","base":true,"job":false}}
+{"t":"2026-10-04T11:34:16.437Z","evt":"kill","data":{"m":"Mandragora","base":741,"job":556}}
+{"t":"2026-10-04T11:34:19.463Z","evt":"levelup","data":{"sessionId":"36V4W7jGz","base":false,"job":true}}
+{"t":"2026-10-04T11:34:19.603Z","evt":"levelup","data":{"sessionId":"5qvE8YsS1","base":false,"job":true}}
+{"t":"2026-10-04T11:34:20.288Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":18,"jobLevel":26,"exp":"13062/14117","job":"2558/7405","weight":"543/2510","autoEnabled":true,"dead":false,"statPts":0}}
+{"t":"2026-10-04T11:34:20.898Z","evt":"kill","data":{"m":"Mandragora","base":741,"job":556}}
+{"t":"2026-10-04T11:34:22.120Z","evt":"drop","data":{"name":"Wolf Pelt","qty":1}}
+{"t":"2026-10-04T11:34:24.956Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:34:24.957Z","evt":"levelup","data":{"sessionId":"OvbqFo8_M","base":true,"job":false}}
+{"t":"2026-10-04T11:34:24.957Z","evt":"CHARACTER","data":{"base":19,"job":26,"skillPts":5,"statPts":6,"zeny":2205,"classId":"swordsman"}}
+{"t":"2026-10-04T11:34:26.330Z","evt":"CHARACTER","data":{"base":19,"job":26,"skillPts":5,"statPts":3,"zeny":2205,"classId":"swordsman"}}
+{"t":"2026-10-04T11:34:26.699Z","evt":"CHARACTER","data":{"base":19,"job":26,"skillPts":5,"statPts":0,"zeny":2205,"classId":"swordsman"}}
+{"t":"2026-10-04T11:34:27.159Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:34:27.445Z","evt":"drop","data":{"name":"Rough Elunium","qty":1}}
+{"t":"2026-10-04T11:34:28.535Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[25.6,49.5],"hp":456,"maxHp":500,"sp":110,"maxSp":114,"bag":{"used":20,"free":80,"weight":545,"weightLimit":2510},"zeny":2205,"base":19,"job":26,"classId":"swordsman","auto":true,"dead":false,"killsTotal":29,"hitsInTotal":68}}
+{"t":"2026-10-04T11:34:30.176Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:34:30.355Z","evt":"drop","data":{"name":"Wolf Pelt","qty":1}}
+{"t":"2026-10-04T11:34:32.395Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:34:35.091Z","evt":"levelup","data":{"sessionId":"5FoqJfyph","base":false,"job":true}}
+{"t":"2026-10-04T11:34:35.299Z","evt":"kill","data":{"m":"Mandragora","base":741,"job":556}}
+{"t":"2026-10-04T11:34:36.243Z","evt":"drop","data":{"name":"Wolf Claw","qty":1}}
+{"t":"2026-10-04T11:34:36.514Z","evt":"drop","data":{"name":"Wolf Pelt","qty":1}}
+{"t":"2026-10-04T11:34:40.897Z","evt":"kill","data":{"m":"Mandragora","base":741,"job":556}}
+{"t":"2026-10-04T11:34:41.128Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T11:34:41.476Z","evt":"drop","data":{"name":"Scream Leaf","qty":1}}
+{"t":"2026-10-04T11:34:44.617Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:34:46.731Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:34:48.541Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[25.6,49.5],"hp":243,"maxHp":500,"sp":110,"maxSp":114,"bag":{"used":20,"free":80,"weight":550,"weightLimit":2510},"zeny":2205,"base":19,"job":26,"classId":"swordsman","auto":true,"dead":false,"killsTotal":35,"hitsInTotal":82}}
+{"t":"2026-10-04T11:34:49.701Z","evt":"kill","data":{"m":"Mandragora","base":741,"job":556}}
+{"t":"2026-10-04T11:34:51.090Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":19,"jobLevel":26,"exp":"5365/15502","job":"7374/7405","weight":"550/2510","autoEnabled":true,"dead":false,"statPts":0}}
+{"t":"2026-10-04T11:34:53.170Z","evt":"levelup","data":{"sessionId":"36V4W7jGz","base":true,"job":false}}
+{"t":"2026-10-04T11:34:53.369Z","evt":"kill","data":{"m":"Wolf","base":218,"job":164}}
+{"t":"2026-10-04T11:34:53.369Z","evt":"levelup","data":{"sessionId":"OvbqFo8_M","base":false,"job":true}}
+{"t":"2026-10-04T11:34:53.369Z","evt":"CHARACTER","data":{"base":19,"job":27,"skillPts":6,"statPts":0,"zeny":2205,"classId":"swordsman"}}
+{"t":"2026-10-04T11:34:56.791Z","evt":"kill","data":{"m":"Mandragora","base":428,"job":321}}
+{"t":"2026-10-04T11:34:58.180Z","evt":"kill","data":{"m":"Wolf","base":436,"job":327}}
+{"t":"2026-10-04T11:35:03.856Z","evt":"kill","data":{"m":"Mandragora","base":688,"job":516}}
+{"t":"2026-10-04T11:35:03.995Z","evt":"drop","data":{"name":"Rough Elunium","qty":1}}
+{"t":"2026-10-04T11:35:06.325Z","evt":"kill","data":{"m":"Wolf","base":436,"job":327}}
+{"t":"2026-10-04T11:35:06.652Z","evt":"drop","data":{"name":"Wolf Claw","qty":1}}
+{"t":"2026-10-04T11:35:08.548Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[25.6,49.5],"hp":482,"maxHp":500,"sp":114,"maxSp":114,"bag":{"used":20,"free":80,"weight":552,"weightLimit":2510},"zeny":2205,"base":19,"job":27,"classId":"swordsman","auto":true,"dead":false,"killsTotal":41,"hitsInTotal":88}}
+{"t":"2026-10-04T11:35:08.946Z","evt":"kill","data":{"m":"Wolf","base":219,"job":165}}
+{"t":"2026-10-04T11:35:11.185Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:35:12.595Z","evt":"levelup","data":{"sessionId":"5qvE8YsS1","base":false,"job":true}}
+{"t":"2026-10-04T11:35:14.217Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:35:14.667Z","evt":"drop","data":{"name":"Wolf Claw","qty":1}}
+{"t":"2026-10-04T11:35:15.026Z","evt":"drop","data":{"name":"Rough Elunium","qty":1}}
+{"t":"2026-10-04T11:35:19.717Z","evt":"kill","data":{"m":"Mandragora","base":741,"job":556}}
+{"t":"2026-10-04T11:35:21.159Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":19,"jobLevel":27,"exp":"9683/15502","job":"3209/7863","weight":"554/2510","autoEnabled":true,"dead":false,"statPts":0}}
+{"t":"2026-10-04T11:35:22.602Z","evt":"kill","data":{"m":"Mandragora","base":741,"job":556}}
+{"t":"2026-10-04T11:35:22.982Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T11:35:24.249Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T11:35:26.019Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:35:28.241Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:35:28.351Z","evt":"drop","data":{"name":"Phracon","qty":1}}
+{"t":"2026-10-04T11:35:28.559Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[25.6,49.5],"hp":477,"maxHp":500,"sp":114,"maxSp":114,"bag":{"used":20,"free":80,"weight":557,"weightLimit":2510},"zeny":2205,"base":19,"job":27,"classId":"swordsman","auto":true,"dead":false,"killsTotal":48,"hitsInTotal":100}}
+{"t":"2026-10-04T11:35:31.031Z","evt":"levelup","data":{"sessionId":"5qvE8YsS1","base":true,"job":false}}
+{"t":"2026-10-04T11:35:32.001Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:35:34.872Z","evt":"kill","data":{"m":"Mandragora","base":741,"job":556}}
+{"t":"2026-10-04T11:35:35.688Z","evt":"drop","data":{"name":"Wolf Claw","qty":1}}
+{"t":"2026-10-04T11:35:37.109Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:35:37.249Z","evt":"drop","data":{"name":"Wolf Pelt","qty":1}}
+{"t":"2026-10-04T11:35:39.293Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:35:41.595Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:35:41.848Z","evt":"drop","data":{"name":"Wolf Pelt","qty":1}}
+{"t":"2026-10-04T11:35:43.703Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:35:48.564Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[25.6,49.5],"hp":437,"maxHp":500,"sp":114,"maxSp":114,"bag":{"used":20,"free":80,"weight":560,"weightLimit":2510},"zeny":2205,"base":19,"job":27,"classId":"swordsman","auto":true,"dead":false,"killsTotal":54,"hitsInTotal":109}}
+{"t":"2026-10-04T11:35:48.674Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:35:48.683Z","evt":"levelup","data":{"sessionId":"OvbqFo8_M","base":true,"job":false}}
+{"t":"2026-10-04T11:35:48.684Z","evt":"CHARACTER","data":{"base":20,"job":27,"skillPts":6,"statPts":7,"zeny":2205,"classId":"swordsman"}}
+{"t":"2026-10-04T11:35:48.854Z","evt":"drop","data":{"name":"Rough Elunium","qty":1}}
+{"t":"2026-10-04T11:35:49.373Z","evt":"drop","data":{"name":"Wolf Pelt","qty":1}}
+{"t":"2026-10-04T11:35:51.242Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":20,"jobLevel":27,"exp":"271/16944","job":"7777/7863","weight":"562/2510","autoEnabled":true,"dead":false,"statPts":7}}
+{"t":"2026-10-04T11:35:51.282Z","evt":"CHARACTER","data":{"base":20,"job":27,"skillPts":6,"statPts":4,"zeny":2205,"classId":"swordsman"}}
+{"t":"2026-10-04T11:35:51.631Z","evt":"CHARACTER","data":{"base":20,"job":27,"skillPts":6,"statPts":1,"zeny":2205,"classId":"swordsman"}}
+{"t":"2026-10-04T11:35:53.967Z","evt":"kill","data":{"m":"Mandragora","base":741,"job":556}}
+{"t":"2026-10-04T11:35:53.968Z","evt":"levelup","data":{"sessionId":"OvbqFo8_M","base":false,"job":true}}
+{"t":"2026-10-04T11:35:53.968Z","evt":"CHARACTER","data":{"base":20,"job":28,"skillPts":7,"statPts":1,"zeny":2205,"classId":"swordsman"}}
+{"t":"2026-10-04T11:35:56.949Z","evt":"kill","data":{"m":"Mandragora","base":741,"job":556}}
+{"t":"2026-10-04T11:35:57.100Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T11:36:01.013Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:36:01.229Z","evt":"drop","data":{"name":"Wolf Pelt","qty":1}}
+{"t":"2026-10-04T11:36:02.429Z","evt":"levelup","data":{"sessionId":"HyJtL7urM","base":false,"job":true}}
+{"t":"2026-10-04T11:36:03.123Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:36:03.352Z","evt":"drop","data":{"name":"Orange Potion","qty":1}}
+{"t":"2026-10-04T11:36:07.120Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:36:08.354Z","evt":"kill","data":{"m":"Wolf","base":223,"job":167}}
+{"t":"2026-10-04T11:36:08.576Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[25.6,49.5],"hp":438,"maxHp":520,"sp":118,"maxSp":118,"bag":{"used":20,"free":80,"weight":571,"weightLimit":2570},"zeny":2205,"base":20,"job":28,"classId":"swordsman","auto":true,"dead":false,"killsTotal":61,"hitsInTotal":118}}
+{"t":"2026-10-04T11:36:11.619Z","evt":"kill","data":{"m":"Mandragora","base":741,"job":556}}
+{"t":"2026-10-04T11:36:13.763Z","evt":"kill","data":{"m":"Mandragora","base":452,"job":339}}
+{"t":"2026-10-04T11:36:16.739Z","evt":"kill","data":{"m":"Mandragora","base":741,"job":556}}
+{"t":"2026-10-04T11:36:16.911Z","evt":"drop","data":{"name":"Scream Leaf","qty":1}}
+{"t":"2026-10-04T11:36:17.941Z","evt":"drop","data":{"name":"Mandragora Root","qty":1}}
+{"t":"2026-10-04T11:36:20.099Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:36:23.436Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:36:23.680Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":20,"jobLevel":28,"exp":"6790/16944","job":"4804/8330","weight":"559/2570","autoEnabled":true,"dead":false,"statPts":1}}
+{"t":"2026-10-04T11:36:27.423Z","evt":"kill","data":{"m":"Mandragora","base":741,"job":556}}
+{"t":"2026-10-04T11:36:28.576Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[25.6,49.5],"hp":408,"maxHp":520,"sp":118,"maxSp":118,"bag":{"used":19,"free":81,"weight":559,"weightLimit":2570},"zeny":2205,"base":20,"job":28,"classId":"swordsman","auto":true,"dead":false,"killsTotal":67,"hitsInTotal":134}}
+{"t":"2026-10-04T11:36:28.955Z","evt":"drop","data":{"name":"Wolf Pelt","qty":1}}
+{"t":"2026-10-04T11:36:30.536Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:36:34.254Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:36:34.531Z","evt":"drop","data":{"name":"Wolf Pelt","qty":1}}
+{"t":"2026-10-04T11:36:36.461Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:36:39.468Z","evt":"kill","data":{"m":"Mandragora","base":741,"job":556}}
+{"t":"2026-10-04T11:36:39.632Z","evt":"drop","data":{"name":"Mandragora Root","qty":1}}
+{"t":"2026-10-04T11:36:42.819Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:36:45.789Z","evt":"kill","data":{"m":"Mandragora","base":741,"job":556}}
+{"t":"2026-10-04T11:36:46.578Z","evt":"drop","data":{"name":"Wolf Claw","qty":1}}
+{"t":"2026-10-04T11:36:48.577Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[25.6,49.5],"hp":140,"maxHp":520,"sp":118,"maxSp":118,"bag":{"used":18,"free":82,"weight":556,"weightLimit":2570},"zeny":2205,"base":20,"job":28,"classId":"swordsman","auto":true,"dead":false,"killsTotal":73,"hitsInTotal":147}}
+{"t":"2026-10-04T11:36:48.849Z","evt":"kill","data":{"m":"Wolf","base":576,"job":432}}
+{"t":"2026-10-04T11:36:48.849Z","evt":"levelup","data":{"sessionId":"OvbqFo8_M","base":false,"job":true}}
+{"t":"2026-10-04T11:36:48.849Z","evt":"CHARACTER","data":{"base":20,"job":29,"skillPts":8,"statPts":1,"zeny":2205,"classId":"swordsman"}}
+{"t":"2026-10-04T11:36:48.968Z","evt":"drop","data":{"name":"Moon Fang","qty":1}}
+{"t":"2026-10-04T11:36:49.445Z","evt":"drop","data":{"name":"Wolf Pelt","qty":1}}
+{"t":"2026-10-04T11:36:56.119Z","evt":"DEATH","data":{"savePointName":"เมืองหลวงโซลเฮเวน","capitalName":"เมืองหลวงโซลเฮเวน","autoReleaseSeconds":300}}
+{"t":"2026-10-04T11:36:57.344Z","evt":"levelup","data":{"sessionId":"36V4W7jGz","base":false,"job":true}}
+{"t":"2026-10-04T11:36:59.093Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":20,"jobLevel":29,"exp":"11724/16944","job":"214/8808","weight":"558/2570","autoEnabled":false,"dead":true,"statPts":1}}
+{"t":"2026-10-04T11:36:59.094Z","evt":"death_detected","data":{"savePointName":"เมืองหลวงโซลเฮเวน","capitalName":"เมืองหลวงโซลเฮเวน","autoReleaseSeconds":300}}
+{"t":"2026-10-04T11:36:59.130Z","evt":"kill","data":{"m":"Wolf","base":446,"job":335}}
+{"t":"2026-10-04T11:36:59.232Z","evt":"respawned","data":{}}
+{"t":"2026-10-04T11:37:06.607Z","evt":"levelup","data":{"sessionId":"HyJtL7urM","base":true,"job":false}}
+{"t":"2026-10-04T11:37:07.055Z","evt":"levelup","data":{"sessionId":"2BUXs3-h7","base":true,"job":false}}
+{"t":"2026-10-04T11:37:08.484Z","evt":"setAuto","data":{"cfg":{"skills":1,"hpItems":[],"spItems":[],"hpPercent":60,"spPercent":40,"monsters":0,"huntRadiusTiles":"all","pickupLoot":true,"lootWhen":"first","basicAttack":true,"defendOthers":false,"lootTypes":[],"lootRarities":[],"lootRarityByType":{},"flyWing":false,"flyWingIdleSeconds":1,"flyWingMobs":0,"buffItems":[],"buffParty":true,"healPartyPercent":60},"enabled":false}}
+{"t":"2026-10-04T11:37:08.578Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[25.6,49.5],"hp":520,"maxHp":520,"sp":118,"maxSp":118,"bag":{"used":18,"free":82,"weight":558,"weightLimit":2570},"zeny":2205,"base":20,"job":29,"classId":"swordsman","auto":false,"dead":false,"killsTotal":75,"hitsInTotal":149}}
+{"t":"2026-10-04T11:37:14.332Z","evt":"auto_off","data":{"weightPct":22}}
+{"t":"2026-10-04T11:37:20.937Z","evt":"setAuto","data":{"cfg":{"skills":1,"hpItems":[],"spItems":[],"hpPercent":60,"spPercent":40,"monsters":0,"huntRadiusTiles":"all","pickupLoot":true,"lootWhen":"first","basicAttack":true,"defendOthers":false,"lootTypes":[],"lootRarities":[],"lootRarityByType":{},"flyWing":false,"flyWingIdleSeconds":1,"flyWingMobs":0,"buffItems":[],"buffParty":true,"healPartyPercent":60},"enabled":false}}
+{"t":"2026-10-04T11:37:26.785Z","evt":"auto_off","data":{"weightPct":22}}
+{"t":"2026-10-04T11:37:28.585Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[25.6,49.5],"hp":520,"maxHp":520,"sp":118,"maxSp":118,"bag":{"used":18,"free":82,"weight":558,"weightLimit":2570},"zeny":2205,"base":20,"job":29,"classId":"swordsman","auto":false,"dead":false,"killsTotal":75,"hitsInTotal":149}}
+{"t":"2026-10-04T11:37:33.620Z","evt":"setAuto","data":{"cfg":{"skills":1,"hpItems":[],"spItems":[],"hpPercent":60,"spPercent":40,"monsters":0,"huntRadiusTiles":"all","pickupLoot":true,"lootWhen":"first","basicAttack":true,"defendOthers":false,"lootTypes":[],"lootRarities":[],"lootRarityByType":{},"flyWing":false,"flyWingIdleSeconds":1,"flyWingMobs":0,"buffItems":[],"buffParty":true,"healPartyPercent":60},"enabled":false}}
+{"t":"2026-10-04T11:37:35.889Z","evt":"levelup","data":{"sessionId":"qDtjsuqFv","base":false,"job":true}}
+{"t":"2026-10-04T11:37:36.629Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":20,"jobLevel":29,"exp":"12170/16944","job":"549/8808","weight":"558/2570","autoEnabled":false,"dead":false,"statPts":1}}
+{"t":"2026-10-04T11:37:39.475Z","evt":"auto_off","data":{"weightPct":22}}
+{"t":"2026-10-04T11:37:42.111Z","evt":"levelup","data":{"sessionId":"qDtjsuqFv","base":true,"job":false}}
+{"t":"2026-10-04T11:37:45.243Z","evt":"levelup","data":{"sessionId":"qDtjsuqFv","base":false,"job":true}}
+{"t":"2026-10-04T11:37:46.330Z","evt":"setAuto","data":{"cfg":{"skills":1,"hpItems":[],"spItems":[],"hpPercent":60,"spPercent":40,"monsters":0,"huntRadiusTiles":"all","pickupLoot":true,"lootWhen":"first","basicAttack":true,"defendOthers":false,"lootTypes":[],"lootRarities":[],"lootRarityByType":{},"flyWing":false,"flyWingIdleSeconds":1,"flyWingMobs":0,"buffItems":[],"buffParty":true,"healPartyPercent":60},"enabled":false}}
+{"t":"2026-10-04T11:37:48.589Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[25.6,49.5],"hp":520,"maxHp":520,"sp":118,"maxSp":118,"bag":{"used":18,"free":82,"weight":558,"weightLimit":2570},"zeny":2205,"base":20,"job":29,"classId":"swordsman","auto":false,"dead":false,"killsTotal":75,"hitsInTotal":149}}
+{"t":"2026-10-04T11:37:52.186Z","evt":"auto_off","data":{"weightPct":22}}
+{"t":"2026-10-04T11:37:58.805Z","evt":"setAuto","data":{"cfg":{"skills":1,"hpItems":[],"spItems":[],"hpPercent":60,"spPercent":40,"monsters":0,"huntRadiusTiles":"all","pickupLoot":true,"lootWhen":"first","basicAttack":true,"defendOthers":false,"lootTypes":[],"lootRarities":[],"lootRarityByType":{},"flyWing":false,"flyWingIdleSeconds":1,"flyWingMobs":0,"buffItems":[],"buffParty":true,"healPartyPercent":60},"enabled":false}}
+{"t":"2026-10-04T11:38:04.651Z","evt":"auto_off","data":{"weightPct":22}}
+{"t":"2026-10-04T11:38:08.596Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[25.6,49.5],"hp":520,"maxHp":520,"sp":118,"maxSp":118,"bag":{"used":18,"free":82,"weight":558,"weightLimit":2570},"zeny":2205,"base":20,"job":29,"classId":"swordsman","auto":false,"dead":false,"killsTotal":75,"hitsInTotal":149}}
+{"t":"2026-10-04T11:38:11.267Z","evt":"setAuto","data":{"cfg":{"skills":1,"hpItems":[],"spItems":[],"hpPercent":60,"spPercent":40,"monsters":0,"huntRadiusTiles":"all","pickupLoot":true,"lootWhen":"first","basicAttack":true,"defendOthers":false,"lootTypes":[],"lootRarities":[],"lootRarityByType":{},"flyWing":false,"flyWingIdleSeconds":1,"flyWingMobs":0,"buffItems":[],"buffParty":true,"healPartyPercent":60},"enabled":false}}
+{"t":"2026-10-04T11:38:14.277Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":20,"jobLevel":29,"exp":"12170/16944","job":"549/8808","weight":"558/2570","autoEnabled":false,"dead":false,"statPts":1}}
+{"t":"2026-10-04T11:38:17.122Z","evt":"auto_off","data":{"weightPct":22}}
+{"t":"2026-10-04T11:38:23.974Z","evt":"setAuto","data":{"cfg":{"skills":1,"hpItems":[],"spItems":[],"hpPercent":60,"spPercent":40,"monsters":0,"huntRadiusTiles":"all","pickupLoot":true,"lootWhen":"first","basicAttack":true,"defendOthers":false,"lootTypes":[],"lootRarities":[],"lootRarityByType":{},"flyWing":false,"flyWingIdleSeconds":1,"flyWingMobs":0,"buffItems":[],"buffParty":true,"healPartyPercent":60},"enabled":false}}
+{"t":"2026-10-04T11:38:26.613Z","evt":"levelup","data":{"sessionId":"36V4W7jGz","base":false,"job":true}}
+{"t":"2026-10-04T11:38:27.785Z","evt":"levelup","data":{"sessionId":"tfLUU1tfp","base":true,"job":false}}
+{"t":"2026-10-04T11:38:28.608Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[25.6,49.5],"hp":520,"maxHp":520,"sp":118,"maxSp":118,"bag":{"used":18,"free":82,"weight":558,"weightLimit":2570},"zeny":2205,"base":20,"job":29,"classId":"swordsman","auto":false,"dead":false,"killsTotal":75,"hitsInTotal":149}}
+{"t":"2026-10-04T11:38:29.830Z","evt":"auto_off","data":{"weightPct":22}}
+{"t":"2026-10-04T11:38:36.650Z","evt":"setAuto","data":{"cfg":{"skills":1,"hpItems":[],"spItems":[],"hpPercent":60,"spPercent":40,"monsters":0,"huntRadiusTiles":"all","pickupLoot":true,"lootWhen":"first","basicAttack":true,"defendOthers":false,"lootTypes":[],"lootRarities":[],"lootRarityByType":{},"flyWing":false,"flyWingIdleSeconds":1,"flyWingMobs":0,"buffItems":[],"buffParty":true,"healPartyPercent":60},"enabled":false}}
+{"t":"2026-10-04T11:38:40.709Z","evt":"levelup","data":{"sessionId":"tfLUU1tfp","base":false,"job":true}}
+{"t":"2026-10-04T11:38:42.505Z","evt":"auto_off","data":{"weightPct":22}}
+{"t":"2026-10-04T11:38:48.608Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[25.6,49.5],"hp":520,"maxHp":520,"sp":118,"maxSp":118,"bag":{"used":18,"free":82,"weight":558,"weightLimit":2570},"zeny":2205,"base":20,"job":29,"classId":"swordsman","auto":false,"dead":false,"killsTotal":75,"hitsInTotal":149}}
+{"t":"2026-10-04T11:38:49.132Z","evt":"setAuto","data":{"cfg":{"skills":1,"hpItems":[],"spItems":[],"hpPercent":60,"spPercent":40,"monsters":0,"huntRadiusTiles":"all","pickupLoot":true,"lootWhen":"first","basicAttack":true,"defendOthers":false,"lootTypes":[],"lootRarities":[],"lootRarityByType":{},"flyWing":false,"flyWingIdleSeconds":1,"flyWingMobs":0,"buffItems":[],"buffParty":true,"healPartyPercent":60},"enabled":false}}
+{"t":"2026-10-04T11:38:52.146Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":20,"jobLevel":29,"exp":"12170/16944","job":"549/8808","weight":"558/2570","autoEnabled":false,"dead":false,"statPts":1}}
+{"t":"2026-10-04T11:38:54.657Z","evt":"levelup","data":{"sessionId":"5FoqJfyph","base":false,"job":true}}
+{"t":"2026-10-04T11:38:54.976Z","evt":"auto_off","data":{"weightPct":22}}
+{"t":"2026-10-04T11:39:01.816Z","evt":"setAuto","data":{"cfg":{"skills":1,"hpItems":[],"spItems":[],"hpPercent":60,"spPercent":40,"monsters":0,"huntRadiusTiles":"all","pickupLoot":true,"lootWhen":"first","basicAttack":true,"defendOthers":false,"lootTypes":[],"lootRarities":[],"lootRarityByType":{},"flyWing":false,"flyWingIdleSeconds":1,"flyWingMobs":0,"buffItems":[],"buffParty":true,"healPartyPercent":60},"enabled":false}}
+{"t":"2026-10-04T11:39:05.121Z","evt":"levelup","data":{"sessionId":"36V4W7jGz","base":true,"job":false}}
+{"t":"2026-10-04T11:39:07.670Z","evt":"auto_off","data":{"weightPct":22}}
+{"t":"2026-10-04T11:39:08.611Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[25.6,49.5],"hp":520,"maxHp":520,"sp":118,"maxSp":118,"bag":{"used":18,"free":82,"weight":558,"weightLimit":2570},"zeny":2205,"base":20,"job":29,"classId":"swordsman","auto":false,"dead":false,"killsTotal":75,"hitsInTotal":149}}
+{"t":"2026-10-04T11:39:14.520Z","evt":"setAuto","data":{"cfg":{"skills":1,"hpItems":[],"spItems":[],"hpPercent":60,"spPercent":40,"monsters":0,"huntRadiusTiles":"all","pickupLoot":true,"lootWhen":"first","basicAttack":true,"defendOthers":false,"lootTypes":[],"lootRarities":[],"lootRarityByType":{},"flyWing":false,"flyWingIdleSeconds":1,"flyWingMobs":0,"buffItems":[],"buffParty":true,"healPartyPercent":60},"enabled":false}}
+{"t":"2026-10-04T11:39:20.376Z","evt":"auto_off","data":{"weightPct":22}}
+{"t":"2026-10-04T11:39:27.171Z","evt":"setAuto","data":{"cfg":{"skills":1,"hpItems":[],"spItems":[],"hpPercent":60,"spPercent":40,"monsters":0,"huntRadiusTiles":"all","pickupLoot":true,"lootWhen":"first","basicAttack":true,"defendOthers":false,"lootTypes":[],"lootRarities":[],"lootRarityByType":{},"flyWing":false,"flyWingIdleSeconds":1,"flyWingMobs":0,"buffItems":[],"buffParty":true,"healPartyPercent":60},"enabled":false}}
+{"t":"2026-10-04T11:39:28.623Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[25.6,49.5],"hp":520,"maxHp":520,"sp":118,"maxSp":118,"bag":{"used":18,"free":82,"weight":558,"weightLimit":2570},"zeny":2205,"base":20,"job":29,"classId":"swordsman","auto":false,"dead":false,"killsTotal":75,"hitsInTotal":149}}
+{"t":"2026-10-04T11:39:28.762Z","evt":"levelup","data":{"sessionId":"qDtjsuqFv","base":false,"job":true}}
+{"t":"2026-10-04T11:39:30.172Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":20,"jobLevel":29,"exp":"12170/16944","job":"549/8808","weight":"558/2570","autoEnabled":false,"dead":false,"statPts":1}}
+{"t":"2026-10-04T11:39:33.009Z","evt":"auto_off","data":{"weightPct":22}}
+{"t":"2026-10-04T11:39:39.641Z","evt":"setAuto","data":{"cfg":{"skills":1,"hpItems":[],"spItems":[],"hpPercent":60,"spPercent":40,"monsters":0,"huntRadiusTiles":"all","pickupLoot":true,"lootWhen":"first","basicAttack":true,"defendOthers":false,"lootTypes":[],"lootRarities":[],"lootRarityByType":{},"flyWing":false,"flyWingIdleSeconds":1,"flyWingMobs":0,"buffItems":[],"buffParty":true,"healPartyPercent":60},"enabled":false}}
+{"t":"2026-10-04T11:39:43.693Z","evt":"levelup","data":{"sessionId":"2BUXs3-h7","base":false,"job":true}}
+{"t":"2026-10-04T11:39:45.501Z","evt":"auto_off","data":{"weightPct":22}}
+{"t":"2026-10-04T11:39:46.162Z","evt":"levelup","data":{"sessionId":"qDtjsuqFv","base":true,"job":true}}
+{"t":"2026-10-04T11:39:48.624Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[25.6,49.5],"hp":520,"maxHp":520,"sp":118,"maxSp":118,"bag":{"used":18,"free":82,"weight":558,"weightLimit":2570},"zeny":2205,"base":20,"job":29,"classId":"swordsman","auto":false,"dead":false,"killsTotal":75,"hitsInTotal":149}}
+{"t":"2026-10-04T11:39:52.335Z","evt":"setAuto","data":{"cfg":{"skills":1,"hpItems":[],"spItems":[],"hpPercent":60,"spPercent":40,"monsters":0,"huntRadiusTiles":"all","pickupLoot":true,"lootWhen":"first","basicAttack":true,"defendOthers":false,"lootTypes":[],"lootRarities":[],"lootRarityByType":{},"flyWing":false,"flyWingIdleSeconds":1,"flyWingMobs":0,"buffItems":[],"buffParty":true,"healPartyPercent":60},"enabled":false}}
+{"t":"2026-10-04T11:39:58.186Z","evt":"auto_off","data":{"weightPct":22}}
+{"t":"2026-10-04T11:40:04.292Z","evt":"levelup","data":{"sessionId":"36V4W7jGz","base":false,"job":true}}
+{"t":"2026-10-04T11:40:04.816Z","evt":"setAuto","data":{"cfg":{"skills":1,"hpItems":[],"spItems":[],"hpPercent":60,"spPercent":40,"monsters":0,"huntRadiusTiles":"all","pickupLoot":true,"lootWhen":"first","basicAttack":true,"defendOthers":false,"lootTypes":[],"lootRarities":[],"lootRarityByType":{},"flyWing":false,"flyWingIdleSeconds":1,"flyWingMobs":0,"buffItems":[],"buffParty":true,"healPartyPercent":60},"enabled":false}}
+{"t":"2026-10-04T11:40:07.818Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":20,"jobLevel":29,"exp":"12170/16944","job":"549/8808","weight":"558/2570","autoEnabled":false,"dead":false,"statPts":1}}
+{"t":"2026-10-04T11:40:08.629Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[25.6,49.5],"hp":520,"maxHp":520,"sp":118,"maxSp":118,"bag":{"used":18,"free":82,"weight":558,"weightLimit":2570},"zeny":2205,"base":20,"job":29,"classId":"swordsman","auto":false,"dead":false,"killsTotal":75,"hitsInTotal":149}}
+{"t":"2026-10-04T11:40:10.669Z","evt":"auto_off","data":{"weightPct":22}}
+{"t":"2026-10-04T11:40:11.564Z","evt":"levelup","data":{"sessionId":"2BUXs3-h7","base":true,"job":false}}
+{"t":"2026-10-04T11:40:17.530Z","evt":"setAuto","data":{"cfg":{"skills":1,"hpItems":[],"spItems":[],"hpPercent":60,"spPercent":40,"monsters":0,"huntRadiusTiles":"all","pickupLoot":true,"lootWhen":"first","basicAttack":true,"defendOthers":false,"lootTypes":[],"lootRarities":[],"lootRarityByType":{},"flyWing":false,"flyWingIdleSeconds":1,"flyWingMobs":0,"buffItems":[],"buffParty":true,"healPartyPercent":60},"enabled":false}}
+{"t":"2026-10-04T11:40:18.452Z","evt":"levelup","data":{"sessionId":"qDtjsuqFv","base":false,"job":true}}
+{"t":"2026-10-04T11:40:23.367Z","evt":"auto_off","data":{"weightPct":22}}
+{"t":"2026-10-04T11:40:28.630Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[25.6,49.5],"hp":520,"maxHp":520,"sp":118,"maxSp":118,"bag":{"used":18,"free":82,"weight":558,"weightLimit":2570},"zeny":2205,"base":20,"job":29,"classId":"swordsman","auto":false,"dead":false,"killsTotal":75,"hitsInTotal":149}}
+{"t":"2026-10-04T11:40:29.978Z","evt":"setAuto","data":{"cfg":{"skills":1,"hpItems":[],"spItems":[],"hpPercent":60,"spPercent":40,"monsters":0,"huntRadiusTiles":"all","pickupLoot":true,"lootWhen":"first","basicAttack":true,"defendOthers":false,"lootTypes":[],"lootRarities":[],"lootRarityByType":{},"flyWing":false,"flyWingIdleSeconds":1,"flyWingMobs":0,"buffItems":[],"buffParty":true,"healPartyPercent":60},"enabled":false}}
+{"t":"2026-10-04T11:40:30.885Z","evt":"levelup","data":{"sessionId":"Z045ZI3QC","base":false,"job":true}}
+{"t":"2026-10-04T11:40:31.322Z","evt":"levelup","data":{"sessionId":"5qvE8YsS1","base":true,"job":false}}
+{"t":"2026-10-04T11:40:34.866Z","evt":"levelup","data":{"sessionId":"5qvE8YsS1","base":false,"job":true}}
+{"t":"2026-10-04T11:40:35.824Z","evt":"auto_off","data":{"weightPct":22}}
+{"t":"2026-10-04T11:40:42.087Z","evt":"levelup","data":{"sessionId":"2BUXs3-h7","base":false,"job":true}}
+{"t":"2026-10-04T11:40:42.653Z","evt":"levelup","data":{"sessionId":"qDtjsuqFv","base":true,"job":false}}
+{"t":"2026-10-04T11:40:42.680Z","evt":"setAuto","data":{"cfg":{"skills":1,"hpItems":[],"spItems":[],"hpPercent":60,"spPercent":40,"monsters":0,"huntRadiusTiles":"all","pickupLoot":true,"lootWhen":"first","basicAttack":true,"defendOthers":false,"lootTypes":[],"lootRarities":[],"lootRarityByType":{},"flyWing":false,"flyWingIdleSeconds":1,"flyWingMobs":0,"buffItems":[],"buffParty":true,"healPartyPercent":60},"enabled":false}}
+{"t":"2026-10-04T11:40:45.692Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":20,"jobLevel":29,"exp":"12170/16944","job":"549/8808","weight":"558/2570","autoEnabled":false,"dead":false,"statPts":1}}
+{"t":"2026-10-04T11:40:48.528Z","evt":"auto_off","data":{"weightPct":22}}
+{"t":"2026-10-04T11:40:48.633Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[25.6,49.5],"hp":520,"maxHp":520,"sp":118,"maxSp":118,"bag":{"used":18,"free":82,"weight":558,"weightLimit":2570},"zeny":2205,"base":20,"job":29,"classId":"swordsman","auto":false,"dead":false,"killsTotal":75,"hitsInTotal":149}}
+{"t":"2026-10-04T11:40:55.381Z","evt":"setAuto","data":{"cfg":{"skills":1,"hpItems":[],"spItems":[],"hpPercent":60,"spPercent":40,"monsters":0,"huntRadiusTiles":"all","pickupLoot":true,"lootWhen":"first","basicAttack":true,"defendOthers":false,"lootTypes":[],"lootRarities":[],"lootRarityByType":{},"flyWing":false,"flyWingIdleSeconds":1,"flyWingMobs":0,"buffItems":[],"buffParty":true,"healPartyPercent":60},"enabled":false}}
+{"t":"2026-10-04T11:41:01.245Z","evt":"auto_off","data":{"weightPct":22}}

@@ -1,0 +1,886 @@
+{"t":"2026-10-04T12:32:34.709Z","evt":"run_start","data":{"upto":26,"logFile":"E:\\GitHub\\lumivaraonline\\aetheria\\testbot\\out\\run-2026-10-04T12-32-34-708Z.jsonl","cursor":22,"char":"ScoutA1"}}
+{"t":"2026-10-04T12:32:35.074Z","evt":"character","data":{"id":10011810,"name":"ScoutA1"}}
+{"t":"2026-10-04T12:32:36.137Z","evt":"CHARACTER","data":{"base":27,"job":39,"skillPts":18,"statPts":2,"zeny":6742,"classId":"swordsman"}}
+{"t":"2026-10-04T12:32:36.138Z","evt":"message:mailbox","data":{"mails":[],"unread":0}}
+{"t":"2026-10-04T12:32:36.139Z","evt":"message:arena_status","data":{"queued":null,"waitingMs":0,"queueSize":{"1v1":0,"3v3":0}}}
+{"t":"2026-10-04T12:32:36.139Z","evt":"message:party","data":null}
+{"t":"2026-10-04T12:32:36.139Z","evt":"message:guild","data":null}
+{"t":"2026-10-04T12:32:36.139Z","evt":"message:friends","data":{"friends":[],"max":100,"hideOnline":false}}
+{"t":"2026-10-04T12:32:36.162Z","evt":"incoming_hit_sample","data":{"targetId":"-4MS3EQYs","damage":5,"x":3335.5610813189087,"y":1971.9783501639488,"onPlayer":true,"heal":true}}
+{"t":"2026-10-04T12:32:36.172Z","evt":"message:market_badge","data":{"pending":0}}
+{"t":"2026-10-04T12:32:36.327Z","evt":"mob_hit_seen","data":{"id":"m6418","x":3344.934722267919,"y":1926.5474743489026,"dmg":156}}
+{"t":"2026-10-04T12:32:36.327Z","evt":"message:died","data":{"id":"m6418","x":3344.934722267919,"y":1926.5474743489026}}
+{"t":"2026-10-04T12:32:36.378Z","evt":"message:pet_fetch","data":{"ownerId":"-4MS3EQYs","dropId":"d3853","x":3357.7905881898296,"y":1918.3186526347367,"ms":161}}
+{"t":"2026-10-04T12:32:36.619Z","evt":"mob_hit_seen","data":{"id":"m6439","x":2257.0261904742792,"y":357.4842856988458,"dmg":195}}
+{"t":"2026-10-04T12:32:37.080Z","evt":"mob_hit_seen","data":{"id":"m6448","x":3462.548418336042,"y":1885.3109728902855,"dmg":156}}
+{"t":"2026-10-04T12:32:37.272Z","evt":"mob_hit_seen","data":{"id":"m6439","x":2261.991263493479,"y":422.09379002997366,"dmg":195}}
+{"t":"2026-10-04T12:32:37.571Z","evt":"mob_hit_seen","data":{"id":"m6339","x":1856.9702625790364,"y":807.9915485208529,"dmg":74}}
+{"t":"2026-10-04T12:32:37.859Z","evt":"mob_hit_seen","data":{"id":"m6448","x":3462.548418336042,"y":1885.3109728902855,"dmg":156}}
+{"t":"2026-10-04T12:32:38.383Z","evt":"mob_hit_seen","data":{"id":"m6339","x":1856.9702625790364,"y":807.9915485208529,"dmg":37}}
+{"t":"2026-10-04T12:32:38.606Z","evt":"joined","data":{"map":"goblin_trail"}}
+{"t":"2026-10-04T12:32:38.635Z","evt":"mob_hit_seen","data":{"id":"m6448","x":3462.548418336042,"y":1885.3109728902855,"dmg":156}}
+{"t":"2026-10-04T12:32:38.735Z","evt":"HEARTBEAT","data":{"step":null,"selfId":"_wL92KIHE","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[0,0],"hp":660,"maxHp":660,"sp":146,"maxSp":146,"bashLv":10,"hpItems":1,"weaves":0,"pots":26,"bag":{"used":29,"free":71,"weight":1398,"weightLimit":2960},"zeny":6742,"base":27,"job":39,"classId":"swordsman","auto":false,"dead":false,"killsTotal":0,"hitsInTotal":0}}
+{"t":"2026-10-04T12:32:38.735Z","evt":"STEP_START","data":{"step":"23-farm-j50-stats"}}
+{"t":"2026-10-04T12:32:39.592Z","evt":"setAuto","data":{"skills":["bash"],"radius":"all","monsters":0,"hpItems":1,"hpPercent":75,"bashLv":10,"enabled":true,"map":"goblin_trail"}}
+{"t":"2026-10-04T12:32:40.197Z","evt":"setAuto","data":{"skills":["bash"],"radius":"all","monsters":0,"hpItems":1,"hpPercent":75,"bashLv":10,"enabled":true,"map":"goblin_trail"}}
+{"t":"2026-10-04T12:32:40.197Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":27,"jobLevel":39,"exp":"22784/28610","job":"12532/14113","weight":"1398/2960","autoEnabled":true,"dead":false,"statPts":2}}
+{"t":"2026-10-04T12:32:42.885Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:32:42.954Z","evt":"message:item_used","data":{"itemId":90301,"cooldownGroup":"HpPotion","cooldownSeconds":1}}
+{"t":"2026-10-04T12:32:43.031Z","evt":"weave","data":{"skill":"bash","target":"m6295","sp":146}}
+{"t":"2026-10-04T12:32:43.212Z","evt":"drop","data":{"name":"Wolf Pelt","qty":1}}
+{"t":"2026-10-04T12:32:44.345Z","evt":"levelup","data":{"sessionId":"zQLEDzyQM","base":true,"job":false}}
+{"t":"2026-10-04T12:32:44.654Z","evt":"levelup","data":{"sessionId":"-4MS3EQYs","base":true,"job":false}}
+{"t":"2026-10-04T12:32:47.666Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:32:47.821Z","evt":"drop","data":{"name":"Wolf Claw","qty":1}}
+{"t":"2026-10-04T12:32:49.119Z","evt":"levelup","data":{"sessionId":"zQLEDzyQM","base":false,"job":true}}
+{"t":"2026-10-04T12:32:50.559Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:32:54.221Z","evt":"levelup","data":{"sessionId":"9ke9GE0vT","base":false,"job":true}}
+{"t":"2026-10-04T12:32:54.557Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:32:56.735Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:32:56.950Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:32:57.367Z","evt":"drop","data":{"name":"Rough Elunium","qty":1}}
+{"t":"2026-10-04T12:32:58.738Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"_wL92KIHE","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[80.9,31.7],"hp":646,"maxHp":660,"sp":146,"maxSp":146,"bashLv":10,"hpItems":1,"weaves":6,"pots":21,"bag":{"used":29,"free":71,"weight":1367,"weightLimit":2960},"zeny":6742,"base":27,"job":39,"classId":"swordsman","auto":true,"dead":false,"killsTotal":5,"hitsInTotal":8}}
+{"t":"2026-10-04T12:33:00.269Z","evt":"levelup","data":{"sessionId":"02L5WFVEL","base":false,"job":true}}
+{"t":"2026-10-04T12:33:00.270Z","evt":"own_skill_fx","data":{"skillId":"bash","targets":["m6435"]}}
+{"t":"2026-10-04T12:33:00.270Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:33:00.270Z","evt":"levelup","data":{"sessionId":"_wL92KIHE","base":false,"job":true}}
+{"t":"2026-10-04T12:33:00.270Z","evt":"CHARACTER","data":{"base":27,"job":40,"skillPts":19,"statPts":2,"zeny":6742,"classId":"swordsman"}}
+{"t":"2026-10-04T12:33:02.972Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:33:04.811Z","evt":"weave_idle","data":{"mobHitsSeen":135,"buffered":40,"selfPos":true}}
+{"t":"2026-10-04T12:33:07.280Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:33:10.985Z","evt":"kill","data":{"m":"Bat","base":560,"job":420}}
+{"t":"2026-10-04T12:33:12.698Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":27,"jobLevel":40,"exp":"26629/28610","job":"1303/14694","weight":"1325/2960","autoEnabled":true,"dead":false,"statPts":2}}
+{"t":"2026-10-04T12:33:13.711Z","evt":"weave","data":{"skill":"bash","target":"m6409","sp":146}}
+{"t":"2026-10-04T12:33:16.631Z","evt":"kill","data":{"m":"Bat","base":560,"job":420}}
+{"t":"2026-10-04T12:33:18.743Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"_wL92KIHE","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[80.9,31.7],"hp":550,"maxHp":660,"sp":146,"maxSp":146,"bashLv":10,"hpItems":1,"weaves":11,"pots":13,"bag":{"used":29,"free":71,"weight":1311,"weightLimit":2960},"zeny":6742,"base":27,"job":40,"classId":"swordsman","auto":true,"dead":false,"killsTotal":10,"hitsInTotal":21}}
+{"t":"2026-10-04T12:33:21.604Z","evt":"kill","data":{"m":"Bat","base":560,"job":420}}
+{"t":"2026-10-04T12:33:23.777Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:33:24.571Z","evt":"drop","data":{"name":"Bat Wing","qty":1}}
+{"t":"2026-10-04T12:33:24.691Z","evt":"drop","data":{"name":"Rough Elunium","qty":1}}
+{"t":"2026-10-04T12:33:25.353Z","evt":"levelup","data":{"sessionId":"wh1wf7d0Q","base":false,"job":true}}
+{"t":"2026-10-04T12:33:27.452Z","evt":"kill","data":{"m":"Bat","base":560,"job":420}}
+{"t":"2026-10-04T12:33:27.458Z","evt":"levelup","data":{"sessionId":"_wL92KIHE","base":true,"job":false}}
+{"t":"2026-10-04T12:33:27.459Z","evt":"CHARACTER","data":{"base":28,"job":40,"skillPts":19,"statPts":10,"zeny":6742,"classId":"swordsman"}}
+{"t":"2026-10-04T12:33:27.658Z","evt":"drop","data":{"name":"Enchant Rune","qty":1}}
+{"t":"2026-10-04T12:33:30.029Z","evt":"own_skill_fx","data":{"skillId":"bash","targets":["m6565"]}}
+{"t":"2026-10-04T12:33:30.029Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:33:30.134Z","evt":"drop","data":{"name":"Phracon","qty":1}}
+{"t":"2026-10-04T12:33:31.884Z","evt":"own_skill_fx","data":{"skillId":"bash","targets":["m6572"]}}
+{"t":"2026-10-04T12:33:31.885Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:33:33.504Z","evt":"CHARACTER","data":{"base":28,"job":40,"skillPts":19,"statPts":5,"zeny":6742,"classId":"swordsman"}}
+{"t":"2026-10-04T12:33:33.843Z","evt":"CHARACTER","data":{"base":28,"job":40,"skillPts":19,"statPts":0,"zeny":6742,"classId":"swordsman"}}
+{"t":"2026-10-04T12:33:34.703Z","evt":"own_skill_fx","data":{"skillId":"bash","targets":["m6569"]}}
+{"t":"2026-10-04T12:33:34.706Z","evt":"kill","data":{"m":"Bat","base":560,"job":420}}
+{"t":"2026-10-04T12:33:34.886Z","evt":"drop","data":{"name":"Bat Wing","qty":1}}
+{"t":"2026-10-04T12:33:36.121Z","evt":"own_skill_fx","data":{"skillId":"bash","targets":["m6556"]}}
+{"t":"2026-10-04T12:33:36.123Z","evt":"kill","data":{"m":"Bat","base":560,"job":420}}
+{"t":"2026-10-04T12:33:36.397Z","evt":"drop","data":{"name":"Echo Stone","qty":1}}
+{"t":"2026-10-04T12:33:37.858Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:33:38.750Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"_wL92KIHE","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[80.9,31.7],"hp":559,"maxHp":680,"sp":146,"maxSp":150,"bashLv":10,"hpItems":1,"weaves":17,"pots":6,"bag":{"used":30,"free":70,"weight":1268,"weightLimit":3020},"zeny":6742,"base":28,"job":40,"classId":"swordsman","auto":true,"dead":false,"killsTotal":18,"hitsInTotal":31}}
+{"t":"2026-10-04T12:33:39.069Z","evt":"kill","data":{"m":"Bat","base":560,"job":420}}
+{"t":"2026-10-04T12:33:41.804Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:33:43.224Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":28,"jobLevel":40,"exp":"3685/30496","job":"5552/14694","weight":"1268/3020","autoEnabled":true,"dead":false,"statPts":0}}
+{"t":"2026-10-04T12:33:43.240Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:33:43.531Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:33:43.980Z","evt":"drop","data":{"name":"Green Live","qty":1}}
+{"t":"2026-10-04T12:33:46.254Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:33:48.335Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:33:49.743Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:33:51.273Z","evt":"weave","data":{"skill":"bash","target":"m6625","sp":146}}
+{"t":"2026-10-04T12:33:52.326Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:33:52.416Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:33:52.807Z","evt":"drop","data":{"name":"Green Live","qty":1}}
+{"t":"2026-10-04T12:33:53.091Z","evt":"levelup","data":{"sessionId":"zQLEDzyQM","base":false,"job":true}}
+{"t":"2026-10-04T12:33:57.336Z","evt":"kill","data":{"m":"Bat","base":560,"job":420}}
+{"t":"2026-10-04T12:33:57.617Z","evt":"drop","data":{"name":"Bat Wing","qty":1}}
+{"t":"2026-10-04T12:33:58.756Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"_wL92KIHE","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[80.9,31.7],"hp":483,"maxHp":680,"sp":146,"maxSp":150,"bashLv":10,"hpItems":1,"weaves":23,"pots":4,"bag":{"used":30,"free":70,"weight":1259,"weightLimit":3020},"zeny":6742,"base":28,"job":40,"classId":"swordsman","auto":true,"dead":false,"killsTotal":26,"hitsInTotal":36}}
+{"t":"2026-10-04T12:34:01.021Z","evt":"kill","data":{"m":"Bat","base":560,"job":420}}
+{"t":"2026-10-04T12:34:01.081Z","evt":"drop","data":{"name":"Bat Wing","qty":1}}
+{"t":"2026-10-04T12:34:03.963Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:34:07.653Z","evt":"kill","data":{"m":"Bat","base":560,"job":420}}
+{"t":"2026-10-04T12:34:07.774Z","evt":"drop","data":{"name":"Rough Elunium","qty":1}}
+{"t":"2026-10-04T12:34:10.850Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:34:11.014Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:34:13.419Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":28,"jobLevel":40,"exp":"8998/30496","job":"9535/14694","weight":"1234/3020","autoEnabled":true,"dead":false,"statPts":0}}
+{"t":"2026-10-04T12:34:14.435Z","evt":"weave","data":{"skill":"bash","target":"m6667","sp":146}}
+{"t":"2026-10-04T12:34:15.290Z","evt":"kill","data":{"m":"Bat","base":560,"job":420}}
+{"t":"2026-10-04T12:34:18.770Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"_wL92KIHE","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[80.9,31.7],"hp":329,"maxHp":680,"sp":146,"maxSp":150,"bashLv":10,"hpItems":1,"weaves":32,"pots":0,"bag":{"used":29,"free":71,"weight":1234,"weightLimit":3020},"zeny":6742,"base":28,"job":40,"classId":"swordsman","auto":true,"dead":false,"killsTotal":31,"hitsInTotal":46}}
+{"t":"2026-10-04T12:34:19.806Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:34:22.007Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:34:22.235Z","evt":"drop","data":{"name":"Mandragora Root","qty":1}}
+{"t":"2026-10-04T12:34:22.599Z","evt":"drop","data":{"name":"Mandragora Root","qty":1}}
+{"t":"2026-10-04T12:34:25.821Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:34:29.613Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:34:29.825Z","evt":"drop","data":{"name":"Rough Elunium","qty":1}}
+{"t":"2026-10-04T12:34:30.147Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:34:33.848Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:34:36.056Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:34:36.334Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:34:36.969Z","evt":"drop","data":{"name":"Blue Potion","qty":1}}
+{"t":"2026-10-04T12:34:37.621Z","evt":"drop","data":{"name":"Mandragora Root","qty":1}}
+{"t":"2026-10-04T12:34:38.600Z","evt":"kill","data":{"m":"Bat","base":560,"job":420}}
+{"t":"2026-10-04T12:34:38.718Z","evt":"drop","data":{"name":"Bat Wing","qty":1}}
+{"t":"2026-10-04T12:34:38.783Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"_wL92KIHE","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[80.9,31.7],"hp":4,"maxHp":680,"sp":150,"maxSp":150,"bashLv":10,"hpItems":1,"weaves":39,"pots":0,"bag":{"used":29,"free":71,"weight":1241,"weightLimit":3020},"zeny":6742,"base":28,"job":40,"classId":"swordsman","auto":true,"dead":false,"killsTotal":38,"hitsInTotal":56}}
+{"t":"2026-10-04T12:34:39.011Z","evt":"drop","data":{"name":"Phracon","qty":1}}
+{"t":"2026-10-04T12:34:40.030Z","evt":"kill","data":{"m":"Bat","base":560,"job":420}}
+{"t":"2026-10-04T12:34:41.615Z","evt":"weave","data":{"skill":"bash","target":"m6513","sp":150}}
+{"t":"2026-10-04T12:34:41.835Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:34:43.619Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":28,"jobLevel":40,"exp":"14311/30496","job":"13518/14694","weight":"1242/3020","autoEnabled":true,"dead":false,"statPts":0}}
+{"t":"2026-10-04T12:34:44.511Z","evt":"kill","data":{"m":"Bat","base":560,"job":420}}
+{"t":"2026-10-04T12:34:45.759Z","evt":"DEATH","data":{"savePointName":"เมืองหลวงโซลเฮเวน","capitalName":"เมืองหลวงโซลเฮเวน","autoReleaseSeconds":300}}
+{"t":"2026-10-04T12:34:46.630Z","evt":"death_recover","data":{"savePointName":"เมืองหลวงโซลเฮเวน","capitalName":"เมืองหลวงโซลเฮเวน","autoReleaseSeconds":300}}
+{"t":"2026-10-04T12:34:46.646Z","evt":"respawned","data":{}}
+{"t":"2026-10-04T12:34:48.904Z","evt":"reconnect_start","data":{}}
+{"t":"2026-10-04T12:34:48.922Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T12:34:51.124Z","evt":"reconnect_attempt_fail","data":{"attempt":1,"err":"world/enter failed: {\"error\":\"ตัวละครในบัญชีนี้ออนไลน์อยู่แล้ว\"}"}}
+{"t":"2026-10-04T12:34:58.793Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"_wL92KIHE","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[80.9,31.7],"hp":680,"maxHp":680,"sp":150,"maxSp":150,"bashLv":10,"hpItems":1,"weaves":42,"pots":0,"bag":{"used":29,"free":71,"weight":1242,"weightLimit":3020},"zeny":6742,"base":28,"job":40,"classId":"swordsman","auto":false,"dead":false,"killsTotal":41,"hitsInTotal":59}}
+{"t":"2026-10-04T12:35:18.799Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"_wL92KIHE","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":[80.9,31.7],"hp":680,"maxHp":680,"sp":150,"maxSp":150,"bashLv":10,"hpItems":1,"weaves":42,"pots":0,"bag":{"used":29,"free":71,"weight":1242,"weightLimit":3020},"zeny":6742,"base":28,"job":40,"classId":"swordsman","auto":false,"dead":false,"killsTotal":41,"hitsInTotal":59}}
+{"t":"2026-10-04T12:35:37.052Z","evt":"levelup","data":{"sessionId":"D326mvrAT","base":false,"job":true}}
+{"t":"2026-10-04T12:35:38.505Z","evt":"reconnect_done","data":{"map":"goblin_trail","attempt":2}}
+{"t":"2026-10-04T12:35:38.505Z","evt":"death_recovered","data":{"map":"goblin_trail","via":"reconnect"}}
+{"t":"2026-10-04T12:35:38.683Z","evt":"route","data":{"from":"goblin_trail","to":"capital","route":["clover_meadow","capital"]}}
+{"t":"2026-10-04T12:35:38.800Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"z3gfiG4WQ","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,4],"lastMoveAgeSec":0,"anchorTile":[0,0],"hp":680,"maxHp":680,"sp":150,"maxSp":150,"bashLv":10,"hpItems":1,"weaves":42,"pots":0,"bag":{"used":29,"free":71,"weight":1242,"weightLimit":3020},"zeny":6742,"base":28,"job":40,"classId":"swordsman","auto":false,"dead":false,"killsTotal":41,"hitsInTotal":59}}
+{"t":"2026-10-04T12:35:43.605Z","evt":"levelup","data":{"sessionId":"uXbOUxS_W","base":true,"job":false}}
+{"t":"2026-10-04T12:35:45.573Z","evt":"levelup","data":{"sessionId":"D326mvrAT","base":true,"job":false}}
+{"t":"2026-10-04T12:35:46.703Z","evt":"levelup","data":{"sessionId":"uXbOUxS_W","base":false,"job":true}}
+{"t":"2026-10-04T12:35:47.557Z","evt":"levelup","data":{"sessionId":"zQLEDzyQM","base":true,"job":false}}
+{"t":"2026-10-04T12:35:51.686Z","evt":"travel_msg","data":{"mapId":"clover_meadow","roomId":"abMnCvA0c","channel":1,"endpoint":"https://g5.aetheria-online.in.th","displayName":"ทุ่งโคลเวอร์"}}
+{"t":"2026-10-04T12:35:51.732Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T12:35:53.977Z","evt":"traveled","data":{"now":"clover_meadow"}}
+{"t":"2026-10-04T12:35:58.800Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"I4dTZ0U6z","weapon":"Ring Pommel Saber","map":"clover_meadow","lastMoveTile":[61.5,4],"lastMoveAgeSec":5,"anchorTile":[0,0],"hp":680,"maxHp":680,"sp":150,"maxSp":150,"bashLv":10,"hpItems":1,"weaves":42,"pots":0,"bag":{"used":29,"free":71,"weight":1242,"weightLimit":3020},"zeny":6742,"base":28,"job":40,"classId":"swordsman","auto":false,"dead":false,"killsTotal":41,"hitsInTotal":59}}
+{"t":"2026-10-04T12:36:09.012Z","evt":"travel_msg","data":{"mapId":"capital","roomId":"Md5MUUum2","channel":18,"endpoint":"https://g6.aetheria-online.in.th","displayName":"เมืองหลวงโซลเฮเวน"}}
+{"t":"2026-10-04T12:36:09.037Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T12:36:11.760Z","evt":"traveled","data":{"now":"capital"}}
+{"t":"2026-10-04T12:36:18.812Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"s02jIv4ci","weapon":"Ring Pommel Saber","map":"capital","lastMoveTile":[27.5,47.5],"lastMoveAgeSec":7,"anchorTile":[0,0],"hp":680,"maxHp":680,"sp":150,"maxSp":150,"bashLv":10,"hpItems":1,"weaves":42,"pots":0,"bag":{"used":29,"free":71,"weight":1242,"weightLimit":3020},"zeny":6742,"base":28,"job":40,"classId":"swordsman","auto":false,"dead":false,"killsTotal":41,"hitsInTotal":59}}
+{"t":"2026-10-04T12:36:20.480Z","evt":"npc_dialog","data":{"npcKey":"n2","name":"Shopkeeper Bor","art":"npc/shopkeeper-bor","text":"ยินดีต้อนรับ ต้องการซื้อของหรือฝากของไว้กับฉันไหม?","options":["ซื้อของหน่อย","ฝากของหน่อย","ไม่ล่ะ ขอบคุณ"]}}
+{"t":"2026-10-04T12:36:20.550Z","evt":"shop","data":{"shopId":1,"name":"General Goods","buyback":true,"items":[{"itemId":90104,"name":"Carrot","type":"Consumable","price":15,"basePrice":15,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90301,"name":"Red Potion","type":"Consumable","price":50,"basePrice":50,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90302,"name":"Orange Potion","type":"Consumable","price":200,"basePrice":200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90303,"name":"White Potion","type":"Consumable","price":1200,"basePrice":1200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90304,"name":"Blue Potion","type":"Consumable","price":1000,"basePrice":1000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90311,"name":"Butterfly Wing","type":"Consumable","price":300,"basePrice":300,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90312,"name":"Fly Wing","type":"Consumable","price":60,"basePrice":60,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90030,"name":"Arrow","type":"Equipment","equipType":"Ammo","price":1,"basePrice":1,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90031,"name":"Fire Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90032,"name":"Crystal Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90033,"name":"Stone Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90034,"name":"Arrow of Wind","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90036,"name":"Silver Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90040,"name":"Blank Scroll","type":"Miscellaneous","price":100,"basePrice":100,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90306,"name":"Concentration Potion","type":"Consumable","price":800,"basePrice":800,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90307,"name":"Awakening Potion","type":"Consumable","price":1500,"basePrice":1500,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90308,"name":"Berserk Potion","type":"Consumable","price":3000,"basePrice":3000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90309,"name":"Weight Limit Scroll","type":"Consumable","price":5000,"basePrice":5000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1}]}}
+{"t":"2026-10-04T12:36:20.772Z","evt":"auto_sold","data":{"count":18}}
+{"t":"2026-10-04T12:36:20.799Z","evt":"CHARACTER","data":{"base":28,"job":40,"skillPts":19,"statPts":0,"zeny":17089,"classId":"swordsman"}}
+{"t":"2026-10-04T12:36:24.271Z","evt":"npc_dialog","data":{"npcKey":"n2","name":"Shopkeeper Bor","art":"npc/shopkeeper-bor","text":"ยินดีต้อนรับ ต้องการซื้อของหรือฝากของไว้กับฉันไหม?","options":["ซื้อของหน่อย","ฝากของหน่อย","ไม่ล่ะ ขอบคุณ"]}}
+{"t":"2026-10-04T12:36:24.521Z","evt":"chose","data":{"keyword":"ซื้อของหน่อย","index":0,"text":"ซื้อของหน่อย"}}
+{"t":"2026-10-04T12:36:24.538Z","evt":"shop","data":{"shopId":1,"name":"General Goods","buyback":true,"items":[{"itemId":90104,"name":"Carrot","type":"Consumable","price":15,"basePrice":15,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90301,"name":"Red Potion","type":"Consumable","price":50,"basePrice":50,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90302,"name":"Orange Potion","type":"Consumable","price":200,"basePrice":200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90303,"name":"White Potion","type":"Consumable","price":1200,"basePrice":1200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90304,"name":"Blue Potion","type":"Consumable","price":1000,"basePrice":1000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90311,"name":"Butterfly Wing","type":"Consumable","price":300,"basePrice":300,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90312,"name":"Fly Wing","type":"Consumable","price":60,"basePrice":60,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90030,"name":"Arrow","type":"Equipment","equipType":"Ammo","price":1,"basePrice":1,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90031,"name":"Fire Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90032,"name":"Crystal Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90033,"name":"Stone Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90034,"name":"Arrow of Wind","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90036,"name":"Silver Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90040,"name":"Blank Scroll","type":"Miscellaneous","price":100,"basePrice":100,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90306,"name":"Concentration Potion","type":"Consumable","price":800,"basePrice":800,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90307,"name":"Awakening Potion","type":"Consumable","price":1500,"basePrice":1500,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90308,"name":"Berserk Potion","type":"Consumable","price":3000,"basePrice":3000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90309,"name":"Weight Limit Scroll","type":"Consumable","price":5000,"basePrice":5000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1}]}}
+{"t":"2026-10-04T12:36:30.775Z","evt":"buy_potions","data":{"want":45,"have":0,"zeny":17089}}
+{"t":"2026-10-04T12:36:30.788Z","evt":"CHARACTER","data":{"base":28,"job":40,"skillPts":19,"statPts":0,"zeny":14839,"classId":"swordsman"}}
+{"t":"2026-10-04T12:36:30.788Z","evt":"shop","data":{"shopId":1,"name":"General Goods","buyback":true,"items":[{"itemId":90104,"name":"Carrot","type":"Consumable","price":15,"basePrice":15,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90301,"name":"Red Potion","type":"Consumable","price":50,"basePrice":50,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90302,"name":"Orange Potion","type":"Consumable","price":200,"basePrice":200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90303,"name":"White Potion","type":"Consumable","price":1200,"basePrice":1200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90304,"name":"Blue Potion","type":"Consumable","price":1000,"basePrice":1000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90311,"name":"Butterfly Wing","type":"Consumable","price":300,"basePrice":300,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90312,"name":"Fly Wing","type":"Consumable","price":60,"basePrice":60,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90030,"name":"Arrow","type":"Equipment","equipType":"Ammo","price":1,"basePrice":1,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90031,"name":"Fire Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90032,"name":"Crystal Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90033,"name":"Stone Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90034,"name":"Arrow of Wind","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90036,"name":"Silver Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90040,"name":"Blank Scroll","type":"Miscellaneous","price":100,"basePrice":100,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90306,"name":"Concentration Potion","type":"Consumable","price":800,"basePrice":800,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90307,"name":"Awakening Potion","type":"Consumable","price":1500,"basePrice":1500,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90308,"name":"Berserk Potion","type":"Consumable","price":3000,"basePrice":3000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90309,"name":"Weight Limit Scroll","type":"Consumable","price":5000,"basePrice":5000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1}]}}
+{"t":"2026-10-04T12:36:34.596Z","evt":"pot_restocked","data":{"before":0,"after":45}}
+{"t":"2026-10-04T12:36:34.707Z","evt":"route","data":{"from":"capital","to":"goblin_trail","route":["clover_meadow","goblin_trail"]}}
+{"t":"2026-10-04T12:36:38.820Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"s02jIv4ci","weapon":"Ring Pommel Saber","map":"capital","lastMoveTile":[52,102.5],"lastMoveAgeSec":4,"anchorTile":[0,0],"hp":680,"maxHp":680,"sp":150,"maxSp":150,"bashLv":10,"hpItems":1,"weaves":42,"pots":45,"bag":{"used":12,"free":88,"weight":688,"weightLimit":3020},"zeny":14839,"base":28,"job":40,"classId":"swordsman","auto":false,"dead":false,"killsTotal":41,"hitsInTotal":59}}
+{"t":"2026-10-04T12:36:45.611Z","evt":"travel_msg","data":{"mapId":"clover_meadow","roomId":"abMnCvA0c","channel":1,"endpoint":"https://g5.aetheria-online.in.th","displayName":"ทุ่งโคลเวอร์"}}
+{"t":"2026-10-04T12:36:45.626Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T12:36:48.126Z","evt":"traveled","data":{"now":"clover_meadow"}}
+{"t":"2026-10-04T12:36:58.828Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"qeLnRW8a_","weapon":"Ring Pommel Saber","map":"clover_meadow","lastMoveTile":[61.5,90],"lastMoveAgeSec":4,"anchorTile":[0,0],"hp":680,"maxHp":680,"sp":150,"maxSp":150,"bashLv":10,"hpItems":1,"weaves":42,"pots":45,"bag":{"used":12,"free":88,"weight":688,"weightLimit":3020},"zeny":14839,"base":28,"job":40,"classId":"swordsman","auto":false,"dead":false,"killsTotal":41,"hitsInTotal":59}}
+{"t":"2026-10-04T12:37:03.020Z","evt":"travel_msg","data":{"mapId":"goblin_trail","roomId":"fho1pk9Pz","channel":1,"endpoint":"https://g5.aetheria-online.in.th","displayName":"เส้นทางก็อบลิน"}}
+{"t":"2026-10-04T12:37:03.039Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T12:37:05.352Z","evt":"traveled","data":{"now":"goblin_trail"}}
+{"t":"2026-10-04T12:37:06.228Z","evt":"setAuto","data":{"skills":["bash"],"radius":"all","monsters":0,"hpItems":1,"hpPercent":75,"bashLv":10,"enabled":true,"map":"goblin_trail"}}
+{"t":"2026-10-04T12:37:07.634Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:37:09.246Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":28,"jobLevel":40,"exp":"14797/30496","job":"13965/14694","weight":"667/3020","autoEnabled":true,"dead":false,"statPts":0}}
+{"t":"2026-10-04T12:37:10.566Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:37:12.701Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:37:18.662Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:37:18.664Z","evt":"CHARACTER","data":{"base":28,"job":41,"skillPts":20,"statPts":0,"zeny":14839,"classId":"swordsman"}}
+{"t":"2026-10-04T12:37:18.834Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"2HIjyRDMi","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":18,"anchorTile":[62.4,7.5],"hp":645,"maxHp":680,"sp":150,"maxSp":150,"bashLv":10,"hpItems":1,"weaves":42,"pots":41,"bag":{"used":12,"free":88,"weight":660,"weightLimit":3020},"zeny":14839,"base":28,"job":41,"classId":"swordsman","auto":true,"dead":false,"killsTotal":45,"hitsInTotal":60}}
+{"t":"2026-10-04T12:37:20.239Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:37:20.446Z","evt":"drop","data":{"name":"Green Live","qty":1}}
+{"t":"2026-10-04T12:37:20.667Z","evt":"drop","data":{"name":"Wolf Pelt","qty":1}}
+{"t":"2026-10-04T12:37:23.161Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:37:23.537Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:37:24.938Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:37:27.492Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:37:30.813Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:37:34.505Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:37:37.449Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:37:38.833Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"2HIjyRDMi","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":38,"anchorTile":[62.4,7.5],"hp":0,"maxHp":680,"sp":150,"maxSp":150,"bashLv":10,"hpItems":1,"weaves":50,"pots":29,"bag":{"used":15,"free":85,"weight":579,"weightLimit":3020},"zeny":14839,"base":28,"job":41,"classId":"swordsman","auto":true,"dead":false,"killsTotal":52,"hitsInTotal":83}}
+{"t":"2026-10-04T12:37:39.406Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":28,"jobLevel":41,"exp":"19120/30496","job":"2513/15283","weight":"572/3020","autoEnabled":true,"dead":false,"statPts":0}}
+{"t":"2026-10-04T12:37:39.594Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:37:40.411Z","evt":"weave","data":{"skill":"bash","target":"m7160","sp":150}}
+{"t":"2026-10-04T12:37:42.567Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:37:44.747Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:37:47.702Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:37:47.933Z","evt":"drop","data":{"name":"Mandragora Root","qty":1}}
+{"t":"2026-10-04T12:37:48.569Z","evt":"drop","data":{"name":"Bow","qty":1}}
+{"t":"2026-10-04T12:37:51.245Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:37:53.470Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:37:55.645Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:37:57.300Z","evt":"drop","data":{"name":"Phracon","qty":1}}
+{"t":"2026-10-04T12:37:58.844Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"2HIjyRDMi","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":58,"anchorTile":[62.4,7.5],"hp":0,"maxHp":680,"sp":150,"maxSp":150,"bashLv":10,"hpItems":1,"weaves":59,"pots":12,"bag":{"used":17,"free":83,"weight":562,"weightLimit":3020},"zeny":14839,"base":28,"job":41,"classId":"swordsman","auto":true,"dead":false,"killsTotal":59,"hitsInTotal":100}}
+{"t":"2026-10-04T12:37:59.034Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:37:59.216Z","evt":"drop","data":{"name":"Moon Fang","qty":1}}
+{"t":"2026-10-04T12:38:01.285Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:38:01.536Z","evt":"weave","data":{"skill":"bash","target":"m7173","sp":150}}
+{"t":"2026-10-04T12:38:01.726Z","evt":"drop","data":{"name":"Wolf Claw","qty":1}}
+{"t":"2026-10-04T12:38:03.435Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:38:05.679Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:38:07.867Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:38:09.571Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":28,"jobLevel":41,"exp":"24192/30496","job":"6317/15283","weight":"543/3020","autoEnabled":true,"dead":false,"statPts":0}}
+{"t":"2026-10-04T12:38:10.066Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:38:12.965Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:38:17.006Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:38:18.858Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"2HIjyRDMi","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":78,"anchorTile":[62.4,7.5],"hp":0,"maxHp":680,"sp":150,"maxSp":150,"bashLv":10,"hpItems":1,"weaves":69,"pots":6,"bag":{"used":19,"free":81,"weight":522,"weightLimit":3020},"zeny":14839,"base":28,"job":41,"classId":"swordsman","auto":true,"dead":false,"killsTotal":67,"hitsInTotal":110}}
+{"t":"2026-10-04T12:38:22.158Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:38:23.647Z","evt":"weave","data":{"skill":"bash","target":"m7285","sp":150}}
+{"t":"2026-10-04T12:38:24.317Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:38:27.419Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:38:31.890Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:38:32.001Z","evt":"drop","data":{"name":"Mandragora Root","qty":1}}
+{"t":"2026-10-04T12:38:35.697Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:38:35.971Z","evt":"drop","data":{"name":"Rough Elunium","qty":1}}
+{"t":"2026-10-04T12:38:38.868Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"2HIjyRDMi","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":98,"anchorTile":[62.4,7.5],"hp":0,"maxHp":680,"sp":150,"maxSp":150,"bashLv":10,"hpItems":1,"weaves":78,"pots":0,"bag":{"used":18,"free":82,"weight":482,"weightLimit":3020},"zeny":14839,"base":28,"job":41,"classId":"swordsman","auto":true,"dead":false,"killsTotal":72,"hitsInTotal":122}}
+{"t":"2026-10-04T12:38:39.534Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:38:39.751Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":28,"jobLevel":41,"exp":"27129/30496","job":"8522/15283","weight":"482/3020","autoEnabled":true,"dead":false,"statPts":0}}
+{"t":"2026-10-04T12:38:41.743Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:38:41.835Z","evt":"drop","data":{"name":"Phracon","qty":1}}
+{"t":"2026-10-04T12:38:42.278Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:38:45.799Z","evt":"weave","data":{"skill":"bash","target":"m7397","sp":150}}
+{"t":"2026-10-04T12:38:46.041Z","evt":"kill","data":{"m":"Wolf","base":104,"job":78}}
+{"t":"2026-10-04T12:38:48.598Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:38:50.618Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:38:54.991Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:38:58.870Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"2HIjyRDMi","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":118,"anchorTile":[62.4,7.5],"hp":0,"maxHp":680,"sp":150,"maxSp":150,"bashLv":10,"hpItems":1,"weaves":86,"pots":0,"bag":{"used":18,"free":82,"weight":484,"weightLimit":3020},"zeny":14839,"base":28,"job":41,"classId":"swordsman","auto":true,"dead":false,"killsTotal":78,"hitsInTotal":135}}
+{"t":"2026-10-04T12:39:01.955Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:39:02.834Z","evt":"DEATH","data":{"savePointName":"เมืองหลวงโซลเฮเวน","capitalName":"เมืองหลวงโซลเฮเวน","autoReleaseSeconds":300}}
+{"t":"2026-10-04T12:39:03.904Z","evt":"death_recover","data":{"savePointName":"เมืองหลวงโซลเฮเวน","capitalName":"เมืองหลวงโซลเฮเวน","autoReleaseSeconds":300}}
+{"t":"2026-10-04T12:39:03.916Z","evt":"respawned","data":{}}
+{"t":"2026-10-04T12:39:04.890Z","evt":"kill","data":{"m":"Mandragora","base":179,"job":134}}
+{"t":"2026-10-04T12:39:06.173Z","evt":"reconnect_start","data":{}}
+{"t":"2026-10-04T12:39:06.196Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T12:39:08.382Z","evt":"reconnect_attempt_fail","data":{"attempt":1,"err":"world/enter failed: {\"error\":\"ตัวละครในบัญชีนี้ออนไลน์อยู่แล้ว\"}"}}
+{"t":"2026-10-04T12:39:18.882Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"2HIjyRDMi","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":138,"anchorTile":[62.4,7.5],"hp":680,"maxHp":680,"sp":150,"maxSp":150,"bashLv":10,"hpItems":1,"weaves":87,"pots":0,"bag":{"used":18,"free":82,"weight":484,"weightLimit":3020},"zeny":14839,"base":28,"job":41,"classId":"swordsman","auto":false,"dead":false,"killsTotal":80,"hitsInTotal":137}}
+{"t":"2026-10-04T12:39:38.889Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"2HIjyRDMi","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":158,"anchorTile":[62.4,7.5],"hp":680,"maxHp":680,"sp":150,"maxSp":150,"bashLv":10,"hpItems":1,"weaves":87,"pots":0,"bag":{"used":18,"free":82,"weight":484,"weightLimit":3020},"zeny":14839,"base":28,"job":41,"classId":"swordsman","auto":false,"dead":false,"killsTotal":80,"hitsInTotal":137}}
+{"t":"2026-10-04T12:39:55.747Z","evt":"reconnect_done","data":{"map":"goblin_trail","attempt":2}}
+{"t":"2026-10-04T12:39:55.747Z","evt":"death_recovered","data":{"map":"goblin_trail","via":"reconnect"}}
+{"t":"2026-10-04T12:39:55.845Z","evt":"route","data":{"from":"goblin_trail","to":"capital","route":["clover_meadow","capital"]}}
+{"t":"2026-10-04T12:39:58.894Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"JlC35qV8_","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,4],"lastMoveAgeSec":3,"anchorTile":[0,0],"hp":680,"maxHp":680,"sp":150,"maxSp":150,"bashLv":10,"hpItems":1,"weaves":87,"pots":0,"bag":{"used":18,"free":82,"weight":484,"weightLimit":3020},"zeny":14839,"base":28,"job":41,"classId":"swordsman","auto":false,"dead":false,"killsTotal":80,"hitsInTotal":137}}
+{"t":"2026-10-04T12:40:03.353Z","evt":"travel_msg","data":{"mapId":"clover_meadow","roomId":"abMnCvA0c","channel":1,"endpoint":"https://g5.aetheria-online.in.th","displayName":"ทุ่งโคลเวอร์"}}
+{"t":"2026-10-04T12:40:03.372Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T12:40:05.623Z","evt":"traveled","data":{"now":"clover_meadow"}}
+{"t":"2026-10-04T12:40:18.895Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"jAzxb0y9-","weapon":"Ring Pommel Saber","map":"clover_meadow","lastMoveTile":[61.5,4],"lastMoveAgeSec":7,"anchorTile":[0,0],"hp":680,"maxHp":680,"sp":150,"maxSp":150,"bashLv":10,"hpItems":1,"weaves":87,"pots":0,"bag":{"used":18,"free":82,"weight":484,"weightLimit":3020},"zeny":14839,"base":28,"job":41,"classId":"swordsman","auto":false,"dead":false,"killsTotal":80,"hitsInTotal":137}}
+{"t":"2026-10-04T12:40:20.412Z","evt":"travel_msg","data":{"mapId":"capital","roomId":"eOPMcz6RR","channel":10,"endpoint":"https://g2.aetheria-online.in.th","displayName":"เมืองหลวงโซลเฮเวน"}}
+{"t":"2026-10-04T12:40:20.439Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T12:40:22.754Z","evt":"traveled","data":{"now":"capital"}}
+{"t":"2026-10-04T12:40:31.501Z","evt":"npc_dialog","data":{"npcKey":"n2","name":"Shopkeeper Bor","art":"npc/shopkeeper-bor","text":"ยินดีต้อนรับ ต้องการซื้อของหรือฝากของไว้กับฉันไหม?","options":["ซื้อของหน่อย","ฝากของหน่อย","ไม่ล่ะ ขอบคุณ"]}}
+{"t":"2026-10-04T12:40:31.691Z","evt":"shop","data":{"shopId":1,"name":"General Goods","buyback":true,"items":[{"itemId":90104,"name":"Carrot","type":"Consumable","price":15,"basePrice":15,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90301,"name":"Red Potion","type":"Consumable","price":50,"basePrice":50,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90302,"name":"Orange Potion","type":"Consumable","price":200,"basePrice":200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90303,"name":"White Potion","type":"Consumable","price":1200,"basePrice":1200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90304,"name":"Blue Potion","type":"Consumable","price":1000,"basePrice":1000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90311,"name":"Butterfly Wing","type":"Consumable","price":300,"basePrice":300,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90312,"name":"Fly Wing","type":"Consumable","price":60,"basePrice":60,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90030,"name":"Arrow","type":"Equipment","equipType":"Ammo","price":1,"basePrice":1,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90031,"name":"Fire Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90032,"name":"Crystal Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90033,"name":"Stone Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90034,"name":"Arrow of Wind","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90036,"name":"Silver Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90040,"name":"Blank Scroll","type":"Miscellaneous","price":100,"basePrice":100,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90306,"name":"Concentration Potion","type":"Consumable","price":800,"basePrice":800,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90307,"name":"Awakening Potion","type":"Consumable","price":1500,"basePrice":1500,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90308,"name":"Berserk Potion","type":"Consumable","price":3000,"basePrice":3000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90309,"name":"Weight Limit Scroll","type":"Consumable","price":5000,"basePrice":5000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1}]}}
+{"t":"2026-10-04T12:40:31.949Z","evt":"auto_sold","data":{"count":7}}
+{"t":"2026-10-04T12:40:31.956Z","evt":"CHARACTER","data":{"base":28,"job":41,"skillPts":20,"statPts":0,"zeny":15748,"classId":"swordsman"}}
+{"t":"2026-10-04T12:40:35.503Z","evt":"npc_dialog","data":{"npcKey":"n2","name":"Shopkeeper Bor","art":"npc/shopkeeper-bor","text":"ยินดีต้อนรับ ต้องการซื้อของหรือฝากของไว้กับฉันไหม?","options":["ซื้อของหน่อย","ฝากของหน่อย","ไม่ล่ะ ขอบคุณ"]}}
+{"t":"2026-10-04T12:40:35.730Z","evt":"chose","data":{"keyword":"ซื้อของหน่อย","index":0,"text":"ซื้อของหน่อย"}}
+{"t":"2026-10-04T12:40:35.741Z","evt":"shop","data":{"shopId":1,"name":"General Goods","buyback":true,"items":[{"itemId":90104,"name":"Carrot","type":"Consumable","price":15,"basePrice":15,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90301,"name":"Red Potion","type":"Consumable","price":50,"basePrice":50,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90302,"name":"Orange Potion","type":"Consumable","price":200,"basePrice":200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90303,"name":"White Potion","type":"Consumable","price":1200,"basePrice":1200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90304,"name":"Blue Potion","type":"Consumable","price":1000,"basePrice":1000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90311,"name":"Butterfly Wing","type":"Consumable","price":300,"basePrice":300,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90312,"name":"Fly Wing","type":"Consumable","price":60,"basePrice":60,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90030,"name":"Arrow","type":"Equipment","equipType":"Ammo","price":1,"basePrice":1,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90031,"name":"Fire Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90032,"name":"Crystal Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90033,"name":"Stone Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90034,"name":"Arrow of Wind","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90036,"name":"Silver Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90040,"name":"Blank Scroll","type":"Miscellaneous","price":100,"basePrice":100,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90306,"name":"Concentration Potion","type":"Consumable","price":800,"basePrice":800,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90307,"name":"Awakening Potion","type":"Consumable","price":1500,"basePrice":1500,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90308,"name":"Berserk Potion","type":"Consumable","price":3000,"basePrice":3000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90309,"name":"Weight Limit Scroll","type":"Consumable","price":5000,"basePrice":5000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1}]}}
+{"t":"2026-10-04T12:40:38.909Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"wxP-a7BBW","weapon":"Ring Pommel Saber","map":"capital","lastMoveTile":[27.5,47.5],"lastMoveAgeSec":5,"anchorTile":[0,0],"hp":680,"maxHp":680,"sp":150,"maxSp":150,"bashLv":10,"hpItems":1,"weaves":87,"pots":0,"bag":{"used":11,"free":89,"weight":376,"weightLimit":3020},"zeny":15748,"base":28,"job":41,"classId":"swordsman","auto":false,"dead":false,"killsTotal":80,"hitsInTotal":137}}
+{"t":"2026-10-04T12:40:41.922Z","evt":"buy_potions","data":{"want":45,"have":0,"zeny":15748}}
+{"t":"2026-10-04T12:40:41.931Z","evt":"CHARACTER","data":{"base":28,"job":41,"skillPts":20,"statPts":0,"zeny":13498,"classId":"swordsman"}}
+{"t":"2026-10-04T12:40:41.931Z","evt":"shop","data":{"shopId":1,"name":"General Goods","buyback":true,"items":[{"itemId":90104,"name":"Carrot","type":"Consumable","price":15,"basePrice":15,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90301,"name":"Red Potion","type":"Consumable","price":50,"basePrice":50,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90302,"name":"Orange Potion","type":"Consumable","price":200,"basePrice":200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90303,"name":"White Potion","type":"Consumable","price":1200,"basePrice":1200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90304,"name":"Blue Potion","type":"Consumable","price":1000,"basePrice":1000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90311,"name":"Butterfly Wing","type":"Consumable","price":300,"basePrice":300,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90312,"name":"Fly Wing","type":"Consumable","price":60,"basePrice":60,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90030,"name":"Arrow","type":"Equipment","equipType":"Ammo","price":1,"basePrice":1,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90031,"name":"Fire Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90032,"name":"Crystal Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90033,"name":"Stone Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90034,"name":"Arrow of Wind","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90036,"name":"Silver Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90040,"name":"Blank Scroll","type":"Miscellaneous","price":100,"basePrice":100,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90306,"name":"Concentration Potion","type":"Consumable","price":800,"basePrice":800,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90307,"name":"Awakening Potion","type":"Consumable","price":1500,"basePrice":1500,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90308,"name":"Berserk Potion","type":"Consumable","price":3000,"basePrice":3000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90309,"name":"Weight Limit Scroll","type":"Consumable","price":5000,"basePrice":5000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1}]}}
+{"t":"2026-10-04T12:40:45.749Z","evt":"pot_restocked","data":{"before":0,"after":45}}
+{"t":"2026-10-04T12:40:45.893Z","evt":"route","data":{"from":"capital","to":"goblin_trail","route":["clover_meadow","goblin_trail"]}}
+{"t":"2026-10-04T12:40:56.541Z","evt":"travel_msg","data":{"mapId":"clover_meadow","roomId":"jnhscjMrz","channel":3,"endpoint":"https://g7.aetheria-online.in.th","displayName":"ทุ่งโคลเวอร์"}}
+{"t":"2026-10-04T12:40:56.557Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T12:40:58.869Z","evt":"traveled","data":{"now":"clover_meadow"}}
+{"t":"2026-10-04T12:40:58.916Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"uvyLUGIss","weapon":"Ring Pommel Saber","map":"clover_meadow","lastMoveTile":[61.5,90],"lastMoveAgeSec":0,"anchorTile":[0,0],"hp":680,"maxHp":680,"sp":150,"maxSp":150,"bashLv":10,"hpItems":1,"weaves":87,"pots":45,"bag":{"used":12,"free":88,"weight":691,"weightLimit":3020},"zeny":13498,"base":28,"job":41,"classId":"swordsman","auto":false,"dead":false,"killsTotal":80,"hitsInTotal":137}}
+{"t":"2026-10-04T12:41:13.658Z","evt":"travel_msg","data":{"mapId":"goblin_trail","roomId":"fho1pk9Pz","channel":1,"endpoint":"https://g5.aetheria-online.in.th","displayName":"เส้นทางก็อบลิน"}}
+{"t":"2026-10-04T12:41:13.787Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T12:41:16.309Z","evt":"traveled","data":{"now":"goblin_trail"}}
+{"t":"2026-10-04T12:41:17.178Z","evt":"setAuto","data":{"skills":["bash"],"radius":"all","monsters":0,"hpItems":1,"hpPercent":75,"bashLv":10,"enabled":true,"map":"goblin_trail"}}
+{"t":"2026-10-04T12:41:18.920Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"UcPw2wCvR","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":7,"anchorTile":[62.4,7.5],"hp":680,"maxHp":680,"sp":150,"maxSp":150,"bashLv":10,"hpItems":1,"weaves":87,"pots":44,"bag":{"used":12,"free":88,"weight":684,"weightLimit":3020},"zeny":13498,"base":28,"job":41,"classId":"swordsman","auto":true,"dead":false,"killsTotal":80,"hitsInTotal":137}}
+{"t":"2026-10-04T12:41:19.089Z","evt":"kill","data":{"m":"Mandragora","base":519,"job":389}}
+{"t":"2026-10-04T12:41:19.409Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:41:20.215Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":28,"jobLevel":41,"exp":"30043/30496","job":"10782/15283","weight":"678/3020","autoEnabled":true,"dead":false,"statPts":0}}
+{"t":"2026-10-04T12:41:21.526Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:41:21.683Z","evt":"drop","data":{"name":"Wolf Claw","qty":1}}
+{"t":"2026-10-04T12:41:23.411Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:41:23.412Z","evt":"CHARACTER","data":{"base":29,"job":41,"skillPts":20,"statPts":8,"zeny":13498,"classId":"swordsman"}}
+{"t":"2026-10-04T12:41:25.993Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:41:26.053Z","evt":"drop","data":{"name":"Phracon","qty":1}}
+{"t":"2026-10-04T12:41:26.246Z","evt":"CHARACTER","data":{"base":29,"job":41,"skillPts":20,"statPts":3,"zeny":13498,"classId":"swordsman"}}
+{"t":"2026-10-04T12:41:27.433Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:41:27.714Z","evt":"drop","data":{"name":"Rough Elunium","qty":1}}
+{"t":"2026-10-04T12:41:27.969Z","evt":"drop","data":{"name":"Wolf Claw","qty":1}}
+{"t":"2026-10-04T12:41:28.813Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:41:32.269Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:41:34.140Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:41:34.176Z","evt":"drop","data":{"name":"Mandragora Root","qty":1}}
+{"t":"2026-10-04T12:41:35.946Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:41:38.743Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:41:38.927Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"UcPw2wCvR","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":27,"anchorTile":[62.4,7.5],"hp":468,"maxHp":700,"sp":150,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":90,"pots":41,"bag":{"used":15,"free":85,"weight":669,"weightLimit":3050},"zeny":13498,"base":29,"job":41,"classId":"swordsman","auto":true,"dead":false,"killsTotal":90,"hitsInTotal":144}}
+{"t":"2026-10-04T12:41:39.129Z","evt":"drop","data":{"name":"Mandragora Root","qty":1}}
+{"t":"2026-10-04T12:41:39.944Z","evt":"weave","data":{"skill":"bash","target":"m7729","sp":150}}
+{"t":"2026-10-04T12:41:40.019Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:41:43.563Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:41:44.933Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:41:46.324Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:41:49.904Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:41:52.077Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:41:52.848Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":29,"jobLevel":41,"exp":"3361/32437","job":"13645/15283","weight":"601/3050","autoEnabled":true,"dead":false,"statPts":3}}
+{"t":"2026-10-04T12:41:54.300Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:41:56.485Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:41:58.932Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"UcPw2wCvR","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":47,"anchorTile":[62.4,7.5],"hp":0,"maxHp":700,"sp":150,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":97,"pots":26,"bag":{"used":15,"free":85,"weight":566,"weightLimit":3050},"zeny":13498,"base":29,"job":41,"classId":"swordsman","auto":true,"dead":false,"killsTotal":97,"hitsInTotal":167}}
+{"t":"2026-10-04T12:41:59.415Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:42:00.229Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:42:00.500Z","evt":"drop","data":{"name":"Green Live","qty":1}}
+{"t":"2026-10-04T12:42:00.848Z","evt":"drop","data":{"name":"Mandragora Root","qty":1}}
+{"t":"2026-10-04T12:42:01.736Z","evt":"drop","data":{"name":"Lifesteal Gem (Skill) 3%","qty":1}}
+{"t":"2026-10-04T12:42:02.285Z","evt":"drop","data":{"name":"Blue Potion","qty":1}}
+{"t":"2026-10-04T12:42:05.242Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:42:05.512Z","evt":"drop","data":{"name":"Phracon","qty":1}}
+{"t":"2026-10-04T12:42:06.703Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:42:07.046Z","evt":"drop","data":{"name":"Green Live","qty":1}}
+{"t":"2026-10-04T12:42:07.303Z","evt":"drop","data":{"name":"Scream Leaf","qty":1}}
+{"t":"2026-10-04T12:42:08.285Z","evt":"kill","data":{"m":"Bat","base":560,"job":420}}
+{"t":"2026-10-04T12:42:12.127Z","evt":"kill","data":{"m":"Bat","base":560,"job":420}}
+{"t":"2026-10-04T12:42:12.131Z","evt":"CHARACTER","data":{"base":29,"job":42,"skillPts":21,"statPts":3,"zeny":13498,"classId":"swordsman"}}
+{"t":"2026-10-04T12:42:16.735Z","evt":"kill","data":{"m":"Bat","base":560,"job":420}}
+{"t":"2026-10-04T12:42:16.797Z","evt":"drop","data":{"name":"Claw","qty":1}}
+{"t":"2026-10-04T12:42:18.939Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"UcPw2wCvR","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":67,"anchorTile":[62.4,7.5],"hp":0,"maxHp":700,"sp":150,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":98,"pots":21,"bag":{"used":19,"free":81,"weight":638,"weightLimit":3050},"zeny":13498,"base":29,"job":42,"classId":"swordsman","auto":true,"dead":false,"killsTotal":103,"hitsInTotal":170}}
+{"t":"2026-10-04T12:42:21.096Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:42:21.207Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:42:21.534Z","evt":"drop","data":{"name":"Rough Elunium","qty":1}}
+{"t":"2026-10-04T12:42:25.363Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":29,"jobLevel":42,"exp":"6817/32437","job":"954/15882","weight":"626/3050","autoEnabled":true,"dead":false,"statPts":3}}
+{"t":"2026-10-04T12:42:25.490Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:42:26.377Z","evt":"weave","data":{"skill":"bash","target":"m7820","sp":150}}
+{"t":"2026-10-04T12:42:27.708Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:42:27.761Z","evt":"drop","data":{"name":"Scream Leaf","qty":1}}
+{"t":"2026-10-04T12:42:28.084Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:42:28.835Z","evt":"drop","data":{"name":"Rough Elunium","qty":1}}
+{"t":"2026-10-04T12:42:29.193Z","evt":"drop","data":{"name":"Phracon","qty":1}}
+{"t":"2026-10-04T12:42:34.080Z","evt":"kill","data":{"m":"Bat","base":560,"job":420}}
+{"t":"2026-10-04T12:42:36.303Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:42:36.362Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:42:36.789Z","evt":"drop","data":{"name":"Mandragora Root","qty":1}}
+{"t":"2026-10-04T12:42:38.951Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"UcPw2wCvR","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":87,"anchorTile":[62.4,7.5],"hp":0,"maxHp":700,"sp":150,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":103,"pots":14,"bag":{"used":19,"free":81,"weight":597,"weightLimit":3050},"zeny":13498,"base":29,"job":42,"classId":"swordsman","auto":true,"dead":false,"killsTotal":108,"hitsInTotal":181}}
+{"t":"2026-10-04T12:42:39.761Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:42:43.266Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:42:43.534Z","evt":"drop","data":{"name":"Mandragora Root","qty":1}}
+{"t":"2026-10-04T12:42:45.424Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:42:45.831Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:42:49.075Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:42:49.347Z","evt":"drop","data":{"name":"Mandragora Root","qty":1}}
+{"t":"2026-10-04T12:42:54.768Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:42:58.965Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"UcPw2wCvR","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":107,"anchorTile":[62.4,7.5],"hp":0,"maxHp":700,"sp":150,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":109,"pots":7,"bag":{"used":19,"free":81,"weight":551,"weightLimit":3050},"zeny":13498,"base":29,"job":42,"classId":"swordsman","auto":true,"dead":false,"killsTotal":113,"hitsInTotal":190}}
+{"t":"2026-10-04T12:42:58.983Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:43:00.865Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":29,"jobLevel":42,"exp":"9975/32437","job":"3323/15882","weight":"544/3050","autoEnabled":true,"dead":false,"statPts":3}}
+{"t":"2026-10-04T12:43:01.876Z","evt":"weave","data":{"skill":"bash","target":"m7905","sp":150}}
+{"t":"2026-10-04T12:43:02.624Z","evt":"kill","data":{"m":"Bat","base":560,"job":420}}
+{"t":"2026-10-04T12:43:06.598Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:43:06.912Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:43:12.060Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:43:12.218Z","evt":"drop","data":{"name":"Rough Elunium","qty":1}}
+{"t":"2026-10-04T12:43:17.276Z","evt":"kill","data":{"m":"Mandragora","base":103,"job":77}}
+{"t":"2026-10-04T12:43:18.976Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"UcPw2wCvR","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":127,"anchorTile":[62.4,7.5],"hp":0,"maxHp":700,"sp":150,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":115,"pots":0,"bag":{"used":18,"free":82,"weight":504,"weightLimit":3050},"zeny":13498,"base":29,"job":42,"classId":"swordsman","auto":true,"dead":false,"killsTotal":118,"hitsInTotal":200}}
+{"t":"2026-10-04T12:43:19.939Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:43:26.204Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:43:29.944Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:43:30.111Z","evt":"drop","data":{"name":"Wolf Pelt","qty":1}}
+{"t":"2026-10-04T12:43:34.780Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:43:34.840Z","evt":"drop","data":{"name":"Phracon","qty":1}}
+{"t":"2026-10-04T12:43:36.400Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":29,"jobLevel":42,"exp":"12216/32437","job":"5005/15882","weight":"506/3050","autoEnabled":true,"dead":false,"statPts":3}}
+{"t":"2026-10-04T12:43:36.725Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:43:38.986Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"UcPw2wCvR","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":147,"anchorTile":[62.4,7.5],"hp":0,"maxHp":700,"sp":150,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":120,"pots":0,"bag":{"used":19,"free":81,"weight":506,"weightLimit":3050},"zeny":13498,"base":29,"job":42,"classId":"swordsman","auto":true,"dead":false,"killsTotal":123,"hitsInTotal":204}}
+{"t":"2026-10-04T12:43:42.270Z","evt":"weave","data":{"skill":"bash","target":"m8036","sp":150}}
+{"t":"2026-10-04T12:43:42.617Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:43:42.739Z","evt":"drop","data":{"name":"Rough Elunium","qty":1}}
+{"t":"2026-10-04T12:43:45.954Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:43:48.969Z","evt":"kill","data":{"m":"Mandragora","base":206,"job":155}}
+{"t":"2026-10-04T12:43:52.365Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:43:55.501Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:43:56.877Z","evt":"drop","data":{"name":"Mandragora Root","qty":1}}
+{"t":"2026-10-04T12:43:57.198Z","evt":"drop","data":{"name":"Rough Elunium","qty":1}}
+{"t":"2026-10-04T12:43:57.358Z","evt":"drop","data":{"name":"Phracon","qty":1}}
+{"t":"2026-10-04T12:43:58.993Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"UcPw2wCvR","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":167,"anchorTile":[62.4,7.5],"hp":0,"maxHp":700,"sp":150,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":126,"pots":0,"bag":{"used":19,"free":81,"weight":510,"weightLimit":3050},"zeny":13498,"base":29,"job":42,"classId":"swordsman","auto":true,"dead":false,"killsTotal":128,"hitsInTotal":214}}
+{"t":"2026-10-04T12:44:00.783Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:44:05.265Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:44:11.844Z","evt":"DEATH","data":{"savePointName":"เมืองหลวงโซลเฮเวน","capitalName":"เมืองหลวงโซลเฮเวน","autoReleaseSeconds":300}}
+{"t":"2026-10-04T12:44:11.891Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":29,"jobLevel":42,"exp":"13906/32437","job":"6360/15882","weight":"510/3050","autoEnabled":false,"dead":true,"statPts":3}}
+{"t":"2026-10-04T12:44:11.891Z","evt":"death_recover","data":{"savePointName":"เมืองหลวงโซลเฮเวน","capitalName":"เมืองหลวงโซลเฮเวน","autoReleaseSeconds":300}}
+{"t":"2026-10-04T12:44:11.896Z","evt":"respawned","data":{}}
+{"t":"2026-10-04T12:44:14.167Z","evt":"reconnect_start","data":{}}
+{"t":"2026-10-04T12:44:14.196Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T12:44:16.741Z","evt":"reconnect_attempt_fail","data":{"attempt":1,"err":"world/enter failed: {\"error\":\"ตัวละครในบัญชีนี้ออนไลน์อยู่แล้ว\"}"}}
+{"t":"2026-10-04T12:44:18.999Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"UcPw2wCvR","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":187,"anchorTile":[62.4,7.5],"hp":700,"maxHp":700,"sp":154,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":130,"pots":0,"bag":{"used":19,"free":81,"weight":510,"weightLimit":3050},"zeny":13498,"base":29,"job":42,"classId":"swordsman","auto":false,"dead":false,"killsTotal":130,"hitsInTotal":220}}
+{"t":"2026-10-04T12:44:39.001Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"UcPw2wCvR","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":207,"anchorTile":[62.4,7.5],"hp":700,"maxHp":700,"sp":154,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":130,"pots":0,"bag":{"used":19,"free":81,"weight":510,"weightLimit":3050},"zeny":13498,"base":29,"job":42,"classId":"swordsman","auto":false,"dead":false,"killsTotal":130,"hitsInTotal":220}}
+{"t":"2026-10-04T12:44:59.001Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"UcPw2wCvR","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":227,"anchorTile":[62.4,7.5],"hp":700,"maxHp":700,"sp":154,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":130,"pots":0,"bag":{"used":19,"free":81,"weight":510,"weightLimit":3050},"zeny":13498,"base":29,"job":42,"classId":"swordsman","auto":false,"dead":false,"killsTotal":130,"hitsInTotal":220}}
+{"t":"2026-10-04T12:45:04.108Z","evt":"reconnect_done","data":{"map":"goblin_trail","attempt":2}}
+{"t":"2026-10-04T12:45:04.109Z","evt":"death_recovered","data":{"map":"goblin_trail","via":"reconnect"}}
+{"t":"2026-10-04T12:45:04.164Z","evt":"route","data":{"from":"goblin_trail","to":"capital","route":["clover_meadow","capital"]}}
+{"t":"2026-10-04T12:45:16.369Z","evt":"travel_msg","data":{"mapId":"clover_meadow","roomId":"jnhscjMrz","channel":3,"endpoint":"https://g7.aetheria-online.in.th","displayName":"ทุ่งโคลเวอร์"}}
+{"t":"2026-10-04T12:45:16.392Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T12:45:18.830Z","evt":"traveled","data":{"now":"clover_meadow"}}
+{"t":"2026-10-04T12:45:19.015Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"29H8do1py","weapon":"Ring Pommel Saber","map":"clover_meadow","lastMoveTile":[61.5,4],"lastMoveAgeSec":0,"anchorTile":[0,0],"hp":700,"maxHp":700,"sp":154,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":130,"pots":0,"bag":{"used":19,"free":81,"weight":510,"weightLimit":3050},"zeny":13498,"base":29,"job":42,"classId":"swordsman","auto":false,"dead":false,"killsTotal":130,"hitsInTotal":220}}
+{"t":"2026-10-04T12:45:33.651Z","evt":"travel_msg","data":{"mapId":"capital","roomId":"C_6WUuChw","channel":11,"endpoint":"https://aetheria-online.in.th","displayName":"เมืองหลวงโซลเฮเวน"}}
+{"t":"2026-10-04T12:45:33.699Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T12:45:36.049Z","evt":"traveled","data":{"now":"capital"}}
+{"t":"2026-10-04T12:45:39.025Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"1YlT-I3WJ","weapon":"Ring Pommel Saber","map":"capital","lastMoveTile":[27.5,47.5],"lastMoveAgeSec":3,"anchorTile":[0,0],"hp":700,"maxHp":700,"sp":154,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":130,"pots":0,"bag":{"used":19,"free":81,"weight":510,"weightLimit":3050},"zeny":13498,"base":29,"job":42,"classId":"swordsman","auto":false,"dead":false,"killsTotal":130,"hitsInTotal":220}}
+{"t":"2026-10-04T12:45:44.812Z","evt":"npc_dialog","data":{"npcKey":"n2","name":"Shopkeeper Bor","art":"npc/shopkeeper-bor","text":"ยินดีต้อนรับ ต้องการซื้อของหรือฝากของไว้กับฉันไหม?","options":["ซื้อของหน่อย","ฝากของหน่อย","ไม่ล่ะ ขอบคุณ"]}}
+{"t":"2026-10-04T12:45:45.081Z","evt":"shop","data":{"shopId":1,"name":"General Goods","buyback":true,"items":[{"itemId":90104,"name":"Carrot","type":"Consumable","price":15,"basePrice":15,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90301,"name":"Red Potion","type":"Consumable","price":50,"basePrice":50,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90302,"name":"Orange Potion","type":"Consumable","price":200,"basePrice":200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90303,"name":"White Potion","type":"Consumable","price":1200,"basePrice":1200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90304,"name":"Blue Potion","type":"Consumable","price":1000,"basePrice":1000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90311,"name":"Butterfly Wing","type":"Consumable","price":300,"basePrice":300,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90312,"name":"Fly Wing","type":"Consumable","price":60,"basePrice":60,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90030,"name":"Arrow","type":"Equipment","equipType":"Ammo","price":1,"basePrice":1,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90031,"name":"Fire Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90032,"name":"Crystal Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90033,"name":"Stone Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90034,"name":"Arrow of Wind","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90036,"name":"Silver Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90040,"name":"Blank Scroll","type":"Miscellaneous","price":100,"basePrice":100,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90306,"name":"Concentration Potion","type":"Consumable","price":800,"basePrice":800,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90307,"name":"Awakening Potion","type":"Consumable","price":1500,"basePrice":1500,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90308,"name":"Berserk Potion","type":"Consumable","price":3000,"basePrice":3000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90309,"name":"Weight Limit Scroll","type":"Consumable","price":5000,"basePrice":5000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1}]}}
+{"t":"2026-10-04T12:45:45.309Z","evt":"auto_sold","data":{"count":7}}
+{"t":"2026-10-04T12:45:45.377Z","evt":"CHARACTER","data":{"base":29,"job":42,"skillPts":21,"statPts":3,"zeny":16596,"classId":"swordsman"}}
+{"t":"2026-10-04T12:45:48.819Z","evt":"npc_dialog","data":{"npcKey":"n2","name":"Shopkeeper Bor","art":"npc/shopkeeper-bor","text":"ยินดีต้อนรับ ต้องการซื้อของหรือฝากของไว้กับฉันไหม?","options":["ซื้อของหน่อย","ฝากของหน่อย","ไม่ล่ะ ขอบคุณ"]}}
+{"t":"2026-10-04T12:45:49.024Z","evt":"chose","data":{"keyword":"ซื้อของหน่อย","index":0,"text":"ซื้อของหน่อย"}}
+{"t":"2026-10-04T12:45:49.040Z","evt":"shop","data":{"shopId":1,"name":"General Goods","buyback":true,"items":[{"itemId":90104,"name":"Carrot","type":"Consumable","price":15,"basePrice":15,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90301,"name":"Red Potion","type":"Consumable","price":50,"basePrice":50,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90302,"name":"Orange Potion","type":"Consumable","price":200,"basePrice":200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90303,"name":"White Potion","type":"Consumable","price":1200,"basePrice":1200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90304,"name":"Blue Potion","type":"Consumable","price":1000,"basePrice":1000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90311,"name":"Butterfly Wing","type":"Consumable","price":300,"basePrice":300,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90312,"name":"Fly Wing","type":"Consumable","price":60,"basePrice":60,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90030,"name":"Arrow","type":"Equipment","equipType":"Ammo","price":1,"basePrice":1,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90031,"name":"Fire Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90032,"name":"Crystal Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90033,"name":"Stone Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90034,"name":"Arrow of Wind","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90036,"name":"Silver Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90040,"name":"Blank Scroll","type":"Miscellaneous","price":100,"basePrice":100,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90306,"name":"Concentration Potion","type":"Consumable","price":800,"basePrice":800,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90307,"name":"Awakening Potion","type":"Consumable","price":1500,"basePrice":1500,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90308,"name":"Berserk Potion","type":"Consumable","price":3000,"basePrice":3000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90309,"name":"Weight Limit Scroll","type":"Consumable","price":5000,"basePrice":5000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1}]}}
+{"t":"2026-10-04T12:45:55.282Z","evt":"buy_potions","data":{"want":45,"have":0,"zeny":16596}}
+{"t":"2026-10-04T12:45:55.322Z","evt":"CHARACTER","data":{"base":29,"job":42,"skillPts":21,"statPts":3,"zeny":14346,"classId":"swordsman"}}
+{"t":"2026-10-04T12:45:55.322Z","evt":"shop","data":{"shopId":1,"name":"General Goods","buyback":true,"items":[{"itemId":90104,"name":"Carrot","type":"Consumable","price":15,"basePrice":15,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90301,"name":"Red Potion","type":"Consumable","price":50,"basePrice":50,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90302,"name":"Orange Potion","type":"Consumable","price":200,"basePrice":200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90303,"name":"White Potion","type":"Consumable","price":1200,"basePrice":1200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90304,"name":"Blue Potion","type":"Consumable","price":1000,"basePrice":1000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90311,"name":"Butterfly Wing","type":"Consumable","price":300,"basePrice":300,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90312,"name":"Fly Wing","type":"Consumable","price":60,"basePrice":60,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90030,"name":"Arrow","type":"Equipment","equipType":"Ammo","price":1,"basePrice":1,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90031,"name":"Fire Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90032,"name":"Crystal Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90033,"name":"Stone Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90034,"name":"Arrow of Wind","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90036,"name":"Silver Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90040,"name":"Blank Scroll","type":"Miscellaneous","price":100,"basePrice":100,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90306,"name":"Concentration Potion","type":"Consumable","price":800,"basePrice":800,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90307,"name":"Awakening Potion","type":"Consumable","price":1500,"basePrice":1500,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90308,"name":"Berserk Potion","type":"Consumable","price":3000,"basePrice":3000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90309,"name":"Weight Limit Scroll","type":"Consumable","price":5000,"basePrice":5000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1}]}}
+{"t":"2026-10-04T12:45:59.032Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"1YlT-I3WJ","weapon":"Ring Pommel Saber","map":"capital","lastMoveTile":[27.5,47.5],"lastMoveAgeSec":11,"anchorTile":[0,0],"hp":700,"maxHp":700,"sp":154,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":130,"pots":45,"bag":{"used":13,"free":87,"weight":703,"weightLimit":3050},"zeny":14346,"base":29,"job":42,"classId":"swordsman","auto":false,"dead":false,"killsTotal":130,"hitsInTotal":220}}
+{"t":"2026-10-04T12:45:59.093Z","evt":"pot_restocked","data":{"before":0,"after":45}}
+{"t":"2026-10-04T12:45:59.267Z","evt":"route","data":{"from":"capital","to":"goblin_trail","route":["clover_meadow","goblin_trail"]}}
+{"t":"2026-10-04T12:46:10.237Z","evt":"travel_msg","data":{"mapId":"clover_meadow","roomId":"jnhscjMrz","channel":3,"endpoint":"https://g7.aetheria-online.in.th","displayName":"ทุ่งโคลเวอร์"}}
+{"t":"2026-10-04T12:46:10.257Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T12:46:12.643Z","evt":"traveled","data":{"now":"clover_meadow"}}
+{"t":"2026-10-04T12:46:19.045Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"SxvXD7lMK","weapon":"Ring Pommel Saber","map":"clover_meadow","lastMoveTile":[61.5,90],"lastMoveAgeSec":6,"anchorTile":[0,0],"hp":700,"maxHp":700,"sp":154,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":130,"pots":45,"bag":{"used":13,"free":87,"weight":703,"weightLimit":3050},"zeny":14346,"base":29,"job":42,"classId":"swordsman","auto":false,"dead":false,"killsTotal":130,"hitsInTotal":220}}
+{"t":"2026-10-04T12:46:27.449Z","evt":"travel_msg","data":{"mapId":"goblin_trail","roomId":"fho1pk9Pz","channel":1,"endpoint":"https://g5.aetheria-online.in.th","displayName":"เส้นทางก็อบลิน"}}
+{"t":"2026-10-04T12:46:27.470Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T12:46:29.754Z","evt":"traveled","data":{"now":"goblin_trail"}}
+{"t":"2026-10-04T12:46:30.606Z","evt":"setAuto","data":{"skills":["bash"],"radius":"all","monsters":0,"hpItems":1,"hpPercent":75,"bashLv":10,"enabled":true,"map":"goblin_trail"}}
+{"t":"2026-10-04T12:46:30.606Z","evt":"weave_idle","data":{"mobHitsSeen":1474,"buffered":40,"selfPos":false}}
+{"t":"2026-10-04T12:46:33.624Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":29,"jobLevel":42,"exp":"13906/32437","job":"6360/15882","weight":"689/3050","autoEnabled":true,"dead":false,"statPts":3}}
+{"t":"2026-10-04T12:46:34.395Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:46:39.053Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"bU7FOog3h","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":13,"anchorTile":[62.4,7.5],"hp":700,"maxHp":700,"sp":154,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":130,"pots":42,"bag":{"used":13,"free":87,"weight":682,"weightLimit":3050},"zeny":14346,"base":29,"job":42,"classId":"swordsman","auto":true,"dead":false,"killsTotal":131,"hitsInTotal":220}}
+{"t":"2026-10-04T12:46:42.974Z","evt":"kill","data":{"m":"Mandragora","base":189,"job":142}}
+{"t":"2026-10-04T12:46:44.409Z","evt":"kill","data":{"m":"Mandragora","base":189,"job":142}}
+{"t":"2026-10-04T12:46:47.374Z","evt":"weave","data":{"skill":"bash","target":"m8432","sp":154}}
+{"t":"2026-10-04T12:46:47.610Z","evt":"kill","data":{"m":"Mandragora","base":103,"job":77}}
+{"t":"2026-10-04T12:46:48.509Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:46:48.840Z","evt":"drop","data":{"name":"Wolf Claw","qty":1}}
+{"t":"2026-10-04T12:46:50.915Z","evt":"kill","data":{"m":"Bat","base":560,"job":420}}
+{"t":"2026-10-04T12:46:50.995Z","evt":"drop","data":{"name":"Bat Wing","qty":1}}
+{"t":"2026-10-04T12:46:52.960Z","evt":"kill","data":{"m":"Wolf","base":12,"job":9}}
+{"t":"2026-10-04T12:46:53.244Z","evt":"drop","data":{"name":"Green Live","qty":1}}
+{"t":"2026-10-04T12:46:56.984Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:46:57.258Z","evt":"drop","data":{"name":"Poo Poo Hat","qty":1}}
+{"t":"2026-10-04T12:46:57.641Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:46:59.058Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"bU7FOog3h","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":33,"anchorTile":[62.4,7.5],"hp":622,"maxHp":700,"sp":154,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":132,"pots":40,"bag":{"used":18,"free":82,"weight":742,"weightLimit":3050},"zeny":14346,"base":29,"job":42,"classId":"swordsman","auto":true,"dead":false,"killsTotal":138,"hitsInTotal":222}}
+{"t":"2026-10-04T12:46:59.889Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:47:03.384Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:47:03.458Z","evt":"drop","data":{"name":"Mandragora Root","qty":1}}
+{"t":"2026-10-04T12:47:03.820Z","evt":"drop","data":{"name":"Green Live","qty":1}}
+{"t":"2026-10-04T12:47:05.614Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:47:05.674Z","evt":"drop","data":{"name":"Rough Elunium","qty":1}}
+{"t":"2026-10-04T12:47:06.141Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":29,"jobLevel":42,"exp":"16471/32437","job":"8286/15882","weight":"731/3050","autoEnabled":true,"dead":false,"statPts":3}}
+{"t":"2026-10-04T12:47:08.912Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:47:11.121Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:47:15.506Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:47:17.719Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:47:17.775Z","evt":"drop","data":{"name":"Evil Wing","qty":1}}
+{"t":"2026-10-04T12:47:18.662Z","evt":"drop","data":{"name":"Wolf Claw","qty":1}}
+{"t":"2026-10-04T12:47:19.068Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"bU7FOog3h","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":53,"anchorTile":[62.4,7.5],"hp":250,"maxHp":700,"sp":154,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":138,"pots":32,"bag":{"used":20,"free":80,"weight":700,"weightLimit":3050},"zeny":14346,"base":29,"job":42,"classId":"swordsman","auto":true,"dead":false,"killsTotal":145,"hitsInTotal":234}}
+{"t":"2026-10-04T12:47:21.074Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:47:21.346Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:47:23.894Z","evt":"kill","data":{"m":"Wolf","base":162,"job":122}}
+{"t":"2026-10-04T12:47:24.921Z","evt":"weave","data":{"skill":"bash","target":"m8520","sp":154}}
+{"t":"2026-10-04T12:47:25.701Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:47:30.120Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:47:32.317Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:47:35.972Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:47:38.167Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:47:38.535Z","evt":"drop","data":{"name":"Green Live","qty":1}}
+{"t":"2026-10-04T12:47:39.069Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"bU7FOog3h","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":73,"anchorTile":[62.4,7.5],"hp":0,"maxHp":700,"sp":154,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":144,"pots":27,"bag":{"used":20,"free":80,"weight":667,"weightLimit":3050},"zeny":14346,"base":29,"job":42,"classId":"swordsman","auto":true,"dead":false,"killsTotal":152,"hitsInTotal":243}}
+{"t":"2026-10-04T12:47:41.245Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:47:41.330Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":29,"jobLevel":42,"exp":"19493/32437","job":"10556/15882","weight":"660/3050","autoEnabled":true,"dead":false,"statPts":3}}
+{"t":"2026-10-04T12:47:41.361Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:47:45.152Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:47:48.589Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:47:52.295Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:47:54.435Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:47:54.604Z","evt":"drop","data":{"name":"Wolf Claw","qty":1}}
+{"t":"2026-10-04T12:47:56.410Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:47:58.651Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:47:58.982Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:47:59.081Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"bU7FOog3h","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":93,"anchorTile":[62.4,7.5],"hp":0,"maxHp":700,"sp":154,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":150,"pots":21,"bag":{"used":20,"free":80,"weight":628,"weightLimit":3050},"zeny":14346,"base":29,"job":42,"classId":"swordsman","auto":true,"dead":false,"killsTotal":159,"hitsInTotal":252}}
+{"t":"2026-10-04T12:47:59.081Z","evt":"weave","data":{"skill":"bash","target":"m8610","sp":154}}
+{"t":"2026-10-04T12:48:02.265Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:48:05.631Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:48:05.715Z","evt":"drop","data":{"name":"Mandragora Root","qty":1}}
+{"t":"2026-10-04T12:48:06.014Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:48:09.844Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:48:09.928Z","evt":"drop","data":{"name":"Wolf Pelt","qty":1}}
+{"t":"2026-10-04T12:48:13.008Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:48:16.854Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":29,"jobLevel":42,"exp":"22057/32437","job":"12482/15882","weight":"589/3050","autoEnabled":true,"dead":false,"statPts":3}}
+{"t":"2026-10-04T12:48:16.970Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:48:19.089Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"bU7FOog3h","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":113,"anchorTile":[62.4,7.5],"hp":0,"maxHp":700,"sp":154,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":157,"pots":13,"bag":{"used":21,"free":79,"weight":575,"weightLimit":3050},"zeny":14346,"base":29,"job":42,"classId":"swordsman","auto":true,"dead":false,"killsTotal":164,"hitsInTotal":265}}
+{"t":"2026-10-04T12:48:19.161Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:48:21.442Z","evt":"drop","data":{"name":"Enchant Rune","qty":1}}
+{"t":"2026-10-04T12:48:26.850Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:48:29.824Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:48:31.971Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:48:32.348Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:48:33.626Z","evt":"weave","data":{"skill":"bash","target":"m8701","sp":154}}
+{"t":"2026-10-04T12:48:33.679Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:48:39.092Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"bU7FOog3h","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":133,"anchorTile":[62.4,7.5],"hp":0,"maxHp":700,"sp":154,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":161,"pots":4,"bag":{"used":21,"free":79,"weight":515,"weightLimit":3050},"zeny":14346,"base":29,"job":42,"classId":"swordsman","auto":true,"dead":false,"killsTotal":168,"hitsInTotal":275}}
+{"t":"2026-10-04T12:48:39.825Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:48:39.876Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:48:40.322Z","evt":"drop","data":{"name":"Scream Leaf","qty":1}}
+{"t":"2026-10-04T12:48:42.982Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:48:46.410Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:48:48.584Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:48:50.839Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:48:52.419Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":29,"jobLevel":42,"exp":"24819/32437","job":"14555/15882","weight":"489/3050","autoEnabled":true,"dead":false,"statPts":3}}
+{"t":"2026-10-04T12:48:55.608Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:48:57.817Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:48:59.106Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"bU7FOog3h","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":153,"anchorTile":[62.4,7.5],"hp":0,"maxHp":700,"sp":154,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":168,"pots":0,"bag":{"used":21,"free":79,"weight":489,"weightLimit":3050},"zeny":14346,"base":29,"job":42,"classId":"swordsman","auto":true,"dead":false,"killsTotal":175,"hitsInTotal":288}}
+{"t":"2026-10-04T12:49:01.401Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:49:03.610Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:49:03.873Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:49:08.184Z","evt":"weave","data":{"skill":"bash","target":"m8771","sp":154}}
+{"t":"2026-10-04T12:49:08.969Z","evt":"kill","data":{"m":"Bat","base":560,"job":420}}
+{"t":"2026-10-04T12:49:09.182Z","evt":"drop","data":{"name":"Bat Fang","qty":1}}
+{"t":"2026-10-04T12:49:10.606Z","evt":"kill","data":{"m":"Bat","base":560,"job":420}}
+{"t":"2026-10-04T12:49:10.606Z","evt":"CHARACTER","data":{"base":29,"job":43,"skillPts":22,"statPts":3,"zeny":14346,"classId":"swordsman"}}
+{"t":"2026-10-04T12:49:12.892Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:49:15.106Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:49:15.339Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:49:16.156Z","evt":"drop","data":{"name":"Mandragora Root","qty":1}}
+{"t":"2026-10-04T12:49:17.379Z","evt":"DEATH","data":{"savePointName":"เมืองหลวงโซลเฮเวน","capitalName":"เมืองหลวงโซลเฮเวน","autoReleaseSeconds":300}}
+{"t":"2026-10-04T12:49:19.073Z","evt":"death_recover","data":{"savePointName":"เมืองหลวงโซลเฮเวน","capitalName":"เมืองหลวงโซลเฮเวน","autoReleaseSeconds":300}}
+{"t":"2026-10-04T12:49:19.094Z","evt":"respawned","data":{}}
+{"t":"2026-10-04T12:49:19.118Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"bU7FOog3h","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":173,"anchorTile":[62.4,7.5],"hp":700,"maxHp":700,"sp":154,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":174,"pots":0,"bag":{"used":22,"free":78,"weight":493,"weightLimit":3050},"zeny":14346,"base":29,"job":43,"classId":"swordsman","auto":false,"dead":false,"killsTotal":181,"hitsInTotal":299}}
+{"t":"2026-10-04T12:49:21.347Z","evt":"reconnect_start","data":{}}
+{"t":"2026-10-04T12:49:21.365Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T12:49:23.574Z","evt":"reconnect_attempt_fail","data":{"attempt":1,"err":"world/enter failed: {\"error\":\"ตัวละครในบัญชีนี้ออนไลน์อยู่แล้ว\"}"}}
+{"t":"2026-10-04T12:49:39.122Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"bU7FOog3h","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":193,"anchorTile":[62.4,7.5],"hp":700,"maxHp":700,"sp":154,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":174,"pots":0,"bag":{"used":22,"free":78,"weight":493,"weightLimit":3050},"zeny":14346,"base":29,"job":43,"classId":"swordsman","auto":false,"dead":false,"killsTotal":181,"hitsInTotal":299}}
+{"t":"2026-10-04T12:49:59.125Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"bU7FOog3h","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":213,"anchorTile":[62.4,7.5],"hp":700,"maxHp":700,"sp":154,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":174,"pots":0,"bag":{"used":22,"free":78,"weight":493,"weightLimit":3050},"zeny":14346,"base":29,"job":43,"classId":"swordsman","auto":false,"dead":false,"killsTotal":181,"hitsInTotal":299}}
+{"t":"2026-10-04T12:50:11.126Z","evt":"reconnect_done","data":{"map":"goblin_trail","attempt":2}}
+{"t":"2026-10-04T12:50:11.126Z","evt":"death_recovered","data":{"map":"goblin_trail","via":"reconnect"}}
+{"t":"2026-10-04T12:50:11.177Z","evt":"route","data":{"from":"goblin_trail","to":"capital","route":["clover_meadow","capital"]}}
+{"t":"2026-10-04T12:50:19.136Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"wGZgLqHd1","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,4],"lastMoveAgeSec":1,"anchorTile":[0,0],"hp":607,"maxHp":700,"sp":154,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":174,"pots":0,"bag":{"used":22,"free":78,"weight":493,"weightLimit":3050},"zeny":14346,"base":29,"job":43,"classId":"swordsman","auto":false,"dead":false,"killsTotal":181,"hitsInTotal":302}}
+{"t":"2026-10-04T12:50:22.377Z","evt":"travel_msg","data":{"mapId":"clover_meadow","roomId":"UGXuuIXDf","channel":2,"endpoint":"https://g8.aetheria-online.in.th","displayName":"ทุ่งโคลเวอร์"}}
+{"t":"2026-10-04T12:50:22.409Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T12:50:24.676Z","evt":"traveled","data":{"now":"clover_meadow"}}
+{"t":"2026-10-04T12:50:39.143Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"v5hxep2A2","weapon":"Ring Pommel Saber","map":"clover_meadow","lastMoveTile":[61.5,4],"lastMoveAgeSec":1,"anchorTile":[0,0],"hp":607,"maxHp":700,"sp":154,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":174,"pots":0,"bag":{"used":22,"free":78,"weight":493,"weightLimit":3050},"zeny":14346,"base":29,"job":43,"classId":"swordsman","auto":false,"dead":false,"killsTotal":181,"hitsInTotal":302}}
+{"t":"2026-10-04T12:50:39.469Z","evt":"travel_msg","data":{"mapId":"capital","roomId":"fjmrkpR_u","channel":7,"endpoint":"https://g7.aetheria-online.in.th","displayName":"เมืองหลวงโซลเฮเวน"}}
+{"t":"2026-10-04T12:50:39.482Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T12:50:42.406Z","evt":"traveled","data":{"now":"capital"}}
+{"t":"2026-10-04T12:50:51.222Z","evt":"npc_dialog","data":{"npcKey":"n2","name":"Shopkeeper Bor","art":"npc/shopkeeper-bor","text":"ยินดีต้อนรับ ต้องการซื้อของหรือฝากของไว้กับฉันไหม?","options":["ซื้อของหน่อย","ฝากของหน่อย","ไม่ล่ะ ขอบคุณ"]}}
+{"t":"2026-10-04T12:50:51.414Z","evt":"shop","data":{"shopId":1,"name":"General Goods","buyback":true,"items":[{"itemId":90104,"name":"Carrot","type":"Consumable","price":15,"basePrice":15,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90301,"name":"Red Potion","type":"Consumable","price":50,"basePrice":50,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90302,"name":"Orange Potion","type":"Consumable","price":200,"basePrice":200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90303,"name":"White Potion","type":"Consumable","price":1200,"basePrice":1200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90304,"name":"Blue Potion","type":"Consumable","price":1000,"basePrice":1000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90311,"name":"Butterfly Wing","type":"Consumable","price":300,"basePrice":300,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90312,"name":"Fly Wing","type":"Consumable","price":60,"basePrice":60,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90030,"name":"Arrow","type":"Equipment","equipType":"Ammo","price":1,"basePrice":1,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90031,"name":"Fire Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90032,"name":"Crystal Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90033,"name":"Stone Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90034,"name":"Arrow of Wind","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90036,"name":"Silver Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90040,"name":"Blank Scroll","type":"Miscellaneous","price":100,"basePrice":100,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90306,"name":"Concentration Potion","type":"Consumable","price":800,"basePrice":800,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90307,"name":"Awakening Potion","type":"Consumable","price":1500,"basePrice":1500,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90308,"name":"Berserk Potion","type":"Consumable","price":3000,"basePrice":3000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90309,"name":"Weight Limit Scroll","type":"Consumable","price":5000,"basePrice":5000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1}]}}
+{"t":"2026-10-04T12:50:51.656Z","evt":"auto_sold","data":{"count":10}}
+{"t":"2026-10-04T12:50:51.715Z","evt":"CHARACTER","data":{"base":29,"job":43,"skillPts":22,"statPts":3,"zeny":17150,"classId":"swordsman"}}
+{"t":"2026-10-04T12:50:55.240Z","evt":"npc_dialog","data":{"npcKey":"n2","name":"Shopkeeper Bor","art":"npc/shopkeeper-bor","text":"ยินดีต้อนรับ ต้องการซื้อของหรือฝากของไว้กับฉันไหม?","options":["ซื้อของหน่อย","ฝากของหน่อย","ไม่ล่ะ ขอบคุณ"]}}
+{"t":"2026-10-04T12:50:55.438Z","evt":"chose","data":{"keyword":"ซื้อของหน่อย","index":0,"text":"ซื้อของหน่อย"}}
+{"t":"2026-10-04T12:50:55.473Z","evt":"shop","data":{"shopId":1,"name":"General Goods","buyback":true,"items":[{"itemId":90104,"name":"Carrot","type":"Consumable","price":15,"basePrice":15,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90301,"name":"Red Potion","type":"Consumable","price":50,"basePrice":50,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90302,"name":"Orange Potion","type":"Consumable","price":200,"basePrice":200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90303,"name":"White Potion","type":"Consumable","price":1200,"basePrice":1200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90304,"name":"Blue Potion","type":"Consumable","price":1000,"basePrice":1000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90311,"name":"Butterfly Wing","type":"Consumable","price":300,"basePrice":300,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90312,"name":"Fly Wing","type":"Consumable","price":60,"basePrice":60,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90030,"name":"Arrow","type":"Equipment","equipType":"Ammo","price":1,"basePrice":1,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90031,"name":"Fire Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90032,"name":"Crystal Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90033,"name":"Stone Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90034,"name":"Arrow of Wind","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90036,"name":"Silver Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90040,"name":"Blank Scroll","type":"Miscellaneous","price":100,"basePrice":100,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90306,"name":"Concentration Potion","type":"Consumable","price":800,"basePrice":800,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90307,"name":"Awakening Potion","type":"Consumable","price":1500,"basePrice":1500,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90308,"name":"Berserk Potion","type":"Consumable","price":3000,"basePrice":3000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90309,"name":"Weight Limit Scroll","type":"Consumable","price":5000,"basePrice":5000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1}]}}
+{"t":"2026-10-04T12:50:59.149Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"xl19sXibL","weapon":"Ring Pommel Saber","map":"capital","lastMoveTile":[27.5,47.5],"lastMoveAgeSec":5,"anchorTile":[0,0],"hp":607,"maxHp":700,"sp":154,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":174,"pots":0,"bag":{"used":12,"free":88,"weight":390,"weightLimit":3050},"zeny":17150,"base":29,"job":43,"classId":"swordsman","auto":false,"dead":false,"killsTotal":181,"hitsInTotal":302}}
+{"t":"2026-10-04T12:51:01.671Z","evt":"buy_potions","data":{"want":45,"have":0,"zeny":17150}}
+{"t":"2026-10-04T12:51:01.702Z","evt":"CHARACTER","data":{"base":29,"job":43,"skillPts":22,"statPts":3,"zeny":14900,"classId":"swordsman"}}
+{"t":"2026-10-04T12:51:01.703Z","evt":"shop","data":{"shopId":1,"name":"General Goods","buyback":true,"items":[{"itemId":90104,"name":"Carrot","type":"Consumable","price":15,"basePrice":15,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90301,"name":"Red Potion","type":"Consumable","price":50,"basePrice":50,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90302,"name":"Orange Potion","type":"Consumable","price":200,"basePrice":200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90303,"name":"White Potion","type":"Consumable","price":1200,"basePrice":1200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90304,"name":"Blue Potion","type":"Consumable","price":1000,"basePrice":1000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90311,"name":"Butterfly Wing","type":"Consumable","price":300,"basePrice":300,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90312,"name":"Fly Wing","type":"Consumable","price":60,"basePrice":60,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90030,"name":"Arrow","type":"Equipment","equipType":"Ammo","price":1,"basePrice":1,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90031,"name":"Fire Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90032,"name":"Crystal Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90033,"name":"Stone Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90034,"name":"Arrow of Wind","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90036,"name":"Silver Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90040,"name":"Blank Scroll","type":"Miscellaneous","price":100,"basePrice":100,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90306,"name":"Concentration Potion","type":"Consumable","price":800,"basePrice":800,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90307,"name":"Awakening Potion","type":"Consumable","price":1500,"basePrice":1500,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90308,"name":"Berserk Potion","type":"Consumable","price":3000,"basePrice":3000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90309,"name":"Weight Limit Scroll","type":"Consumable","price":5000,"basePrice":5000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1}]}}
+{"t":"2026-10-04T12:51:05.485Z","evt":"pot_restocked","data":{"before":0,"after":45}}
+{"t":"2026-10-04T12:51:05.550Z","evt":"route","data":{"from":"capital","to":"goblin_trail","route":["clover_meadow","goblin_trail"]}}
+{"t":"2026-10-04T12:51:16.486Z","evt":"travel_msg","data":{"mapId":"clover_meadow","roomId":"UGXuuIXDf","channel":2,"endpoint":"https://g8.aetheria-online.in.th","displayName":"ทุ่งโคลเวอร์"}}
+{"t":"2026-10-04T12:51:16.522Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T12:51:18.894Z","evt":"traveled","data":{"now":"clover_meadow"}}
+{"t":"2026-10-04T12:51:19.149Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"C5qSF_Grr","weapon":"Ring Pommel Saber","map":"clover_meadow","lastMoveTile":[61.5,90],"lastMoveAgeSec":0,"anchorTile":[0,0],"hp":607,"maxHp":700,"sp":154,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":174,"pots":45,"bag":{"used":13,"free":87,"weight":705,"weightLimit":3050},"zeny":14900,"base":29,"job":43,"classId":"swordsman","auto":false,"dead":false,"killsTotal":181,"hitsInTotal":302}}
+{"t":"2026-10-04T12:51:33.630Z","evt":"travel_msg","data":{"mapId":"goblin_trail","roomId":"fho1pk9Pz","channel":1,"endpoint":"https://g5.aetheria-online.in.th","displayName":"เส้นทางก็อบลิน"}}
+{"t":"2026-10-04T12:51:33.681Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T12:51:35.955Z","evt":"traveled","data":{"now":"goblin_trail"}}
+{"t":"2026-10-04T12:51:36.818Z","evt":"setAuto","data":{"skills":["bash"],"radius":"all","monsters":0,"hpItems":1,"hpPercent":75,"bashLv":10,"enabled":true,"map":"goblin_trail"}}
+{"t":"2026-10-04T12:51:39.157Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"zzNS5_MNQ","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":7,"anchorTile":[62.4,7.5],"hp":607,"maxHp":700,"sp":154,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":174,"pots":44,"bag":{"used":13,"free":87,"weight":698,"weightLimit":3050},"zeny":14900,"base":29,"job":43,"classId":"swordsman","auto":true,"dead":false,"killsTotal":181,"hitsInTotal":302}}
+{"t":"2026-10-04T12:51:39.822Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":29,"jobLevel":43,"exp":"27259/32437","job":"583/16489","weight":"698/3050","autoEnabled":true,"dead":false,"statPts":3}}
+{"t":"2026-10-04T12:51:43.431Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:51:45.197Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:51:46.408Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:51:48.505Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:51:48.975Z","evt":"drop","data":{"name":"Wolf Claw","qty":1}}
+{"t":"2026-10-04T12:51:51.298Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:51:53.564Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:51:54.855Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:51:57.782Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:51:57.949Z","evt":"drop","data":{"name":"Wolf Claw","qty":1}}
+{"t":"2026-10-04T12:51:58.225Z","evt":"drop","data":{"name":"Green Live","qty":1}}
+{"t":"2026-10-04T12:51:59.160Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"zzNS5_MNQ","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":27,"anchorTile":[62.4,7.5],"hp":447,"maxHp":700,"sp":154,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":177,"pots":36,"bag":{"used":15,"free":85,"weight":645,"weightLimit":3050},"zeny":14900,"base":29,"job":43,"classId":"swordsman","auto":true,"dead":false,"killsTotal":189,"hitsInTotal":307}}
+{"t":"2026-10-04T12:52:06.509Z","evt":"kill","data":{"m":"Bat","base":560,"job":420}}
+{"t":"2026-10-04T12:52:06.732Z","evt":"drop","data":{"name":"Bat Fang","qty":1}}
+{"t":"2026-10-04T12:52:06.981Z","evt":"drop","data":{"name":"Elunium","qty":1}}
+{"t":"2026-10-04T12:52:10.185Z","evt":"kill","data":{"m":"Bat","base":560,"job":420}}
+{"t":"2026-10-04T12:52:12.353Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":29,"jobLevel":43,"exp":"30483/32437","job":"3003/16489","weight":"619/3050","autoEnabled":true,"dead":false,"statPts":3}}
+{"t":"2026-10-04T12:52:13.324Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:52:13.363Z","evt":"weave","data":{"skill":"bash","target":"m9172","sp":154}}
+{"t":"2026-10-04T12:52:13.592Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:52:17.030Z","evt":"kill","data":{"m":"Bat","base":560,"job":420}}
+{"t":"2026-10-04T12:52:19.164Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"zzNS5_MNQ","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":47,"anchorTile":[62.4,7.5],"hp":103,"maxHp":700,"sp":154,"maxSp":154,"bashLv":10,"hpItems":1,"weaves":182,"pots":29,"bag":{"used":17,"free":83,"weight":599,"weightLimit":3050},"zeny":14900,"base":29,"job":43,"classId":"swordsman","auto":true,"dead":false,"killsTotal":193,"hitsInTotal":317}}
+{"t":"2026-10-04T12:52:21.033Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:52:26.368Z","evt":"kill","data":{"m":"Bat","base":560,"job":420}}
+{"t":"2026-10-04T12:52:26.634Z","evt":"drop","data":{"name":"Echo Stone","qty":1}}
+{"t":"2026-10-04T12:52:31.000Z","evt":"kill","data":{"m":"Bat","base":560,"job":420}}
+{"t":"2026-10-04T12:52:31.001Z","evt":"CHARACTER","data":{"base":30,"job":43,"skillPts":22,"statPts":12,"zeny":14900,"classId":"swordsman"}}
+{"t":"2026-10-04T12:52:31.264Z","evt":"drop","data":{"name":"Bat Wing","qty":1}}
+{"t":"2026-10-04T12:52:31.596Z","evt":"drop","data":{"name":"Phracon","qty":1}}
+{"t":"2026-10-04T12:52:33.121Z","evt":"CHARACTER","data":{"base":30,"job":43,"skillPts":22,"statPts":7,"zeny":14900,"classId":"swordsman"}}
+{"t":"2026-10-04T12:52:33.476Z","evt":"CHARACTER","data":{"base":30,"job":43,"skillPts":22,"statPts":2,"zeny":14900,"classId":"swordsman"}}
+{"t":"2026-10-04T12:52:36.131Z","evt":"kill","data":{"m":"Bat","base":320,"job":240}}
+{"t":"2026-10-04T12:52:36.189Z","evt":"drop","data":{"name":"Bat Fang","qty":1}}
+{"t":"2026-10-04T12:52:38.768Z","evt":"kill","data":{"m":"Bat","base":320,"job":240}}
+{"t":"2026-10-04T12:52:39.177Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"zzNS5_MNQ","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":67,"anchorTile":[62.4,7.5],"hp":0,"maxHp":720,"sp":154,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":188,"pots":25,"bag":{"used":19,"free":81,"weight":575,"weightLimit":3110},"zeny":14900,"base":30,"job":43,"classId":"swordsman","auto":true,"dead":false,"killsTotal":198,"hitsInTotal":324}}
+{"t":"2026-10-04T12:52:40.318Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:52:42.697Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:52:42.754Z","evt":"drop","data":{"name":"Phracon","qty":1}}
+{"t":"2026-10-04T12:52:44.786Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:52:44.856Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:52:45.197Z","evt":"drop","data":{"name":"Mandragora Root","qty":1}}
+{"t":"2026-10-04T12:52:46.245Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:52:46.508Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:52:47.875Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":30,"jobLevel":43,"exp":"2142/34432","job":"6075/16489","weight":"579/3110","autoEnabled":true,"dead":false,"statPts":2}}
+{"t":"2026-10-04T12:52:47.875Z","evt":"weave","data":{"skill":"bash","target":"m9221","sp":154}}
+{"t":"2026-10-04T12:52:50.843Z","evt":"kill","data":{"m":"Bat","base":320,"job":240}}
+{"t":"2026-10-04T12:52:51.075Z","evt":"drop","data":{"name":"Bat Wing","qty":1}}
+{"t":"2026-10-04T12:52:55.832Z","evt":"kill","data":{"m":"Bat","base":320,"job":240}}
+{"t":"2026-10-04T12:52:56.122Z","evt":"drop","data":{"name":"Bat Wing","qty":1}}
+{"t":"2026-10-04T12:52:57.267Z","evt":"kill","data":{"m":"Bat","base":320,"job":240}}
+{"t":"2026-10-04T12:52:57.664Z","evt":"drop","data":{"name":"Bat Fang","qty":1}}
+{"t":"2026-10-04T12:52:59.193Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"zzNS5_MNQ","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":87,"anchorTile":[62.4,7.5],"hp":0,"maxHp":720,"sp":154,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":193,"pots":24,"bag":{"used":20,"free":80,"weight":575,"weightLimit":3110},"zeny":14900,"base":30,"job":43,"classId":"swordsman","auto":true,"dead":false,"killsTotal":205,"hitsInTotal":330}}
+{"t":"2026-10-04T12:53:02.691Z","evt":"kill","data":{"m":"Mandragora","base":223,"job":167}}
+{"t":"2026-10-04T12:53:04.150Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:53:04.427Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:53:07.300Z","evt":"kill","data":{"m":"Bat","base":320,"job":240}}
+{"t":"2026-10-04T12:53:07.517Z","evt":"drop","data":{"name":"Echo Stone","qty":1}}
+{"t":"2026-10-04T12:53:13.159Z","evt":"kill","data":{"m":"Bat","base":320,"job":240}}
+{"t":"2026-10-04T12:53:15.851Z","evt":"kill","data":{"m":"Bat","base":234,"job":176}}
+{"t":"2026-10-04T12:53:19.010Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:53:19.199Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"zzNS5_MNQ","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":107,"anchorTile":[62.4,7.5],"hp":0,"maxHp":720,"sp":154,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":199,"pots":16,"bag":{"used":20,"free":80,"weight":521,"weightLimit":3110},"zeny":14900,"base":30,"job":43,"classId":"swordsman","auto":true,"dead":false,"killsTotal":211,"hitsInTotal":341}}
+{"t":"2026-10-04T12:53:19.684Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:53:20.087Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:53:20.415Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:53:23.054Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":30,"jobLevel":43,"exp":"5087/34432","job":"8284/16489","weight":"509/3110","autoEnabled":true,"dead":false,"statPts":2}}
+{"t":"2026-10-04T12:53:23.587Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:53:24.055Z","evt":"weave","data":{"skill":"bash","target":"m9129","sp":154}}
+{"t":"2026-10-04T12:53:25.767Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:53:28.720Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:53:31.622Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:53:35.597Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:53:37.754Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:53:37.963Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:53:38.618Z","evt":"drop","data":{"name":"Green Live","qty":1}}
+{"t":"2026-10-04T12:53:39.200Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"zzNS5_MNQ","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":127,"anchorTile":[62.4,7.5],"hp":0,"maxHp":720,"sp":154,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":205,"pots":0,"bag":{"used":19,"free":81,"weight":413,"weightLimit":3110},"zeny":14900,"base":30,"job":43,"classId":"swordsman","auto":true,"dead":false,"killsTotal":218,"hitsInTotal":361}}
+{"t":"2026-10-04T12:53:41.179Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:53:44.455Z","evt":"kill","data":{"m":"Bat","base":320,"job":240}}
+{"t":"2026-10-04T12:53:47.377Z","evt":"kill","data":{"m":"Bat","base":320,"job":240}}
+{"t":"2026-10-04T12:53:52.139Z","evt":"kill","data":{"m":"Bat","base":320,"job":240}}
+{"t":"2026-10-04T12:53:55.180Z","evt":"weave","data":{"skill":"bash","target":"m9283","sp":154}}
+{"t":"2026-10-04T12:53:56.628Z","evt":"kill","data":{"m":"Bat","base":320,"job":240}}
+{"t":"2026-10-04T12:53:58.204Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":30,"jobLevel":43,"exp":"8143/34432","job":"10576/16489","weight":"414/3110","autoEnabled":true,"dead":false,"statPts":2}}
+{"t":"2026-10-04T12:53:59.214Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"zzNS5_MNQ","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":147,"anchorTile":[62.4,7.5],"hp":0,"maxHp":720,"sp":154,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":212,"pots":0,"bag":{"used":19,"free":81,"weight":414,"weightLimit":3110},"zeny":14900,"base":30,"job":43,"classId":"swordsman","auto":true,"dead":false,"killsTotal":222,"hitsInTotal":370}}
+{"t":"2026-10-04T12:54:01.840Z","evt":"kill","data":{"m":"Bat","base":320,"job":240}}
+{"t":"2026-10-04T12:54:07.393Z","evt":"kill","data":{"m":"Bat","base":320,"job":240}}
+{"t":"2026-10-04T12:54:07.739Z","evt":"drop","data":{"name":"Emveretarcon","qty":1}}
+{"t":"2026-10-04T12:54:11.205Z","evt":"DEATH","data":{"savePointName":"เมืองหลวงโซลเฮเวน","capitalName":"เมืองหลวงโซลเฮเวน","autoReleaseSeconds":300}}
+{"t":"2026-10-04T12:54:12.965Z","evt":"death_recover","data":{"savePointName":"เมืองหลวงโซลเฮเวน","capitalName":"เมืองหลวงโซลเฮเวน","autoReleaseSeconds":300}}
+{"t":"2026-10-04T12:54:12.973Z","evt":"respawned","data":{}}
+{"t":"2026-10-04T12:54:15.242Z","evt":"reconnect_start","data":{}}
+{"t":"2026-10-04T12:54:15.278Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T12:54:17.490Z","evt":"reconnect_attempt_fail","data":{"attempt":1,"err":"world/enter failed: {\"error\":\"ตัวละครในบัญชีนี้ออนไลน์อยู่แล้ว\"}"}}
+{"t":"2026-10-04T12:54:19.219Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"zzNS5_MNQ","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":167,"anchorTile":[62.4,7.5],"hp":720,"maxHp":720,"sp":158,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":216,"pots":0,"bag":{"used":19,"free":81,"weight":415,"weightLimit":3110},"zeny":14900,"base":30,"job":43,"classId":"swordsman","auto":false,"dead":false,"killsTotal":224,"hitsInTotal":377}}
+{"t":"2026-10-04T12:54:39.232Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"zzNS5_MNQ","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":187,"anchorTile":[62.4,7.5],"hp":720,"maxHp":720,"sp":158,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":216,"pots":0,"bag":{"used":19,"free":81,"weight":415,"weightLimit":3110},"zeny":14900,"base":30,"job":43,"classId":"swordsman","auto":false,"dead":false,"killsTotal":224,"hitsInTotal":377}}
+{"t":"2026-10-04T12:54:59.241Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"zzNS5_MNQ","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":207,"anchorTile":[62.4,7.5],"hp":720,"maxHp":720,"sp":158,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":216,"pots":0,"bag":{"used":19,"free":81,"weight":415,"weightLimit":3110},"zeny":14900,"base":30,"job":43,"classId":"swordsman","auto":false,"dead":false,"killsTotal":224,"hitsInTotal":377}}
+{"t":"2026-10-04T12:55:05.128Z","evt":"reconnect_done","data":{"map":"goblin_trail","attempt":2}}
+{"t":"2026-10-04T12:55:05.128Z","evt":"death_recovered","data":{"map":"goblin_trail","via":"reconnect"}}
+{"t":"2026-10-04T12:55:05.286Z","evt":"route","data":{"from":"goblin_trail","to":"capital","route":["clover_meadow","capital"]}}
+{"t":"2026-10-04T12:55:10.930Z","evt":"levelup","data":{"sessionId":"tIRqOLrMz","base":true,"job":false}}
+{"t":"2026-10-04T12:55:12.148Z","evt":"levelup","data":{"sessionId":"cZtzg4mKi","base":false,"job":true}}
+{"t":"2026-10-04T12:55:17.775Z","evt":"travel_msg","data":{"mapId":"clover_meadow","roomId":"jnhscjMrz","channel":3,"endpoint":"https://g7.aetheria-online.in.th","displayName":"ทุ่งโคลเวอร์"}}
+{"t":"2026-10-04T12:55:17.800Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T12:55:19.246Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"JeDf_qIQW","weapon":"Ring Pommel Saber","map":"clover_meadow","lastMoveTile":[61.5,4],"lastMoveAgeSec":7,"anchorTile":[0,0],"hp":720,"maxHp":720,"sp":158,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":216,"pots":0,"bag":{"used":19,"free":81,"weight":415,"weightLimit":3110},"zeny":14900,"base":30,"job":43,"classId":"swordsman","auto":false,"dead":false,"killsTotal":224,"hitsInTotal":377}}
+{"t":"2026-10-04T12:55:20.323Z","evt":"traveled","data":{"now":"clover_meadow"}}
+{"t":"2026-10-04T12:55:34.919Z","evt":"travel_msg","data":{"mapId":"capital","roomId":"ZFm1KpWIv","channel":8,"endpoint":"https://g4.aetheria-online.in.th","displayName":"เมืองหลวงโซลเฮเวน"}}
+{"t":"2026-10-04T12:55:34.935Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T12:55:37.289Z","evt":"traveled","data":{"now":"capital"}}
+{"t":"2026-10-04T12:55:39.255Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"bNCk35zw3","weapon":"Ring Pommel Saber","map":"capital","lastMoveTile":[27.5,47.5],"lastMoveAgeSec":2,"anchorTile":[0,0],"hp":720,"maxHp":720,"sp":158,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":216,"pots":0,"bag":{"used":19,"free":81,"weight":415,"weightLimit":3110},"zeny":14900,"base":30,"job":43,"classId":"swordsman","auto":false,"dead":false,"killsTotal":224,"hitsInTotal":377}}
+{"t":"2026-10-04T12:55:46.060Z","evt":"npc_dialog","data":{"npcKey":"n2","name":"Shopkeeper Bor","art":"npc/shopkeeper-bor","text":"ยินดีต้อนรับ ต้องการซื้อของหรือฝากของไว้กับฉันไหม?","options":["ซื้อของหน่อย","ฝากของหน่อย","ไม่ล่ะ ขอบคุณ"]}}
+{"t":"2026-10-04T12:55:46.308Z","evt":"shop","data":{"shopId":1,"name":"General Goods","buyback":true,"items":[{"itemId":90104,"name":"Carrot","type":"Consumable","price":15,"basePrice":15,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90301,"name":"Red Potion","type":"Consumable","price":50,"basePrice":50,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90302,"name":"Orange Potion","type":"Consumable","price":200,"basePrice":200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90303,"name":"White Potion","type":"Consumable","price":1200,"basePrice":1200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90304,"name":"Blue Potion","type":"Consumable","price":1000,"basePrice":1000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90311,"name":"Butterfly Wing","type":"Consumable","price":300,"basePrice":300,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90312,"name":"Fly Wing","type":"Consumable","price":60,"basePrice":60,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90030,"name":"Arrow","type":"Equipment","equipType":"Ammo","price":1,"basePrice":1,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90031,"name":"Fire Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90032,"name":"Crystal Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90033,"name":"Stone Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90034,"name":"Arrow of Wind","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90036,"name":"Silver Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90040,"name":"Blank Scroll","type":"Miscellaneous","price":100,"basePrice":100,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90306,"name":"Concentration Potion","type":"Consumable","price":800,"basePrice":800,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90307,"name":"Awakening Potion","type":"Consumable","price":1500,"basePrice":1500,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90308,"name":"Berserk Potion","type":"Consumable","price":3000,"basePrice":3000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90309,"name":"Weight Limit Scroll","type":"Consumable","price":5000,"basePrice":5000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1}]}}
+{"t":"2026-10-04T12:55:46.553Z","evt":"auto_sold","data":{"count":7}}
+{"t":"2026-10-04T12:55:46.569Z","evt":"CHARACTER","data":{"base":30,"job":43,"skillPts":22,"statPts":2,"zeny":17736,"classId":"swordsman"}}
+{"t":"2026-10-04T12:55:50.178Z","evt":"npc_dialog","data":{"npcKey":"n2","name":"Shopkeeper Bor","art":"npc/shopkeeper-bor","text":"ยินดีต้อนรับ ต้องการซื้อของหรือฝากของไว้กับฉันไหม?","options":["ซื้อของหน่อย","ฝากของหน่อย","ไม่ล่ะ ขอบคุณ"]}}
+{"t":"2026-10-04T12:55:50.390Z","evt":"chose","data":{"keyword":"ซื้อของหน่อย","index":0,"text":"ซื้อของหน่อย"}}
+{"t":"2026-10-04T12:55:50.404Z","evt":"shop","data":{"shopId":1,"name":"General Goods","buyback":true,"items":[{"itemId":90104,"name":"Carrot","type":"Consumable","price":15,"basePrice":15,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90301,"name":"Red Potion","type":"Consumable","price":50,"basePrice":50,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90302,"name":"Orange Potion","type":"Consumable","price":200,"basePrice":200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90303,"name":"White Potion","type":"Consumable","price":1200,"basePrice":1200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90304,"name":"Blue Potion","type":"Consumable","price":1000,"basePrice":1000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90311,"name":"Butterfly Wing","type":"Consumable","price":300,"basePrice":300,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90312,"name":"Fly Wing","type":"Consumable","price":60,"basePrice":60,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90030,"name":"Arrow","type":"Equipment","equipType":"Ammo","price":1,"basePrice":1,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90031,"name":"Fire Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90032,"name":"Crystal Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90033,"name":"Stone Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90034,"name":"Arrow of Wind","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90036,"name":"Silver Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90040,"name":"Blank Scroll","type":"Miscellaneous","price":100,"basePrice":100,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90306,"name":"Concentration Potion","type":"Consumable","price":800,"basePrice":800,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90307,"name":"Awakening Potion","type":"Consumable","price":1500,"basePrice":1500,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90308,"name":"Berserk Potion","type":"Consumable","price":3000,"basePrice":3000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90309,"name":"Weight Limit Scroll","type":"Consumable","price":5000,"basePrice":5000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1}]}}
+{"t":"2026-10-04T12:55:56.642Z","evt":"buy_potions","data":{"want":45,"have":0,"zeny":17736}}
+{"t":"2026-10-04T12:55:56.649Z","evt":"CHARACTER","data":{"base":30,"job":43,"skillPts":22,"statPts":2,"zeny":15486,"classId":"swordsman"}}
+{"t":"2026-10-04T12:55:56.650Z","evt":"shop","data":{"shopId":1,"name":"General Goods","buyback":true,"items":[{"itemId":90104,"name":"Carrot","type":"Consumable","price":15,"basePrice":15,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90301,"name":"Red Potion","type":"Consumable","price":50,"basePrice":50,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90302,"name":"Orange Potion","type":"Consumable","price":200,"basePrice":200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90303,"name":"White Potion","type":"Consumable","price":1200,"basePrice":1200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90304,"name":"Blue Potion","type":"Consumable","price":1000,"basePrice":1000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90311,"name":"Butterfly Wing","type":"Consumable","price":300,"basePrice":300,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90312,"name":"Fly Wing","type":"Consumable","price":60,"basePrice":60,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90030,"name":"Arrow","type":"Equipment","equipType":"Ammo","price":1,"basePrice":1,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90031,"name":"Fire Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90032,"name":"Crystal Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90033,"name":"Stone Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90034,"name":"Arrow of Wind","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90036,"name":"Silver Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90040,"name":"Blank Scroll","type":"Miscellaneous","price":100,"basePrice":100,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90306,"name":"Concentration Potion","type":"Consumable","price":800,"basePrice":800,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90307,"name":"Awakening Potion","type":"Consumable","price":1500,"basePrice":1500,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90308,"name":"Berserk Potion","type":"Consumable","price":3000,"basePrice":3000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90309,"name":"Weight Limit Scroll","type":"Consumable","price":5000,"basePrice":5000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1}]}}
+{"t":"2026-10-04T12:55:59.263Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"bNCk35zw3","weapon":"Ring Pommel Saber","map":"capital","lastMoveTile":[27.5,47.5],"lastMoveAgeSec":10,"anchorTile":[0,0],"hp":720,"maxHp":720,"sp":158,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":216,"pots":45,"bag":{"used":13,"free":87,"weight":709,"weightLimit":3110},"zeny":15486,"base":30,"job":43,"classId":"swordsman","auto":false,"dead":false,"killsTotal":224,"hitsInTotal":377}}
+{"t":"2026-10-04T12:56:00.463Z","evt":"pot_restocked","data":{"before":0,"after":45}}
+{"t":"2026-10-04T12:56:00.588Z","evt":"route","data":{"from":"capital","to":"goblin_trail","route":["clover_meadow","goblin_trail"]}}
+{"t":"2026-10-04T12:56:11.280Z","evt":"travel_msg","data":{"mapId":"clover_meadow","roomId":"abMnCvA0c","channel":1,"endpoint":"https://g5.aetheria-online.in.th","displayName":"ทุ่งโคลเวอร์"}}
+{"t":"2026-10-04T12:56:11.305Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T12:56:13.562Z","evt":"traveled","data":{"now":"clover_meadow"}}
+{"t":"2026-10-04T12:56:19.270Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"7IOR6mOom","weapon":"Ring Pommel Saber","map":"clover_meadow","lastMoveTile":[61.5,90],"lastMoveAgeSec":6,"anchorTile":[0,0],"hp":720,"maxHp":720,"sp":158,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":216,"pots":45,"bag":{"used":13,"free":87,"weight":709,"weightLimit":3110},"zeny":15486,"base":30,"job":43,"classId":"swordsman","auto":false,"dead":false,"killsTotal":224,"hitsInTotal":377}}
+{"t":"2026-10-04T12:56:28.343Z","evt":"travel_msg","data":{"mapId":"goblin_trail","roomId":"fho1pk9Pz","channel":1,"endpoint":"https://g5.aetheria-online.in.th","displayName":"เส้นทางก็อบลิน"}}
+{"t":"2026-10-04T12:56:28.379Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T12:56:30.715Z","evt":"traveled","data":{"now":"goblin_trail"}}
+{"t":"2026-10-04T12:56:31.582Z","evt":"setAuto","data":{"skills":["bash"],"radius":"all","monsters":0,"hpItems":1,"hpPercent":75,"bashLv":10,"enabled":true,"map":"goblin_trail"}}
+{"t":"2026-10-04T12:56:34.602Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":30,"jobLevel":43,"exp":"8439/34432","job":"10892/16489","weight":"702/3110","autoEnabled":true,"dead":false,"statPts":2}}
+{"t":"2026-10-04T12:56:37.954Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:56:39.276Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"AUqgMhbk6","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":12,"anchorTile":[62.4,7.5],"hp":656,"maxHp":720,"sp":158,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":217,"pots":42,"bag":{"used":13,"free":87,"weight":688,"weightLimit":3110},"zeny":15486,"base":30,"job":43,"classId":"swordsman","auto":true,"dead":false,"killsTotal":225,"hitsInTotal":379}}
+{"t":"2026-10-04T12:56:39.437Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:56:39.909Z","evt":"drop","data":{"name":"Mandragora Root","qty":1}}
+{"t":"2026-10-04T12:56:40.824Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:56:42.199Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:56:43.847Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:56:45.634Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:56:47.581Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:56:48.670Z","evt":"drop","data":{"name":"Green Live","qty":1}}
+{"t":"2026-10-04T12:56:49.175Z","evt":"drop","data":{"name":"Bow","qty":1}}
+{"t":"2026-10-04T12:56:50.696Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:56:52.432Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:56:54.651Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:56:54.944Z","evt":"drop","data":{"name":"Wolf Claw","qty":1}}
+{"t":"2026-10-04T12:56:56.881Z","evt":"weave","data":{"skill":"bash","target":"m9349","sp":158}}
+{"t":"2026-10-04T12:56:57.616Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:56:58.007Z","evt":"drop","data":{"name":"Wolf Pelt","qty":1}}
+{"t":"2026-10-04T12:56:59.278Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"AUqgMhbk6","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":32,"anchorTile":[62.4,7.5],"hp":197,"maxHp":720,"sp":158,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":222,"pots":30,"bag":{"used":19,"free":81,"weight":709,"weightLimit":3110},"zeny":15486,"base":30,"job":43,"classId":"swordsman","auto":true,"dead":false,"killsTotal":234,"hitsInTotal":393}}
+{"t":"2026-10-04T12:56:59.800Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:57:02.019Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:57:04.207Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:57:04.599Z","evt":"drop","data":{"name":"Mandragora Root","qty":1}}
+{"t":"2026-10-04T12:57:06.773Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":30,"jobLevel":43,"exp":"12023/34432","job":"13582/16489","weight":"682/3110","autoEnabled":true,"dead":false,"statPts":2}}
+{"t":"2026-10-04T12:57:07.248Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:57:09.470Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:57:11.635Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:57:15.432Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:57:17.636Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:57:18.900Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:57:19.290Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"AUqgMhbk6","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":52,"anchorTile":[62.4,7.5],"hp":0,"maxHp":720,"sp":158,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":228,"pots":18,"bag":{"used":19,"free":81,"weight":626,"weightLimit":3110},"zeny":15486,"base":30,"job":43,"classId":"swordsman","auto":true,"dead":false,"killsTotal":243,"hitsInTotal":413}}
+{"t":"2026-10-04T12:57:21.553Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:57:21.806Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:57:22.633Z","evt":"drop","data":{"name":"Rough Elunium","qty":1}}
+{"t":"2026-10-04T12:57:25.570Z","evt":"weave","data":{"skill":"bash","target":"m9450","sp":158}}
+{"t":"2026-10-04T12:57:26.266Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:57:28.489Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:57:28.796Z","evt":"drop","data":{"name":"Rod","qty":1}}
+{"t":"2026-10-04T12:57:30.757Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:57:32.857Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:57:33.133Z","evt":"drop","data":{"name":"Moon Fang","qty":1}}
+{"t":"2026-10-04T12:57:36.489Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:57:38.653Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:57:38.761Z","evt":"drop","data":{"name":"Phracon","qty":1}}
+{"t":"2026-10-04T12:57:39.042Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:57:39.294Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"AUqgMhbk6","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":72,"anchorTile":[62.4,7.5],"hp":0,"maxHp":720,"sp":158,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":234,"pots":9,"bag":{"used":21,"free":79,"weight":668,"weightLimit":3110},"zeny":15486,"base":30,"job":43,"classId":"swordsman","auto":true,"dead":false,"killsTotal":250,"hitsInTotal":425}}
+{"t":"2026-10-04T12:57:42.322Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":30,"jobLevel":43,"exp":"15475/34432","job":"16174/16489","weight":"661/3110","autoEnabled":true,"dead":false,"statPts":2}}
+{"t":"2026-10-04T12:57:42.649Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:57:42.703Z","evt":"drop","data":{"name":"Phracon","qty":1}}
+{"t":"2026-10-04T12:57:46.041Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:57:46.043Z","evt":"CHARACTER","data":{"base":30,"job":44,"skillPts":23,"statPts":2,"zeny":15486,"classId":"swordsman"}}
+{"t":"2026-10-04T12:57:48.212Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:57:51.631Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:57:53.823Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:57:53.990Z","evt":"drop","data":{"name":"Phracon","qty":1}}
+{"t":"2026-10-04T12:57:57.075Z","evt":"weave","data":{"skill":"bash","target":"m9500","sp":158}}
+{"t":"2026-10-04T12:57:57.908Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:57:59.304Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"AUqgMhbk6","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":92,"anchorTile":[62.4,7.5],"hp":0,"maxHp":720,"sp":158,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":242,"pots":0,"bag":{"used":20,"free":80,"weight":607,"weightLimit":3110},"zeny":15486,"base":30,"job":44,"classId":"swordsman","auto":true,"dead":false,"killsTotal":256,"hitsInTotal":438}}
+{"t":"2026-10-04T12:58:00.105Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:58:00.279Z","evt":"drop","data":{"name":"Scream Leaf","qty":1}}
+{"t":"2026-10-04T12:58:03.003Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:58:05.975Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:58:07.671Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:58:07.950Z","evt":"drop","data":{"name":"Wolf Claw","qty":1}}
+{"t":"2026-10-04T12:58:11.674Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T12:58:14.808Z","evt":"kill","data":{"m":"Wolf","base":20,"job":15}}
+{"t":"2026-10-04T12:58:17.883Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":30,"jobLevel":44,"exp":"18355/34432","job":"1848/17105","weight":"609/3110","autoEnabled":true,"dead":false,"statPts":2}}
+{"t":"2026-10-04T12:58:19.308Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"AUqgMhbk6","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":112,"anchorTile":[62.4,7.5],"hp":0,"maxHp":720,"sp":158,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":246,"pots":0,"bag":{"used":21,"free":79,"weight":609,"weightLimit":3110},"zeny":15486,"base":30,"job":44,"classId":"swordsman","auto":true,"dead":false,"killsTotal":262,"hitsInTotal":446}}
+{"t":"2026-10-04T12:58:19.902Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:58:20.176Z","evt":"drop","data":{"name":"Green Live","qty":1}}
+{"t":"2026-10-04T12:58:24.168Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:58:24.522Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:58:28.894Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T12:58:29.146Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T12:58:36.320Z","evt":"weave","data":{"skill":"bash","target":"m9589","sp":158}}
+{"t":"2026-10-04T12:58:38.152Z","evt":"kill","data":{"m":"Bat","base":320,"job":240}}
+{"t":"2026-10-04T12:58:38.261Z","evt":"drop","data":{"name":"Elunium","qty":1}}
+{"t":"2026-10-04T12:58:38.803Z","evt":"drop","data":{"name":"Bat Fang","qty":1}}
+{"t":"2026-10-04T12:58:39.321Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"AUqgMhbk6","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":132,"anchorTile":[62.4,7.5],"hp":0,"maxHp":720,"sp":158,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":251,"pots":0,"bag":{"used":22,"free":78,"weight":614,"weightLimit":3110},"zeny":15486,"base":30,"job":44,"classId":"swordsman","auto":true,"dead":false,"killsTotal":266,"hitsInTotal":453}}
+{"t":"2026-10-04T12:58:42.606Z","evt":"DEATH","data":{"savePointName":"เมืองหลวงโซลเฮเวน","capitalName":"เมืองหลวงโซลเฮเวน","autoReleaseSeconds":300}}
+{"t":"2026-10-04T12:58:43.864Z","evt":"kill","data":{"m":"Mandragora","base":105,"job":79}}
+{"t":"2026-10-04T12:58:44.195Z","evt":"death_recover","data":{"savePointName":"เมืองหลวงโซลเฮเวน","capitalName":"เมืองหลวงโซลเฮเวน","autoReleaseSeconds":300}}
+{"t":"2026-10-04T12:58:44.202Z","evt":"respawned","data":{}}
+{"t":"2026-10-04T12:58:46.472Z","evt":"reconnect_start","data":{}}
+{"t":"2026-10-04T12:58:46.487Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T12:58:48.692Z","evt":"reconnect_attempt_fail","data":{"attempt":1,"err":"world/enter failed: {\"error\":\"ตัวละครในบัญชีนี้ออนไลน์อยู่แล้ว\"}"}}
+{"t":"2026-10-04T12:58:59.327Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"AUqgMhbk6","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":152,"anchorTile":[62.4,7.5],"hp":720,"maxHp":720,"sp":158,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":252,"pots":0,"bag":{"used":22,"free":78,"weight":614,"weightLimit":3110},"zeny":15486,"base":30,"job":44,"classId":"swordsman","auto":false,"dead":false,"killsTotal":267,"hitsInTotal":456}}
+{"t":"2026-10-04T12:59:19.336Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"AUqgMhbk6","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":172,"anchorTile":[62.4,7.5],"hp":720,"maxHp":720,"sp":158,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":252,"pots":0,"bag":{"used":22,"free":78,"weight":614,"weightLimit":3110},"zeny":15486,"base":30,"job":44,"classId":"swordsman","auto":false,"dead":false,"killsTotal":267,"hitsInTotal":456}}
+{"t":"2026-10-04T12:59:36.296Z","evt":"reconnect_done","data":{"map":"goblin_trail","attempt":2}}
+{"t":"2026-10-04T12:59:36.296Z","evt":"death_recovered","data":{"map":"goblin_trail","via":"reconnect"}}
+{"t":"2026-10-04T12:59:36.452Z","evt":"route","data":{"from":"goblin_trail","to":"capital","route":["clover_meadow","capital"]}}
+{"t":"2026-10-04T12:59:39.342Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"qqtPf_axc","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,4],"lastMoveAgeSec":3,"anchorTile":[0,0],"hp":720,"maxHp":720,"sp":158,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":252,"pots":0,"bag":{"used":22,"free":78,"weight":614,"weightLimit":3110},"zeny":15486,"base":30,"job":44,"classId":"swordsman","auto":false,"dead":false,"killsTotal":267,"hitsInTotal":456}}
+{"t":"2026-10-04T12:59:40.219Z","evt":"levelup","data":{"sessionId":"tIRqOLrMz","base":false,"job":true}}
+{"t":"2026-10-04T12:59:49.454Z","evt":"travel_msg","data":{"mapId":"clover_meadow","roomId":"UGXuuIXDf","channel":2,"endpoint":"https://g8.aetheria-online.in.th","displayName":"ทุ่งโคลเวอร์"}}
+{"t":"2026-10-04T12:59:49.474Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T12:59:51.777Z","evt":"traveled","data":{"now":"clover_meadow"}}
+{"t":"2026-10-04T12:59:59.347Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"k4tlX80Ut","weapon":"Ring Pommel Saber","map":"clover_meadow","lastMoveTile":[61.5,4],"lastMoveAgeSec":1,"anchorTile":[0,0],"hp":720,"maxHp":720,"sp":158,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":252,"pots":0,"bag":{"used":22,"free":78,"weight":614,"weightLimit":3110},"zeny":15486,"base":30,"job":44,"classId":"swordsman","auto":false,"dead":false,"killsTotal":267,"hitsInTotal":456}}
+{"t":"2026-10-04T13:00:06.616Z","evt":"travel_msg","data":{"mapId":"capital","roomId":"ZFm1KpWIv","channel":8,"endpoint":"https://g4.aetheria-online.in.th","displayName":"เมืองหลวงโซลเฮเวน"}}
+{"t":"2026-10-04T13:00:06.669Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T13:00:09.039Z","evt":"traveled","data":{"now":"capital"}}
+{"t":"2026-10-04T13:00:17.839Z","evt":"npc_dialog","data":{"npcKey":"n2","name":"Shopkeeper Bor","art":"npc/shopkeeper-bor","text":"ยินดีต้อนรับ ต้องการซื้อของหรือฝากของไว้กับฉันไหม?","options":["ซื้อของหน่อย","ฝากของหน่อย","ไม่ล่ะ ขอบคุณ"]}}
+{"t":"2026-10-04T13:00:18.021Z","evt":"shop","data":{"shopId":1,"name":"General Goods","buyback":true,"items":[{"itemId":90104,"name":"Carrot","type":"Consumable","price":15,"basePrice":15,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90301,"name":"Red Potion","type":"Consumable","price":50,"basePrice":50,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90302,"name":"Orange Potion","type":"Consumable","price":200,"basePrice":200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90303,"name":"White Potion","type":"Consumable","price":1200,"basePrice":1200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90304,"name":"Blue Potion","type":"Consumable","price":1000,"basePrice":1000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90311,"name":"Butterfly Wing","type":"Consumable","price":300,"basePrice":300,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90312,"name":"Fly Wing","type":"Consumable","price":60,"basePrice":60,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90030,"name":"Arrow","type":"Equipment","equipType":"Ammo","price":1,"basePrice":1,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90031,"name":"Fire Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90032,"name":"Crystal Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90033,"name":"Stone Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90034,"name":"Arrow of Wind","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90036,"name":"Silver Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90040,"name":"Blank Scroll","type":"Miscellaneous","price":100,"basePrice":100,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90306,"name":"Concentration Potion","type":"Consumable","price":800,"basePrice":800,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90307,"name":"Awakening Potion","type":"Consumable","price":1500,"basePrice":1500,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90308,"name":"Berserk Potion","type":"Consumable","price":3000,"basePrice":3000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90309,"name":"Weight Limit Scroll","type":"Consumable","price":5000,"basePrice":5000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1}]}}
+{"t":"2026-10-04T13:00:18.276Z","evt":"auto_sold","data":{"count":10}}
+{"t":"2026-10-04T13:00:18.299Z","evt":"CHARACTER","data":{"base":30,"job":44,"skillPts":23,"statPts":2,"zeny":17398,"classId":"swordsman"}}
+{"t":"2026-10-04T13:00:19.354Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"12Fp9yIUG","weapon":"Ring Pommel Saber","map":"capital","lastMoveTile":[27.5,47.5],"lastMoveAgeSec":10,"anchorTile":[0,0],"hp":720,"maxHp":720,"sp":158,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":252,"pots":0,"bag":{"used":12,"free":88,"weight":399,"weightLimit":3110},"zeny":17398,"base":30,"job":44,"classId":"swordsman","auto":false,"dead":false,"killsTotal":267,"hitsInTotal":456}}
+{"t":"2026-10-04T13:00:21.904Z","evt":"npc_dialog","data":{"npcKey":"n2","name":"Shopkeeper Bor","art":"npc/shopkeeper-bor","text":"ยินดีต้อนรับ ต้องการซื้อของหรือฝากของไว้กับฉันไหม?","options":["ซื้อของหน่อย","ฝากของหน่อย","ไม่ล่ะ ขอบคุณ"]}}
+{"t":"2026-10-04T13:00:22.122Z","evt":"chose","data":{"keyword":"ซื้อของหน่อย","index":0,"text":"ซื้อของหน่อย"}}
+{"t":"2026-10-04T13:00:22.131Z","evt":"shop","data":{"shopId":1,"name":"General Goods","buyback":true,"items":[{"itemId":90104,"name":"Carrot","type":"Consumable","price":15,"basePrice":15,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90301,"name":"Red Potion","type":"Consumable","price":50,"basePrice":50,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90302,"name":"Orange Potion","type":"Consumable","price":200,"basePrice":200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90303,"name":"White Potion","type":"Consumable","price":1200,"basePrice":1200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90304,"name":"Blue Potion","type":"Consumable","price":1000,"basePrice":1000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90311,"name":"Butterfly Wing","type":"Consumable","price":300,"basePrice":300,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90312,"name":"Fly Wing","type":"Consumable","price":60,"basePrice":60,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90030,"name":"Arrow","type":"Equipment","equipType":"Ammo","price":1,"basePrice":1,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90031,"name":"Fire Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90032,"name":"Crystal Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90033,"name":"Stone Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90034,"name":"Arrow of Wind","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90036,"name":"Silver Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90040,"name":"Blank Scroll","type":"Miscellaneous","price":100,"basePrice":100,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90306,"name":"Concentration Potion","type":"Consumable","price":800,"basePrice":800,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90307,"name":"Awakening Potion","type":"Consumable","price":1500,"basePrice":1500,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90308,"name":"Berserk Potion","type":"Consumable","price":3000,"basePrice":3000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90309,"name":"Weight Limit Scroll","type":"Consumable","price":5000,"basePrice":5000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1}]}}
+{"t":"2026-10-04T13:00:28.346Z","evt":"buy_potions","data":{"want":45,"have":0,"zeny":17398}}
+{"t":"2026-10-04T13:00:28.368Z","evt":"CHARACTER","data":{"base":30,"job":44,"skillPts":23,"statPts":2,"zeny":15148,"classId":"swordsman"}}
+{"t":"2026-10-04T13:00:28.368Z","evt":"shop","data":{"shopId":1,"name":"General Goods","buyback":true,"items":[{"itemId":90104,"name":"Carrot","type":"Consumable","price":15,"basePrice":15,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90301,"name":"Red Potion","type":"Consumable","price":50,"basePrice":50,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90302,"name":"Orange Potion","type":"Consumable","price":200,"basePrice":200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90303,"name":"White Potion","type":"Consumable","price":1200,"basePrice":1200,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90304,"name":"Blue Potion","type":"Consumable","price":1000,"basePrice":1000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90311,"name":"Butterfly Wing","type":"Consumable","price":300,"basePrice":300,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90312,"name":"Fly Wing","type":"Consumable","price":60,"basePrice":60,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90030,"name":"Arrow","type":"Equipment","equipType":"Ammo","price":1,"basePrice":1,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90031,"name":"Fire Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90032,"name":"Crystal Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90033,"name":"Stone Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90034,"name":"Arrow of Wind","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90036,"name":"Silver Arrow","type":"Equipment","equipType":"Ammo","price":3,"basePrice":3,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90040,"name":"Blank Scroll","type":"Miscellaneous","price":100,"basePrice":100,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90306,"name":"Concentration Potion","type":"Consumable","price":800,"basePrice":800,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90307,"name":"Awakening Potion","type":"Consumable","price":1500,"basePrice":1500,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90308,"name":"Berserk Potion","type":"Consumable","price":3000,"basePrice":3000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1},{"itemId":90309,"name":"Weight Limit Scroll","type":"Consumable","price":5000,"basePrice":5000,"discountPercent":0,"stockLeft":-1,"limitLeft":-1}]}}
+{"t":"2026-10-04T13:00:32.163Z","evt":"pot_restocked","data":{"before":0,"after":45}}
+{"t":"2026-10-04T13:00:32.297Z","evt":"route","data":{"from":"capital","to":"goblin_trail","route":["clover_meadow","goblin_trail"]}}
+{"t":"2026-10-04T13:00:39.356Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"12Fp9yIUG","weapon":"Ring Pommel Saber","map":"capital","lastMoveTile":[52,102.5],"lastMoveAgeSec":0,"anchorTile":[0,0],"hp":720,"maxHp":720,"sp":158,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":252,"pots":45,"bag":{"used":13,"free":87,"weight":714,"weightLimit":3110},"zeny":15148,"base":30,"job":44,"classId":"swordsman","auto":false,"dead":false,"killsTotal":267,"hitsInTotal":456}}
+{"t":"2026-10-04T13:00:42.932Z","evt":"travel_msg","data":{"mapId":"clover_meadow","roomId":"abMnCvA0c","channel":1,"endpoint":"https://g5.aetheria-online.in.th","displayName":"ทุ่งโคลเวอร์"}}
+{"t":"2026-10-04T13:00:42.948Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T13:00:45.395Z","evt":"traveled","data":{"now":"clover_meadow"}}
+{"t":"2026-10-04T13:00:59.358Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"CUtQY1_NX","weapon":"Ring Pommel Saber","map":"clover_meadow","lastMoveTile":[61.5,90],"lastMoveAgeSec":0,"anchorTile":[0,0],"hp":720,"maxHp":720,"sp":158,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":252,"pots":45,"bag":{"used":13,"free":87,"weight":714,"weightLimit":3110},"zeny":15148,"base":30,"job":44,"classId":"swordsman","auto":false,"dead":false,"killsTotal":267,"hitsInTotal":456}}
+{"t":"2026-10-04T13:01:00.178Z","evt":"travel_msg","data":{"mapId":"goblin_trail","roomId":"fho1pk9Pz","channel":1,"endpoint":"https://g5.aetheria-online.in.th","displayName":"เส้นทางก็อบลิน"}}
+{"t":"2026-10-04T13:01:00.196Z","evt":"ws_close","data":{"code":4000,"reason":""}}
+{"t":"2026-10-04T13:01:02.461Z","evt":"traveled","data":{"now":"goblin_trail"}}
+{"t":"2026-10-04T13:01:03.319Z","evt":"setAuto","data":{"skills":["bash"],"radius":"all","monsters":0,"hpItems":1,"hpPercent":75,"bashLv":10,"enabled":true,"map":"goblin_trail"}}
+{"t":"2026-10-04T13:01:06.337Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":30,"jobLevel":44,"exp":"19324/34432","job":"2662/17105","weight":"707/3110","autoEnabled":true,"dead":false,"statPts":2}}
+{"t":"2026-10-04T13:01:09.566Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T13:01:10.027Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T13:01:11.424Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T13:01:12.858Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T13:01:13.501Z","evt":"drop","data":{"name":"Mandragora Root","qty":1}}
+{"t":"2026-10-04T13:01:14.059Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T13:01:15.801Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T13:01:15.913Z","evt":"drop","data":{"name":"Wolf Pelt","qty":1}}
+{"t":"2026-10-04T13:01:17.814Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T13:01:19.318Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T13:01:19.372Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"YbHkijreq","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":20,"anchorTile":[62.4,7.5],"hp":540,"maxHp":720,"sp":158,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":255,"pots":38,"bag":{"used":16,"free":84,"weight":669,"weightLimit":3110},"zeny":15148,"base":30,"job":44,"classId":"swordsman","auto":true,"dead":false,"killsTotal":273,"hitsInTotal":461}}
+{"t":"2026-10-04T13:01:19.845Z","evt":"drop","data":{"name":"Wolf Pelt","qty":1}}
+{"t":"2026-10-04T13:01:21.174Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T13:01:23.425Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T13:01:25.621Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T13:01:25.724Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T13:01:26.399Z","evt":"drop","data":{"name":"Mandragora Root","qty":1}}
+{"t":"2026-10-04T13:01:28.836Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T13:01:31.038Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T13:01:31.302Z","evt":"drop","data":{"name":"Rough Elunium","qty":1}}
+{"t":"2026-10-04T13:01:33.259Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T13:01:35.461Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T13:01:35.842Z","evt":"weave","data":{"skill":"bash","target":"m9867","sp":158}}
+{"t":"2026-10-04T13:01:38.855Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":30,"jobLevel":44,"exp":"22842/34432","job":"5303/17105","weight":"610/3110","autoEnabled":true,"dead":false,"statPts":2}}
+{"t":"2026-10-04T13:01:39.374Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"YbHkijreq","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":40,"anchorTile":[62.4,7.5],"hp":135,"maxHp":720,"sp":158,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":262,"pots":29,"bag":{"used":16,"free":84,"weight":610,"weightLimit":3110},"zeny":15148,"base":30,"job":44,"classId":"swordsman","auto":true,"dead":false,"killsTotal":280,"hitsInTotal":474}}
+{"t":"2026-10-04T13:01:39.978Z","evt":"kill","data":{"m":"Mandragora","base":105,"job":79}}
+{"t":"2026-10-04T13:01:43.586Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T13:01:43.816Z","evt":"drop","data":{"name":"Enchant Rune","qty":1}}
+{"t":"2026-10-04T13:01:44.254Z","evt":"drop","data":{"name":"Bow","qty":1}}
+{"t":"2026-10-04T13:01:46.812Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T13:01:50.599Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T13:01:50.651Z","evt":"drop","data":{"name":"Rough Elunium","qty":1}}
+{"t":"2026-10-04T13:01:53.801Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T13:01:56.006Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T13:01:58.933Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T13:01:59.254Z","evt":"drop","data":{"name":"Bow","qty":1}}
+{"t":"2026-10-04T13:01:59.387Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"YbHkijreq","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":60,"anchorTile":[62.4,7.5],"hp":0,"maxHp":720,"sp":158,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":267,"pots":19,"bag":{"used":18,"free":82,"weight":742,"weightLimit":3110},"zeny":15148,"base":30,"job":44,"classId":"swordsman","auto":true,"dead":false,"killsTotal":287,"hitsInTotal":487}}
+{"t":"2026-10-04T13:02:00.525Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T13:02:02.696Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T13:02:06.671Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T13:02:10.078Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T13:02:11.378Z","evt":"weave","data":{"skill":"bash","target":"m9771","sp":158}}
+{"t":"2026-10-04T13:02:12.282Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T13:02:14.404Z","evt":"farm_status","data":{"label":"goblin j50","baseLevel":30,"jobLevel":44,"exp":"25643/34432","job":"7406/17105","weight":"701/3110","autoEnabled":true,"dead":false,"statPts":2}}
+{"t":"2026-10-04T13:02:14.488Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T13:02:16.677Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T13:02:16.800Z","evt":"drop","data":{"name":"Wolf Pelt","qty":1}}
+{"t":"2026-10-04T13:02:19.393Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"YbHkijreq","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":80,"anchorTile":[62.4,7.5],"hp":0,"maxHp":720,"sp":158,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":273,"pots":12,"bag":{"used":18,"free":82,"weight":695,"weightLimit":3110},"zeny":15148,"base":30,"job":44,"classId":"swordsman","auto":true,"dead":false,"killsTotal":293,"hitsInTotal":498}}
+{"t":"2026-10-04T13:02:20.306Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T13:02:20.635Z","evt":"drop","data":{"name":"Wolf Pelt","qty":1}}
+{"t":"2026-10-04T13:02:23.456Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T13:02:23.664Z","evt":"drop","data":{"name":"Rough Elunium","qty":1}}
+{"t":"2026-10-04T13:02:26.641Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T13:02:28.836Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T13:02:31.067Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T13:02:33.239Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
+{"t":"2026-10-04T13:02:33.678Z","evt":"drop","data":{"name":"Stem","qty":1}}
+{"t":"2026-10-04T13:02:36.803Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T13:02:38.437Z","evt":"kill","data":{"m":"Wolf","base":230,"job":173}}
+{"t":"2026-10-04T13:02:39.400Z","evt":"HEARTBEAT","data":{"step":"23-farm-j50-stats","selfId":"YbHkijreq","weapon":"Ring Pommel Saber","map":"goblin_trail","lastMoveTile":[61.5,90],"lastMoveAgeSec":101,"anchorTile":[62.4,7.5],"hp":0,"maxHp":720,"sp":158,"maxSp":158,"bashLv":10,"hpItems":1,"weaves":280,"pots":1,"bag":{"used":18,"free":82,"weight":621,"weightLimit":3110},"zeny":15148,"base":30,"job":44,"classId":"swordsman","auto":true,"dead":false,"killsTotal":301,"hitsInTotal":513}}
+{"t":"2026-10-04T13:02:40.044Z","evt":"weave","data":{"skill":"bash","target":"m9982","sp":158}}
+{"t":"2026-10-04T13:02:41.642Z","evt":"kill","data":{"m":"Mandragora","base":296,"job":222}}
