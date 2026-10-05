@@ -182,6 +182,8 @@ export class AetheriaClient {
   autoEnabled(enabled) { this.send('auto_set', { enabled }); }
   autoConfig(config) { this.send('auto_set', { config }); }
   cast(skillId, targetId) { this.send('cast', { skillId, targetId }); }
+  invUse(slot) { this.send('inv_use', { slot }); }
+  petSet(petId) { this.send('pet_set', { petId }); }
   warp(mapId) { this.send('npc_warp', { mapId }); }
   shopSell(slot, qty) { this.send('shop_sell', { slot, qty }); }
   shopSellMany(lines) { this.send('shop_sell_many', { lines }); }

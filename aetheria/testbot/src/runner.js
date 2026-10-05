@@ -7,7 +7,8 @@ import { fileURLToPath } from 'node:url';
 import { AetheriaClient } from './client.js';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
-const OUT = path.join(root, 'out');
+// command-center spawns one runner per bot — each gets its own data dir (state/logs/control/status)
+const OUT = process.env.AETHERIA_DATA ? path.resolve(process.env.AETHERIA_DATA) : path.join(root, 'out');
 const MAPS = path.join(root, 'maps');
 fs.mkdirSync(OUT, { recursive: true }); fs.mkdirSync(MAPS, { recursive: true });
 
@@ -17,6 +18,37 @@ const arg = (k, d) => { const i = argv.indexOf(k); return i >= 0 ? argv[i + 1] :
 const UPTO = parseInt(arg('--upto', '999'), 10);
 const CHAR_NAME = arg('--char', null);
 const FRESH = argv.includes('--fresh');
+
+// ---------------- external control (command center) ----------------
+// control.json {cmd:'run'|'pause'|'stop'} polled by loops; status.json mirrors the latest snapshot for the UI
+const CONTROL_FILE = path.join(OUT, 'control.json');
+const STATUS_FILE = path.join(OUT, 'status.json');
+const readControl = () => { try { return JSON.parse(fs.readFileSync(CONTROL_FILE, 'utf8')); } catch { return null; } };
+const writeStatus = (obj) => { try { fs.writeFileSync(STATUS_FILE, JSON.stringify({ ...obj, ts: Date.now(), pid: process.pid })); } catch {} };
+let _ctrlState = 'running';
+async function controlWait(bot) {
+  for (;;) {
+    const cmd = readControl()?.cmd ?? 'run';
+    if (cmd === 'stop') {
+      try { if (bot?.char?.auto?.enabled) bot.c.autoEnabled(false); } catch {}
+      await sleep(700);
+      try { await bot?.c?.leaveGraceful?.(600); } catch {}
+      try { bot?.c?.close(); } catch {}
+      process.exit(0);
+    }
+    if (cmd !== 'pause') {
+      if (_ctrlState === 'paused') { _ctrlState = 'running'; if (bot?.log) bot.log('control_resumed', {}); writeStatus({ state: 'running' }); }
+      return;
+    }
+    if (_ctrlState !== 'paused') {
+      _ctrlState = 'paused';
+      if (bot?.log) bot.log('control_paused', {});
+      try { if (bot?.char?.auto?.enabled) bot.c.autoEnabled(false); } catch {}
+      writeStatus({ state: 'paused' });
+    }
+    await sleep(3000);
+  }
+}
 
 // ---------------- map/exit routing ----------------
 const exitCache = {};
@@ -110,7 +142,7 @@ class Bot {
       if (type === 'skill_fx') {
         if (data?.casterId === this.selfId()) {
           this._ownFx = (this._ownFx || 0) + 1;
-          if (this._ownFx <= 5 || this._ownFx % 25 === 0) this.log('own_skill_fx', { skillId: data.skillId, targets: data.targets });
+          this.log('skill_fx_self', { s: data.skillId, t: (data.targets ?? [])[0] ?? null, n: (data.targets ?? []).length });
         }
         return;
       }
@@ -144,7 +176,8 @@ class Bot {
       if (type === 'death') { s.death = data; this.combat.hp = 0; this.log('DEATH', data); return; }
       if (type === 'respawned') { s.death = null; this.combat.hp = this.combat.maxHp; this.combat.sp = this.combat.maxSp; this.log('respawned', data); return; }
       if (type === 'chat') { s.chats.push(data); if (s.chats.length > 300) s.chats.shift(); return; }
-      if (type === 'skill_catalog' || type === 'collection') return;
+      if (type === 'collection') { s.collection = data; return; }
+      if (type === 'skill_catalog') return;
       if (!s.unknownDumped.has(type)) { s.unknownDumped.add(type); this.log('message:' + type, data); }
     });
     this.c.on('error', (e) => this.log('client_error', e));
@@ -183,6 +216,44 @@ class Bot {
     return (this.s.inventory?.items ?? [])
       .filter((i) => i.autoPotion === 'HP')
       .reduce((s, i) => s + (i.qty || 0), 0);
+  }
+
+  // Egg -> pet: game rule = item with equipType&&!usable → equip, else inv_use. Collection hint says “ใช้” (use).
+  // After hatch, pet_set {petId} activates the pet (follows + fetches drops within 15 tiles).
+  async hatchEgg() {
+    const ownedBefore = (this.char?.pets?.owned ?? []).length;
+    const findEgg = () => (this.s.inventory?.items ?? []).find((x) => /orc|baby/i.test(x.name) && /egg|ไข่/i.test(x.name));
+    const eqEgg = Object.entries(this.char?.equipment ?? {}).find(([, v]) => /orc|baby/i.test(v?.name ?? ''));
+    let egg = findEgg();
+    this.log('pet_hatch_probe', { inBag: egg ? { slot: egg.slot, name: egg.name } : null, equipped: eqEgg ? { slot: eqEgg[0], name: eqEgg[1]?.name } : null, ownedBefore });
+    if (!egg && eqEgg) {
+      // an earlier equip attempt may have parked it in a slot — unequip so we can use it
+      this.c.send('unequip', { slot: eqEgg[0] });
+      await sleep(1500);
+      egg = findEgg();
+    }
+    if (egg) {
+      this.c.invUse(egg.slot);
+      this.log('pet_hatch_use', { slot: egg.slot, name: egg.name });
+      try { await this.waitFor(() => (this.char?.pets?.owned ?? []).length > ownedBefore || !findEgg(), 'hatch', 9000); } catch { }
+      if ((this.char?.pets?.owned ?? []).length === ownedBefore && findEgg()) {
+        this.c.send('equip', { slot: findEgg().slot });
+        this.log('pet_hatch_equip_attempt', {});
+        await sleep(2500);
+      }
+    }
+    const ownedNow = this.char?.pets?.owned ?? [];
+    this.log('pet_hatch_result', { ownedBefore, owned: ownedNow, active: this.char?.pets?.active ?? null });
+    if (ownedNow.length && !this.char?.pets?.active) {
+      const cat = (this.s.collection?.pets ?? []).find((p) => /orc|baby/i.test(`${p.name ?? ''} ${p.thai ?? ''} ${p.eggName ?? ''}`)) ?? null;
+      const petId = cat?.id ?? ownedNow[ownedNow.length - 1];
+      if (petId != null) {
+        this.c.petSet(petId);
+        this.log('pet_set_sent', { petId, catFound: !!cat, cat: cat ? { id: cat.id, name: cat.name, eggName: cat.eggName } : null });
+        await sleep(1500);
+        this.log('pet_set_readback', { active: this.char?.pets?.active ?? null });
+      }
+    }
   }
 
   // n2 Bor "General Goods": Red Potion (90301) 50z. Sells junk first if broke, buys as many as budget allows.
@@ -265,7 +336,7 @@ class Bot {
     const sid = skills[this.weaves % skills.length];
     this.weaves++;
     this.c.cast(sid, pick.id);
-    if (this.weaves % 10 === 1) this.log('weave', { skill: sid, target: pick.id, sp });
+    this.log('skill_use', { s: sid, t: pick.id, sp });
   }
   onKill(g) { if (g && g.monster) this.kills++; }
   onItemFx(d) {
@@ -293,6 +364,9 @@ class Bot {
       hp: cb.hp != null ? Math.round(cb.hp) : null, maxHp: cb.maxHp,
       sp: cb.sp != null ? Math.round(cb.sp) : null, maxSp: cb.maxSp,
       bashLv: ch?.skills?.bash ?? null, hpItems: (ch?.auto?.config?.hpItems ?? []).length, weaves: this.weaves, pots: this.potCount(),
+      mobHits: this._mobHits || 0,
+      pets: ch?.pets ? { owned: (ch.pets.owned ?? []).length, active: ch.pets.active ? (ch.pets.active.name ?? ch.pets.active.id ?? 'yes') : null } : null,
+      stats: ch?.stats ? { STR: ch.stats.STR, AGI: ch.stats.AGI, VIT: ch.stats.VIT, INT: ch.stats.INT, DEX: ch.stats.DEX, LUK: ch.stats.LUK } : null,
       bag: { used, free, weight: inv?.weight ?? null, weightLimit: inv?.weightLimit ?? null },
       zeny: ch?.zeny ?? null, base: ch?.baseLevel ?? null, job: ch?.jobLevel ?? null, classId: ch?.classId ?? null,
       auto: ch?.auto?.enabled ?? null, dead: !!s.death,
@@ -300,7 +374,7 @@ class Bot {
     };
   }
   startHeartbeat(intervalMs = 20000) {
-    const tick = () => { try { this.log('HEARTBEAT', this.snap()); } catch (e) { try { this.log('HEARTBEAT_ERR', String(e)); } catch {} } };
+    const tick = () => { try { this.log('HEARTBEAT', this.snap()); writeStatus({ ...this.snap(), state: _ctrlState }); } catch (e) { try { this.log('HEARTBEAT_ERR', String(e)); } catch {} } };
     tick();
     if (this._hbTimer) clearInterval(this._hbTimer);
     this._hbTimer = setInterval(tick, intervalMs);
@@ -311,6 +385,7 @@ class Bot {
   // Full re-login/rejoin — used by the turn-key retry loop whenever the session drops.
   async reconnect() {
     this.log('reconnect_start', {});
+    await this.relogin(); // tokens expire after hours — refresh before rejoining
     try { await this.c.leaveGraceful(600); } catch {} // free the seat so rejoin succeeds 1st try
     try { this.c.close(); } catch {}
     await sleep(1500);
@@ -328,10 +403,30 @@ class Bot {
         this.log('reconnect_attempt_fail', { attempt: i, err: String((e && e.message) || e) });
         try { this.c.close(); } catch {}
         const msg = String((e && e.message) || e);
+        if (/token/i.test(msg)) await this.relogin(); // stale token → refresh and retry
         await sleep(/ออนไลน์อยู่แล้ว|already online|429|too many/i.test(msg) ? 45000 : 5000);
       }
     }
     throw new Error('reconnect failed after 12 attempts');
+  }
+
+  // Refresh the session token with env credentials (tokens expire after hours;
+  // without this, any death/reconnect after expiry would fail forever).
+  async relogin() {
+    const u = process.env.AETHERIA_USER, p = process.env.AETHERIA_PASS;
+    if (!u || !p) { this.log('relogin_skip', { reason: 'no env credentials' }); return false; }
+    try {
+      const res = await fetch('https://www.aetheria-online.in.th/auth/login', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: u, password: p }),
+      });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok || !j.token) { this.log('relogin_fail', { status: res.status, err: j && (j.error || j.err) || null }); return false; }
+      this.c.token = j.token;
+      try { fs.writeFileSync(path.join(OUT, 'session.json'), JSON.stringify({ token: j.token, createdAt: new Date().toISOString() })); } catch {}
+      this.log('relogin_ok', {});
+      return true;
+    } catch (e) { this.log('relogin_fail', { err: String((e && e.message) || e) }); return false; }
   }
 
   // items to sell at the vendor: sellPrice>0, not protected (cards/enchants), keep consumables & refine mats & gems
@@ -405,7 +500,7 @@ class Bot {
     return true;
   }
 
-  async applySkills(plan, { wait = false, waitMs = 90 * 60 * 1000, auto = null } = {}) {
+  async applySkills(plan, { wait = false, waitMs = 90 * 60 * 1000, auto = null, farmMap = null } = {}) {
     const levelOf = (ch, id) => {
       const sk = ch.skills;
       if (!sk) return 0;
@@ -413,23 +508,50 @@ class Bot {
       const v = sk[id]; return typeof v === 'object' ? (v?.level ?? 0) : (v ?? 0);
     };
     const t0 = Date.now();
+    const fails = {}; // consecutive no-progress sends per skill (server rejections, e.g. unmet prerequisites)
     while (Date.now() - t0 < waitMs) {
+      await controlWait(this);
       const ch = this.char;
       if (!ch) { await sleep(500); continue; }
+      if (this.s.death) {
+        this.log('skills_death_recover', {});
+        await this.deathRecover();
+        continue;
+      }
       const missing = Object.entries(plan).filter(([id, lv]) => levelOf(ch, id) < lv);
       if (!missing.length) return true;
       if ((ch.skillPoints ?? 0) > 0) {
-        this.c.skillUp(missing[0][0]);
-        this.log('skill_up', { id: missing[0][0], target: missing[0][1] });
-        await sleep(400);
+        // rotate away from skills that keep getting rejected (unmet prereq) so the rest still spend
+        const pick = missing.find(([id]) => (fails[id] ?? 0) < 10) ?? missing[0];
+        const id = pick[0];
+        const before = levelOf(ch, id);
+        this.c.skillUp(id);
+        this.log('skill_up', { id, target: pick[1] });
+        await sleep(500);
+        const after = levelOf(this.char ?? { skills: {} }, id);
+        if (after > before) fails[id] = 0;
+        else {
+          fails[id] = (fails[id] ?? 0) + 1;
+          if (fails[id] === 10) this.log('skill_up_stuck', { id, at: after, target: pick[1], points: this.char?.skillPoints, missing: missing.map(([i2, l2]) => `${i2}:${levelOf(ch, i2)}/${l2}`) });
+        }
+        if (missing.every(([i2]) => (fails[i2] ?? 0) >= 10)) {
+          this.log('skills_all_blocked', { missing: missing.map(([i2, l2]) => `${i2}:${levelOf(ch, i2)}/${l2}`), points: this.char?.skillPoints });
+          await sleep(20000); // back off — likely unmet prereq or points pending; fresh retry follows
+          for (const k of Object.keys(fails)) fails[k] = 0;
+        }
         continue;
       }
       if (!wait) return false;
-      // keep farming while waiting for job points (needed after rejoins where auto starts off)
-      if (auto && this.char?.auto?.enabled === false && Date.now() - (this._lastAutoTry || 0) > 60000) {
-        this._lastAutoTry = Date.now();
-        this.log('skills_wait_enable_auto', {});
-        await this.setAuto(auto);
+      // waiting for job points — keep farming the intended map (and recover if we died meanwhile)
+      if (auto) {
+        if (farmMap && this.c.mapId !== farmMap) {
+          this.log('skills_wait_return', { from: this.c.mapId, to: farmMap });
+          await this.ensureMap(farmMap).catch(() => {});
+        } else if (this.char?.auto?.enabled === false && Date.now() - (this._lastAutoTry || 0) > 45000) {
+          this._lastAutoTry = Date.now();
+          this.log('skills_wait_enable_auto', {});
+          await this.setAuto(auto);
+        }
       }
       await sleep(4000); // farming gives more job levels
     }
@@ -569,6 +691,7 @@ class Bot {
     const t0 = Date.now();
     let last = 0, lastStat = 0;
     while (Date.now() - t0 < timeoutMin * 60 * 1000) {
+      await controlWait(this);
       if (!this.isConnected()) {
         this.log('farm_disconnected', {});
         await this.reconnect();
@@ -632,6 +755,23 @@ class Bot {
 
 // ---------------- main ----------------
 const sessionFile = path.join(OUT, 'session.json');
+if (process.env.AETHERIA_USER && process.env.AETHERIA_PASS) {
+  // command-center mode: log in with credentials and cache a fresh token
+  let res = { ok: false, status: 0 }, j = {};
+  try {
+    res = await fetch('https://www.aetheria-online.in.th/auth/login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: process.env.AETHERIA_USER, password: process.env.AETHERIA_PASS }),
+    });
+    j = await res.json().catch(() => ({}));
+  } catch (e) { j = { err: String(e?.message || e) }; }
+  if (!res.ok || !j.token) {
+    console.error('[login] failed', res.status, JSON.stringify(j).slice(0, 160));
+    await sleep(20000);
+    process.exit(3); // manager will surface the error state
+  }
+  fs.writeFileSync(sessionFile, JSON.stringify({ token: j.token, createdAt: new Date().toISOString() }));
+}
 const sess = JSON.parse(fs.readFileSync(sessionFile, 'utf8'));
 const stamp = new Date().toISOString().replace(/[:.]/g, '-');
 const logFile = path.join(OUT, `run-${stamp}.jsonl`);
@@ -712,7 +852,7 @@ log('joined', { map: client.mapId });
 await bot.syncMapFromRest().catch(() => {});
 bot.startHeartbeat(20000);
 
-const NPCS = { n2: [880, 1520], n3: [2480, 1552], n5: [1664, 960], n6: [1808, 1616] };
+const NPCS = { n1: [2288, 1168], n2: [880, 1520], n3: [2480, 1552], n5: [1664, 960], n6: [1808, 1616], n9: [2032, 1626] };
 
 // ---------------- PLAN ----------------
 const PLAN = [
@@ -898,6 +1038,86 @@ const PLAN = [
       const autoCfg = { huntRadiusTiles: 'all', pickupLoot: true, hpPercent: 75, spPercent: 40, skills: [{ id: 'bash', level: 10 }] };
       await bot.farm({ until: (c) => c.jobLevel >= 50, map: 'goblin_trail', auto: autoCfg, statPlan: { fixed: { DEX: 20, AGI: 20 }, dump: 'STR' }, label: 'goblin j50', timeoutMin: 600, weave: ['bash'] });
     } },
+  { id: '23b-gems-refine-equip', run: async () => {
+      // gems come from field drops now (market purchase step removed). Refine up to 3 gems to +4 and equip.
+      const gems = (bot.s.inventory?.items ?? []).filter((x) => /gem/i.test(x.name)).slice(0, 3);
+      if (!gems.length) { log('gem_skip', { reason: 'no gems in bag' }); return; }
+      log('gem_plan', { gems: gems.map((g) => `${g.name}(${g.itemId})`) });
+      const gemIds = new Set(gems.map((g) => g.itemId));
+      await bot.ensureMap('capital');
+      await bot.walkToNpc(NPCS.n3);
+      await bot.talk('n3');
+      bot.s.refine = null;
+      await bot.chooseByKeyword('ตีบวกอุปกรณ์', { timeout: 6000 });
+      try { await bot.waitFor(() => bot.s.refine, 'refine mode', 8000); } catch { log('gem_refine_mode_fail', {}); }
+      let restocks = 0;
+      for (let round = 0; round < 30; round++) {
+        const entry = (bot.s.refine?.items ?? []).find((x) => gemIds.has(x.item?.itemId) && x.to <= 4);
+        if (!entry) { log('gem_refine_done', { round }); break; }
+        if ((entry.material?.have ?? 0) < 1 || (bot.char?.zeny ?? 0) < entry.zeny) {
+          log('gem_refine_blocked', { mat: entry.material?.have, zeny: bot.char?.zeny, cost: entry.zeny, item: entry.item?.name });
+          if (++restocks > 2) { log('gem_refine_giveup', {}); break; }
+          bot.c.npcClose(); await sleep(500);
+          await bot.talk('n3');
+          bot.s.shop = null;
+          await bot.chooseByKeyword('ซื้อแร่ตีบวก', { timeout: 6000 });
+          try { await bot.waitFor(() => bot.s.shop, 'ore shop', 8000); } catch {}
+          const el = (bot.s.shop?.items ?? []).find((x) => x.name === 'Rough Elunium');
+          const need = Math.max(1, 12 - (entry.material?.have ?? 0));
+          const qty = Math.min(need, Math.max(0, Math.floor(((bot.char?.zeny ?? 0) - 300) / ((el?.price || 200)))));
+          if (el && qty > 0) { bot.c.send('shop_buy', { itemId: el.itemId, qty }); log('gem_buy_elunium', { qty }); await sleep(1600); }
+          bot.c.npcClose(); await sleep(500);
+          await bot.talk('n3');
+          bot.s.refine = null;
+          await bot.chooseByKeyword('ตีบวกอุปกรณ์', { timeout: 6000 });
+          try { await bot.waitFor(() => bot.s.refine, 'refine mode retry', 8000); } catch {}
+          continue;
+        }
+        const seq = bot.s.refineSeq;
+        bot.c.send('refine', { source: entry.source, blessing: false });
+        log('gem_refine_send', { item: entry.item?.name, to: entry.to, cost: entry.zeny });
+        await sleep(2200);
+        if ((bot.s.refineSeq ?? 0) === seq) log('gem_refine_no_update', {});
+      }
+      bot.c.npcClose(); await sleep(500);
+      bot.c.invSort(); await sleep(800);
+      // equip the gems (user flow: ใส่ไอเท็มดาบและ Gem — sword already equipped in 21)
+      for (const g of gems) {
+        const it = (bot.s.inventory?.items ?? []).find((x) => x.itemId === g.itemId);
+        if (!it) { log('gem_equip_missing', { itemId: g.itemId }); continue; }
+        bot.c.send('equip', { slot: it.slot });
+        log('gem_equip', { name: it.name, slot: it.slot, refine: it.refine ?? 0 });
+        await sleep(1300);
+      }
+      bot.c.invSort(); await sleep(600);
+    } },
+  { id: '23c-orc-egg', run: async () => {
+      // Event Lily (n9 @2032,1626): free Orc Baby Egg at base ≥15 — once per character. Equip to hatch it.
+      if ((bot.char?.baseLevel ?? 0) < 15) { log('orc_egg_low_level', { base: bot.char?.baseLevel }); return; }
+      // char.pets shape = { owned: [...], active: {...}|null }
+      const petsRaw = bot.char?.pets;
+      const owned = Array.isArray(petsRaw?.owned) ? petsRaw.owned : [];
+      const hasOrcPet = [...owned, petsRaw?.active].filter(Boolean).some((p) => /orc|baby/i.test(JSON.stringify(p)));
+      if (hasOrcPet) { log('orc_egg_already_hatched', {}); return; }
+      let egg = (bot.s.inventory?.items ?? []).find((x) => /orc|baby/i.test(x.name) && /egg|ไข่/i.test(x.name));
+      if (!egg) {
+        await bot.ensureMap('capital');
+        await bot.walkToNpc(NPCS.n9);
+        await bot.talk('n9');
+        log('orc_egg_dialog', { name: bot.s.dialog?.name, text: bot.s.dialog?.text, options: bot.s.dialog?.options });
+        const opt = bot.findOption(bot.s.dialog, 'ไข่') ?? bot.findOption(bot.s.dialog, 'egg') ?? bot.findOption(bot.s.dialog, 'Orc');
+        if (!opt) { log('orc_egg_option_missing', {}); bot.c.npcClose(); await sleep(400); return; } // soft skip — full options in orc_egg_dialog above
+        bot.s.dialog = null;
+        bot.c.npcOption(opt.index);
+        await sleep(2000);
+        log('orc_egg_claim', { option: opt, followup: bot.s.dialog ? { name: bot.s.dialog.name, text: bot.s.dialog.text, options: bot.s.dialog.options } : null });
+        bot.c.npcClose(); await sleep(400);
+        bot.c.invSort(); await sleep(800);
+        egg = (bot.s.inventory?.items ?? []).find((x) => /orc|baby/i.test(x.name) && /egg|ไข่/i.test(x.name));
+      }
+      if (!egg) { log('orc_egg_not_in_bag', {}); return; }
+      await bot.hatchEgg();
+    } },
   { id: '24-skills-j50', run: async () => {
       const autoCfg = { huntRadiusTiles: 'all', pickupLoot: true, hpPercent: 75, spPercent: 40, skills: [{ id: 'bash', level: 10 }] };
       const ok = await bot.applySkills({ 'sword-mastery': 10, bash: 10, provoke: 3, 'hp-recovery': 10, endure: 10, 'magnum-break': 6 }, { wait: true, auto: autoCfg, waitMs: 60 * 60 * 1000 });
@@ -921,6 +1141,39 @@ const PLAN = [
       await bot.applyStats({ DEX: 30, AGI: 30, VIT: 20 }, { strict: false });
       await bot.dumpStat('STR');
     } },
+  // ---- v3 leg 3: Knight -> gale highland -> Peco -> frost pass (final user sequence) ----
+  { id: '27a-pet-hatch', run: async () => { await bot.hatchEgg(); } },
+  { id: '27-travel-gale', run: async () => { await bot.ensureMap('gale_high'); } },
+  { id: '28-farm-gale-job27', run: async () => {
+      const autoCfg = { huntRadiusTiles: 'all', pickupLoot: true, hpPercent: 75, spPercent: 40, skills: [{ id: 'bash', level: 10 }] };
+      // knight kit = bowling 10 + 2h-sword-mastery 1 (quicken's prereq!) + quicken 10 + ride 1 + master 5 = 27 pts → job 28
+      await bot.farm({ until: (c) => c.jobLevel >= 28, map: 'gale_high', auto: autoCfg, statPlan: { fixed: { DEX: 30, AGI: 30, VIT: 20 }, dump: 'STR' }, label: 'gale knight-job28', timeoutMin: 600, weave: ['bash'] });
+    } },
+  { id: '29-skills-gale', run: async () => {
+      const autoCfg = { huntRadiusTiles: 'all', pickupLoot: true, hpPercent: 75, spPercent: 40, skills: [{ id: 'bash', level: 10 }] };
+      const ok = await bot.applySkills({ 'two-hand-sword-mastery': 1, 'bowling-bash': 10, 'two-hand-quicken': 10, 'peco-peco-ride': 1, 'peco-peco-master': 5 }, { wait: true, auto: autoCfg, waitMs: 90 * 60 * 1000, farmMap: 'gale_high' });
+      log('skills_gale_done', { ok, skills: bot.char?.skills });
+      if (!ok) throw new Error('gale skills incomplete — points pending, will retry');
+    } },
+  { id: '30-peco-rental', run: async () => {
+      // Healer Mira (n1 @2288,1168) = the 'top-right NPC' with the peco-standing prop.
+      // Option 0: 'เช่า Peco Peco (2,500 z · requires Peco Peco Ride)'
+      await bot.ensureMap('capital');
+      await bot.walkToNpc(NPCS.n1);
+      await bot.talk('n1');
+      const rent = bot.findOption(bot.s.dialog, 'เช่า Peco Peco');
+      if (!rent) throw new Error('peco rent option not found: ' + JSON.stringify(bot.s.dialog?.options));
+      bot.s.dialog = null;
+      bot.c.npcOption(rent.index);
+      await sleep(1800);
+      log('peco_rent_clicked', { option: rent, followup: bot.s.dialog ? { name: bot.s.dialog.name, text: bot.s.dialog.text, options: bot.s.dialog.options } : null });
+      bot.c.npcClose(); await sleep(400);
+    } },
+  { id: '31-frost-farm', run: async () => {
+      const autoCfg = { huntRadiusTiles: 'all', pickupLoot: true, hpPercent: 75, spPercent: 40, skills: [{ id: 'bash', level: 10 }] };
+      // final goal: base 65 (user guide: เก็บ LV จน 60-65)
+      await bot.farm({ until: (c) => c.baseLevel >= 65, map: 'frost_pass', auto: autoCfg, label: 'frost lv65', timeoutMin: 900, weave: ['bash', 'bowling-bash'] });
+    } },
 ];
 
 // ---------------- execute (turn-key: never abort — retry forever with reconnect) ----------------
@@ -930,10 +1183,12 @@ for (let i = runState.cursor; i < PLAN.length && i < UPTO; i++) {
   log('STEP_START', { step: step.id });
   let attempt = 0;
   for (;;) {
+    await controlWait(bot);
     try { await step.run(); break; }
     catch (e) {
       attempt++;
       log('STEP_FAIL', { step: step.id, attempt, err: String((e && e.message) || e) });
+      if (bot.s.death) { try { await bot.deathRecover(); } catch (e2) { log('DEATH_RECOVER_FAIL', String((e2 && e2.message) || e2)); } }
       if (!bot.isConnected() || attempt % 3 === 0) {
         try { await bot.reconnect(); } catch (e2) { log('RECONNECT_FAIL', String((e2 && e2.message) || e2)); }
       }

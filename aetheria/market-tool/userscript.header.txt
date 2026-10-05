@@ -1,0 +1,12 @@
+// ==UserScript==
+// @name         Aetheria Market+ (ตลาด+)
+// @namespace    aetheria.marketplus
+// @version      0.2.0
+// @description  ค้นหาไอเทมตลาดกลางตามความสามารถ (attributes/affixes) + ซื้อ/รับของได้ทันที — Chrome & Zen
+// @author       lumivara
+// @match        https://www.aetheria-online.in.th/*
+// @match        https://aetheria-online.in.th/*
+// @run-at       document-start
+// @grant        none
+// @noframes
+// ==/UserScript==

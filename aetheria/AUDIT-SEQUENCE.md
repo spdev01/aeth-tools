@@ -159,6 +159,21 @@ Goblin trail farm J21→J50 with auto-sell/bank loop + stat plan (DEX20/AGI20→
 - `hit` events carry NO attackerId — shape: `{targetId, damage, x, y, onPlayer?, heal?, miss?}`. Self-damage detect = `targetId === sessionId`.
 - Mobs hit near us ARE echoed as `hit` events (buffered as weave targets); our own bash casts ARE echoed back as `skill_fx {casterId:<selfId>}` — **live proof skill weaving lands**.
 
+### Peco rental — SOLVED (2026-10-04 evening)
+- **Healer Mira (n1 @2288,1168)** — the "top-right NPC" (has a `peco-standing` prop @2355,1184; the live map has a 13th NPC "Training Master" npcId 210 the cached copy lacked).
+- Dialog: `["เช่า Peco Peco (2,500 z · ต้องมีสกิล Peco Peco Ride)", "คืน Peco Peco", "เช่าเหยี่ยว (2,500 z · Falconry Mastery)", "คืนเหยี่ยว", "ไม่ล่ะ ขอบคุณ"]` — rent = **option index 0, 2,500z, requires the skill**.
+- Knight skill-id check: `bowling-bash`, `two-hand-quicken`, `peco-peco-ride`, `peco-peco-master` (also exist: two-hand-sword-mastery, grand-peco-ride/master).
+
+### Pet system (Orc Baby egg) — SOLVED + LIVE
+- **Event Lily (n9 @2032,1626)**: option `รับไข่ออร์ค (Base Lv.15 ขึ้นไป, 1 ครั้ง)` → receives **Orc Cub Egg** (once per character, base ≥15).
+- Item-action rule (client `useItemBar`): `equipType && !usable ? equip {slot} : inv_use {slot}`. Eggs are **usable → `inv_use {slot}`** — this HATCHES instantly. (`equip` does nothing to eggs — verified: egg stayed in bag.)
+- After hatch the server auto-activates: `char.pets = { owned:["orc-cub"], active:"orc-cub" }`.
+- `pet_set {petId}` toggles the active pet (null = stow). Collection catalog: `collection` message → `pets[] {id,name,thai,eggItemId,eggName}`.
+- Active pet **follows and auto-fetches drops within 15 tiles** (`pet_fetch` events); bags fill faster during farm (sell cycles already handle it).
+
+### Final operator sequence v3 (authoritative, 2026-10-04)
+Removed forever: market gem purchase (v2), market DR-affix gear, Broad Sword +4. Added to runner PLAN: `23b-gems-refine-equip` (refine dropped gems to +4 w/ Rough Elunium + equip), `23c-orc-egg` (Event Lily n9 @2032,1626 — free **Orc Baby Egg** at base ≥15, once per character; equip the egg to hatch it), `27-travel-gale`, `28-farm-gale-job27` (4 knight skills need 26 pts ⇒ job 27; operator said "~20"), `29-skills-gale`, `30-peco-rental` (Mira, option 0), `31-frost-farm` (until base 60). Total 33 steps; supervisor runs `--upto 33`.
+
 ### Economy (funds the potion drain)
 - Junk sells at n2 (`ฝากของหน่อย`, sellPrice>0, skip Card/Enchantment types) — goblin_trail drops (Stem / Scream Leaf / Bat Wing / Wolf Pelt / Mandragora Root / Pike…) accumulate fast; one organic sell cycle banked **~14.7k zeny** (305 → 14,992).
 - Potion burn is the main cost: auto-drinks at `hpPercent` (75). 38 reds ≈ 5 min of heavy goblin combat → death loop when dry. Restock policy now: buy batches of 45 (budget zeny-200, 50z each) at farm start (when <8 left), after every death recovery (sell junk first if zeny<600), and in bag-full sell cycles.

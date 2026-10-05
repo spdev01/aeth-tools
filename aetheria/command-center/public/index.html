@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Aetheria Command Center</title>
+<meta name="theme-color" content="#0a0e18" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+<header>
+  <div class="brand">
+    <span class="logo">⌘</span>
+    <div class="bt"><b>Aetheria</b><span>Command Center</span></div>
+  </div>
+  <div class="kpis" id="kpis"></div>
+  <div class="conn" id="conn"><i></i><span>LIVE</span></div>
+</header>
+<nav>
+  <div class="tabs">
+    <button data-tab="dash" class="on">Dashboard</button>
+    <button data-tab="accounts">Accounts</button>
+    <button data-tab="stress">Stress</button>
+  </div>
+</nav>
+
+<main>
+  <!-- ============ DASHBOARD ============ -->
+  <section id="tab-dash">
+    <div class="bar">
+      <label class="chk"><input type="checkbox" id="sel-all" /> select all</label>
+      <button id="play-sel" class="btn ok">▶ Play selected</button>
+      <button id="pause-sel" class="btn warn">⏸ Pause selected</button>
+      <button id="stop-sel" class="btn bad">⏹ Stop selected</button>
+      <span class="sep"></span>
+      <button id="stop-all" class="btn bad">⛔ STOP ALL</button>
+      <span class="muted" id="dash-note"></span>
+    </div>
+    <div id="bots" class="grid"></div>
+    <div id="empty-bots" class="empty hidden">No bots yet — create accounts/characters, then start them from the <b>Stress</b> tab.</div>
+  </section>
+
+  <!-- ============ ACCOUNTS ============ -->
+  <section id="tab-accounts" class="hidden">
+    <div class="panelgrid">
+      <div class="panel">
+        <h3>Create accounts</h3>
+        <div class="row">
+          <label>How many <input type="number" id="reg-count" value="3" min="1" max="50" /></label>
+          <label class="chk"><input type="checkbox" id="reg-chars" checked /> create character (1 per account)</label>
+          <label class="chk"><input type="checkbox" id="reg-include" checked /> include in bot roster</label>
+        </div>
+        <div class="row">
+          <button id="reg-go" class="btn ok">Create accounts</button>
+          <button id="chars-go" class="btn">Create characters for accounts missing one</button>
+        </div>
+        <div id="jobbox"></div>
+        <p class="muted small">Registers via <code>/auth/register</code> with generated usernames (a-z, 0-9, _) + strong passwords — fast and stable (no guest rotation). Character names are giphy-style with conflict retries.</p>
+      </div>
+      <div class="panel">
+        <h3>Import accounts</h3>
+        <textarea id="imp-lines" rows="4" placeholder="userId:password (one per line)"></textarea>
+        <div class="row"><button id="imp-go" class="btn">Import</button><span id="imp-msg" class="muted small"></span></div>
+        <p class="muted small">Validates each pair via /auth/login before saving. Great for your known accounts (e.g. the current ScoutA1 account).</p>
+      </div>
+    </div>
+
+    <h3 class="sect">Accounts &amp; characters</h3>
+    <table id="accounts-table">
+      <thead><tr><th>account</th><th>userId</th><th>password</th><th>type</th><th>character</th><th>class / lv</th><th>map</th><th>include</th><th></th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <!-- ============ STRESS ============ -->
+  <section id="tab-stress" class="hidden">
+    <div class="panel">
+      <h3>Concurrent stress test</h3>
+      <div class="row">
+        <label>bots to start <input type="number" id="st-count" value="3" min="1" max="100" /></label>
+        <label>ramp delay between starts (ms) <input type="number" id="st-ramp" value="5000" min="0" max="60000" step="500" /></label>
+        <button id="st-go" class="btn ok">▶ Start bots</button>
+        <button id="st-stop" class="btn bad big">⛔ STOP ALL BOTS</button>
+      </div>
+      <p class="muted small">Starts the first N included characters (Stress uses the roster from Accounts). Bots run the full leveling pipeline headless; each gets its own data dir + logs under <code>command-center/data/bots/&lt;id&gt;/</code>.</p>
+      <div id="st-summary"></div>
+    </div>
+  </section>
+</main>
+
+<footer id="logdrawer" class="hidden">
+  <div class="loghead">
+    <span id="log-title">live log</span>
+    <span class="muted small">(click a bot card to focus · newest last)</span>
+    <button id="log-close" class="btn small">✕</button>
+    <button id="log-clear" class="btn small">clear</button>
+    <label class="chk small"><input type="checkbox" id="log-follow" checked /> follow</label>
+  </div>
+  <div id="log-body"></div>
+</footer>
+
+<script src="/app.js"></script>
+</body>
+</html>

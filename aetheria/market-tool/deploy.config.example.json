@@ -1,0 +1,7 @@
+{
+  "userscriptBase": "https://your-host.example/marketplus",
+  "chromeZipUrl": "https://your-host.example/marketplus/aetheria-market-plus-chrome.zip",
+  "chromeLatestVersionUrl": "https://your-host.example/marketplus/latest-version.txt",
+  "firefoxUpdatesUrl": "https://your-host.example/marketplus/updates.json",
+  "firefoxXpiUrlTemplate": "https://your-host.example/marketplus/aetheria-market-plus-{version}.xpi"
+}

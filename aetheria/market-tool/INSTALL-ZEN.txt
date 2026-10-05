@@ -1,0 +1,75 @@
+AETHERIA MARKET+ (ตลาด+) — Zen Browser install guide / วิธีติดตั้งบน Zen
+=======================================================================
+
+WHAT THIS IS / คืออะไร
+  A third-party add-on for Zen (Firefox-based) that adds ability-aware market
+  search (innate attributes + rolled affixes) and instant buy/claim to the
+  Aetheria in-game market. Works only on https://www.aetheria-online.in.th
+  ส่วนขยายสำหรับ Zen: ค้นหาไอเทมตลาดกลางตามความสามารถ + ซื้อ/รับของได้ทันที
+
+
+OPTION 1 — Temporary install (dev mode) / ติดตั้งชั่วคราว (โหมด dev)
+--------------------------------------------------------------------
+No account needed. The add-on unloads when Zen restarts.
+ไม่ต้องมีบัญชีอะไร — แต่จะหายเมื่อปิด Zen
+
+  1. Get the "firefox" folder / เตรียมโฟลเดอร์:
+     Extract aetheria-market-plus-firefox.zip  (แตกไฟล์ zip ออกมาเป็นโฟลเดอร์)
+
+  2. Open Zen, type in the address bar / เปิด Zen พิมพ์ที่แถบที่อยู่:
+        about:debugging#/runtime/this-firefox
+
+  3. Click "Load Temporary Add-on…" / กดปุ่ม "Load Temporary Add-on…"
+
+  4. In the file picker, open the extracted "firefox" folder and select the file
+     manifest.json  / เลือกไฟล์ manifest.json ในโฟลเดอร์ firefox ที่แตกไว้
+     (select the FILE, not the folder / เลือกไฟล์ ไม่ใช่โฟลเดอร์)
+
+  5. "Aetheria Market+ (ตลาด+)" appears under Temporary Extensions / จะขึ้นในลิสต์
+
+  6. Open (or RELOAD) the game / เปิดหรือรีเฟรชหน้าเกม:
+        https://www.aetheria-online.in.th/play
+     → gold button "ตลาด+ ค้นหาละเอียด" bottom-right / ปุ่มสีทองมุมขวาล่าง
+
+  NOTE: after closing Zen, repeat steps 2–4 (takes ~20 seconds)
+        หลังปิด Zen ต้องโหลดซ้ำตามขั้นตอน 2–4
+
+
+OPTION 2 — Permanent install (signed .xpi) / ติดตั้งถาวร
+---------------------------------------------------------
+Zen (Firefox release rules) will NOT permanently install an UNSIGNED add-on.
+Signing via Mozilla is free and takes ~2 minutes — once per release.
+
+Zen จะไม่ยอมติดตั้งไฟล์ที่ไม่ได้เซ็นแบบถาวร → ต้องเซ็นผ่าน Mozilla (ฟรี)
+
+  FOR THE DEVELOPER — once per release / ผู้พัฒนา (ทำครั้งเดียวต่อเวอร์ชัน):
+    1. Log in at https://addons.mozilla.org and create API keys:
+       https://addons.mozilla.org/developers/addon/api/key/
+    2. From the market-tool folder, run / รันคำสั่ง:
+         npx web-ext sign --source-dir dist/firefox --api-key <KEY> --api-secret <SECRET> --channel unlisted
+    3. A signed file appears in web-ext-artifacts/  (e.g. aetheria_market_plus-0.2.0-an+fx.xpi)
+
+  FOR USERS / สำหรับผู้ใช้:
+    1. Receive the .xpi file / รับไฟล์ .xpi ที่เซ็นแล้ว
+    2. Open Zen → drag the .xpi into the Zen window
+       (or: about:addons → gear icon ⚙ → "Install Add-on From File…")
+       ลากไฟล์ .xpi เข้าหน้าต่าง Zen หรือติดตั้งผ่านหน้า about:addons
+    3. Confirm the install dialog → done. Survives restarts / ติดตั้งถาวร ใช้ได้เลย
+    4. Updates are automatic / อัปเดตอัตโนมัติ: permanently installed copies check for
+       new versions by themselves (the developer hosts an update file) — no action needed.
+       (เฉพาะแบบติดตั้งถาวรเท่านั้น; แบบชั่วคราว/temporary ไม่อัปเดต)
+
+
+TROUBLESHOOTING / แก้ปัญหา
+--------------------------
+  - Button does not appear / ปุ่มไม่ขึ้น:
+      make sure the URL is https://www.aetheria-online.in.th — then RELOAD the page.
+      ต้องอยู่เว็บเกมนี้เท่านั้น แล้วรีเฟรชหน้า
+  - "This add-on could not be installed because it is not verified / appears corrupt":
+      you are installing an UNSIGNED file via Option 2 → use Option 1, or get the signed .xpi.
+      กำลังติดตั้งไฟล์ที่ยังไม่เซ็นผ่านวิธีที่ 2 → ใช้วิธีที่ 1 หรือขอไฟล์ .xpi ที่เซ็นแล้ว
+  - Temporary add-on disappeared / หายไป:
+      Zen was restarted — load it again via Option 1 steps 2–4.
+      ปิด Zen แล้ว — โหลดซ้ำตามวิธีที่ 1
+
+  More info / ข้อมูลเพิ่มเติม: see README.md in the project folder.

@@ -15,8 +15,8 @@ for (const e of es.filter((x) => /connect_retry|joined|run_start|STEP_START|STEP
 console.log('\n--- setAuto readback (bashLv + hpItems) ---');
 for (const e of es.filter((x) => x.evt === 'setAuto')) console.log(e.t.slice(11, 19), JSON.stringify(e.data));
 
-console.log('\n--- weave events ---');
-for (const e of es.filter((x) => x.evt === 'weave')) console.log(e.t.slice(11, 19), JSON.stringify(e.data));
+console.log('\n--- skill casts (skill_use) ---');
+for (const e of es.filter((x) => x.evt === 'skill_use').slice(0, 12)) console.log(e.t.slice(11, 19), JSON.stringify(e.data));
 
 console.log('\n--- SP across heartbeats (dips = skill casts happening) ---');
 const hbs = es.filter((e) => e.evt === 'HEARTBEAT' && e.data.sp != null);

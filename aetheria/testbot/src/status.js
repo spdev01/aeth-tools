@@ -12,7 +12,8 @@ const STEP_NAMES = [
   '09-farm-lv12', '10-skills-bash-sword', '11-auto-bash', '12-travel-capital',
   '13-market-probe', '14-blacksmith-probe', '15-capital-npc-scan',
   '16-extra-npc-hunt', '17-sell-junk', '18-buy-saber', '19-buy-ores', '20-refine-saber', '21-equip-saber',
-  '22-travel-goblin', '23-farm-j50-stats', '24-skills-j50', '25-knight-change', '26-stats-knight',
+  '22-travel-goblin', '23-farm-j50-stats', '23b-gems-refine-equip', '23c-orc-egg', '24-skills-j50', '25-knight-change', '26-stats-knight',
+  '27a-pet-hatch', '27-travel-gale', '28-farm-gale-job27', '29-skills-gale', '30-peco-rental', '31-frost-farm',
 ];
 
 function snapshot() {
@@ -61,11 +62,29 @@ function snapshot() {
     lines2.push(`POSITION  ${d.map}  ·  last move→ ${lm}  ·  hunt anchor ${an}`);
     const bagTot = (d.bag.used != null && d.bag.free != null) ? d.bag.used + d.bag.free : null;
     lines2.push(`CONDITION hp ~${d.hp ?? '?'}/${d.maxHp ?? '?'}  ·  sp ~${d.sp ?? '?'}/${d.maxSp ?? '?'}  ·  bag ${d.bag.used ?? '?'}/${bagTot ?? '?'} (free ${d.bag.free ?? '?'})  ·  weight ${d.bag.weight ?? '?'}/${d.bag.weightLimit ?? '?'}  ·  zeny ${d.zeny ?? '?'}  ·  auto:${d.auto}  dead:${d.dead}`);
-    lines2.push(`LEVELS    base ${d.base ?? '?'} / job ${d.job ?? '?'}  ·  class ${d.classId ?? '?'}  ·  step ${d.step ?? '?'}  ·  kills ${d.killsTotal ?? 0} / hits taken ${d.hitsInTotal ?? 0}  ·  bashLv ${d.bashLv ?? '?'}  ·  weaves ${d.weaves ?? 0}  ·  hpPots ${d.hpItems ?? 0}`);
+    lines2.push(`LEVELS    base ${d.base ?? '?'} / job ${d.job ?? '?'}  ·  class ${d.classId ?? '?'}  ·  step ${d.step ?? '?'}  ·  kills ${d.killsTotal ?? 0} / hits taken ${d.hitsInTotal ?? 0}  ·  bashLv ${d.bashLv ?? '?'}  ·  weaves ${d.weaves ?? 0}  ·  hpPots ${d.hpItems ?? 0}  ·  pets ${d.pets ? d.pets.owned : '?'}${d.pets?.active ? ' (active: ' + d.pets.active + ')' : ''}  ·  ${d.stats ? `STR${d.stats.STR}/AGI${d.stats.AGI}/VIT${d.stats.VIT}/DEX${d.stats.DEX}` : ''}`);
   } else if (farm) lines2.push(`CHARACTER base ${farm.data.baseLevel} / job ${farm.data.jobLevel}  ·  exp ${farm.data.exp}  ·  job ${farm.data.job}  ·  weight ${farm.data.weight}  ·  auto:${farm.data.autoEnabled}  dead:${farm.data.dead}`);
   else if (charEv) lines2.push(`CHARACTER base ${charEv.data.base} / job ${charEv.data.job}  ·  class ${charEv.data.classId}  ·  skillPts ${charEv.data.skillPts}  ·  statPts ${charEv.data.statPts}  ·  zeny ${charEv.data.zeny}  (auto-farming)`);
   else lines2.push(`CHARACTER (no data yet this run)`);
   lines2.push(`ACTIVITY  last 10 min: ${kills} kills, ~${baseExp} base + ${jobExp} job exp  (~${(baseExp / 10).toFixed(0)} base/min)`);
+  // skill usage + attack activity (last 10 min)
+  const cut10 = Date.now() - 600000;
+  const casts10 = evs.filter((e) => e.evt === 'skill_use' && new Date(e.t).getTime() >= cut10);
+  const fx10 = evs.filter((e) => e.evt === 'skill_fx_self' && new Date(e.t).getTime() >= cut10);
+  const bySkill = {};
+  for (const cs of casts10) { const kk = cs.data?.s ?? '?'; bySkill[kk] = (bySkill[kk] || 0) + 1; }
+  const lastCast = [...evs].reverse().find((e) => e.evt === 'skill_use');
+  if (casts10.length || lastCast) {
+    const skillStr = Object.entries(bySkill).sort((a, b) => b[1] - a[1]).map(([k2, v2]) => `${k2}×${v2}`).join(', ') || 'none';
+    const lastAgo = lastCast ? Math.round((Date.now() - new Date(lastCast.t).getTime()) / 1000) : null;
+    lines2.push(`SKILLS    last 10 min: ${skillStr}  ·  fx landed ×${fx10.length}  ·  last: ${lastCast ? `${lastCast.data.s}→${lastCast.data.t}` : 'n/a'}${lastAgo != null ? ` (${lastAgo}s ago)` : ''}`);
+  }
+  const hbSeen = evs.filter((e) => e.evt === 'HEARTBEAT' && e.data && e.data.mobHits != null);
+  if (hbSeen.length >= 2) {
+    const a = hbSeen[0].data.mobHits, b2 = hbSeen[hbSeen.length - 1].data.mobHits;
+    const mins2 = (new Date(hbSeen[hbSeen.length - 1].t) - new Date(hbSeen[0].t)) / 60000;
+    lines2.push(`ATTACKS   mob hits seen ×${b2} (~${mins2 > 0 ? Math.round((b2 - a) / mins2) : '?'}/min)  ·  incoming hits taken ×${hbSeen[hbSeen.length - 1].data.hitsInTotal ?? '?'}`);
+  }
   const dropStr = Object.entries(drops).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([k, v]) => `${k}×${v}`).join(', ');
   if (dropStr) lines2.push(`DROPS     ${dropStr}`);
   if (auto) {

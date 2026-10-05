@@ -1,0 +1,76 @@
+AETHERIA MARKET+ (ตลาด+) — Chrome / Edge install guide
+========================================================
+
+WHAT THIS IS / คืออะไร
+  A third-party browser extension (MV3) for Chrome and Edge that adds
+  ability-aware market search (innate attributes + rolled affixes) and
+  instant buy/claim to the Aetheria in-game market.
+  Works only on https://www.aetheria-online.in.th
+  ส่วนขยายสำหรับ Chrome/Edge: ค้นหาไอเทมตลาดกลางตามความสามารถ + ซื้อ/รับของทันที
+
+
+OPTION 1 — Dev mode "Load unpacked" (any Chrome/Edge, no account)
+------------------------------------------------------------------
+GOOD NEWS: unlike Zen, Chrome KEEPS unpacked extensions after restart.
+One install is enough — but the folder must stay on disk.
+ข้อดี: ติดตั้งครั้งเดียวอยู่ถาวร (ต่างจาก Zen) แต่ต้องเก็บโฟลเดอร์ไว้ ห้ามลบ/ย้าย
+
+  1. Get the "chrome" folder / เตรียมโฟลเดอร์:
+     Extract aetheria-market-plus-chrome.zip  → you get a folder containing
+     manifest.json, core.js, icons/   (แตกไฟล์ zip ออกมา)
+     IMPORTANT: keep it somewhere permanent (not a temp folder), because Chrome
+     re-reads the folder on every startup. / เก็บไว้ที่ถาวร
+
+  2. Open Chrome/Edge and go to / เปิดเบราว์เซอร์แล้วไปที่:
+        chrome://extensions          (Edge: edge://extensions)
+
+  3. Enable "Developer mode" / เปิดสวิตช์ "Developer mode" (มุมขวาบน)
+
+  4. Click "Load unpacked" → select the extracted chrome folder
+     กด "Load unpacked" แล้วเลือกโฟลเดอร์ chrome ที่แตกออกมา
+
+  5. "Aetheria Market+ (ตลาด+)" appears in the list / จะขึ้นในลิสต์ส่วนขยาย
+
+  6. Open (or RELOAD) the game / เปิดหรือรีเฟรชหน้าเกม:
+        https://www.aetheria-online.in.th/play
+     → gold button "ตลาด+ ค้นหาละเอียด" bottom-right / ปุ่มสีทองมุมขวาล่าง
+
+  NOTES / หมายเหตุ:
+  - Chrome shows a "developer mode extensions" warning bubble at startup —
+    just dismiss it; the extension keeps working.
+    ตอนเปิด Chrome จะมีการ์ดเตือนโหมด dev — กดปิดได้เลย ไม่มีผลกับการทำงาน
+  - To update later / อัปเดตภายหลัง:
+    If your distributor provided UPDATE-CHROME.cmd, just double-click it
+    (it downloads the newest version and replaces the files automatically).
+    ถ้ามีสคริปต์ UPDATE-CHROME.cmd ให้ดับเบิลคลิกเพื่ออัปเดตอัตโนมัติ
+    Otherwise: replace the files in the folder manually.
+    Then: chrome://extensions → click the ↻ reload icon → reload the game tab.
+
+
+OPTION 2 — Permanent, one-click for your users (Chrome Web Store)
+------------------------------------------------------------------
+  1. One-time: create a developer account (US$5):
+     https://chrome.google.com/webstore/devconsole
+  2. "New item" → upload / อัปโหลด: dist/aetheria-market-plus-chrome.zip
+  3. Store listing: name, description, screenshots.
+     Privacy practices / ความเป็นส่วนตัว:
+       - "Does not collect user data" (ไม่เก็บข้อมูลผู้ใช้)
+       - Host access is limited to aetheria-online.in.th
+  4. Submit for review → publish → share the store link.
+     Users install with one click ("Add to Chrome"); updates are automatic.
+  5. Update flow / ขั้นตอนอัปเดต: edit core.js (bump VERSION) → node build.mjs →
+     upload the new zip in the developer console → publish.
+
+
+TROUBLESHOOTING / แก้ปัญหา
+--------------------------
+  - After a browser restart: "extension could not be loaded / appears corrupted"
+      → the folder was moved or deleted. Re-extract and "Load unpacked" again.
+      โฟลเดอร์ถูกย้าย/ลบ → แตกไฟล์ใหม่แล้วโหลดอีกครั้ง
+  - Button does not appear / ปุ่มไม่ขึ้น:
+      must be on https://www.aetheria-online.in.th — then RELOAD the tab.
+      ต้องอยู่เว็บเกมนี้เท่านั้น แล้วรีเฟรชหน้า
+  - Microsoft Edge uses the exact same steps at edge://extensions
+    (the same zip can also be published to the Edge Add-ons store).
+
+More info / ข้อมูลเพิ่มเติม: see README.md in the project folder.
