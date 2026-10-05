@@ -1,5 +1,5 @@
 # Publish both tools to GitHub Pages on every push.
-#   - version = build time (yy.mm.dd.hhmm) — auto-increments on every push
+#   - version = build time (yy.mm.dd.hhmm, Thai time) — auto-increments on every push
 #   - Market+: userscript auto-update, Chrome updater files, Zen updates.json (+ optional AMO signing)
 #   - Command Center: release zip + updater + version beacon
 #   - Pages: password-gated pages + un-gated download/update files
@@ -26,6 +26,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Bangkok   # versions use Thai local time (yy.mm.dd.hhmm)
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

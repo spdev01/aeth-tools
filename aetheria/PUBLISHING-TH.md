@@ -10,7 +10,7 @@
 ```
 git push (branch main)
    └─ GitHub Actions: .github/workflows/publish.yml
-        1. คำนวณเวอร์ชันอัตโนมัติ = เวลาที่ build (รูปแบบ yy.mm.dd.hhmm)
+        1. คำนวณเวอร์ชันอัตโนมัติ = เวลาที่ build (รูปแบบ yy.mm.dd.hhmm, เวลาไทย)
         2. Build ตลาด+  (extension + userscript + ตัวอัปเดต + latest-version.txt)
         3. (ถ้ามี AMO secrets) เซ็นไฟล์ .xpi สำหรับ Zen + สร้าง updates.json
         4. Build Command Center (zip + UPDATE-CC + version.txt)
@@ -27,7 +27,8 @@ git push (branch main)
 | Command Center | `UPDATE-CC.cmd` | ผู้ใช้ดับเบิลคลิก 1 ครั้ง → restart เซิร์ฟเวอร์ |
 
 **เวอร์ชัน** ถูกสร้างจากวัน-เวลาที่ build: `yy.mm.dd.hhmm` (ตัดเลข 0 นำหน้า)
-เช่น `25.10.5.1430` = 5 ต.ค. 2025 เวลา 14:30 — ไม่ต้องตั้งเลขเวอร์ชันเอง
+ใช้เวลาไทย (Asia/Bangkok) — CI ตั้ง TZ ให้อัตโนมัติ — ไม่ต้องตั้งเลขเวอร์ชันเอง
+เช่น `26.10.5.1022` = 5 ต.ค. 2026 เวลา 10:22
 ทุกครั้งที่ push ระบบจะออกเวอร์ชันใหม่ให้ทันที
 
 > หมายเหตุ: ถ้า push สองครั้งภายในนาทีเดียวกัน เวอร์ชันจะซ้ำกัน — รอ 1 นาทีแล้ว push ใหม่
