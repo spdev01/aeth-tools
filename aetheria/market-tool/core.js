@@ -14,7 +14,7 @@
   const W = (typeof unsafeWindow !== 'undefined' && unsafeWindow) ? unsafeWindow : window;
   if (W.__amkt) return; W.__amkt = true;
 
-  const VERSION = '0.2.2';
+  const VERSION = '0.0.0-dev'; // stamped by build.mjs (yy.mm.dd.hhmm)
   const LOG = function () { try { if (W.__amktDebug) console.log('[Market+]', ...arguments); } catch (e) { /* noop */ } };
   LOG('core loaded', VERSION);
 
@@ -297,6 +297,7 @@
   .amk-panel{position:fixed;right:14px;top:56px;bottom:56px;width:min(780px,94vw);z-index:99999;background:#121826f2;border:2px solid #c9a45c;border-radius:12px;color:#f3f0e8;font:12px/1.45 'Noto Sans Thai',system-ui,sans-serif;display:flex;flex-direction:column;box-shadow:0 10px 40px #000000b0;overflow:hidden}
   .amk-head{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid #ffffff1f;background:#0e1420cc}
   .amk-head b{color:#ffd166;font-size:13px}
+  .amk-ver{color:#8a93a6;font-size:10px;font-weight:400;margin-left:2px}
   .amk-head .amk-status{color:#a9b1c2;font-size:11px;margin-left:auto}
   .amk-x{background:none;border:none;color:#a9b1c2;font-size:15px;cursor:pointer}
   .amk-body{display:flex;flex:1;min-height:0}
@@ -358,7 +359,7 @@
       if (this.panel) return;
       const p = el('div', 'amk-panel');
       p.innerHTML = `
-        <div class="amk-head"><b>ตลาด+</b><span class="amk-muted">ค้นหาตามความสามารถ · ซื้อได้ทันที</span><span class="amk-status">รอเชื่อมต่อ…</span><button class="amk-x" title="ปิด">✕</button></div>
+        <div class="amk-head"><b>ตลาด+</b><span class="amk-ver">v${VERSION}</span><span class="amk-muted">ค้นหาตามความสามารถ · ซื้อได้ทันที</span><span class="amk-status">รอเชื่อมต่อ…</span><button class="amk-x" title="ปิด">✕</button></div>
         <div class="amk-body">
           <div class="amk-side">
             <div class="amk-sechead">กรองฝั่งเซิร์ฟเวอร์</div>

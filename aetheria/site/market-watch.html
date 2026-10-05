@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ตลาด+ (Market+) — คู่มือติดตั้งและใช้งาน</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/site.css" />
+<script src="assets/gate.js"></script>
+</head>
+<body>
+<div id="page">
+  <div class="wrap">
+    <div class="top"><span class="logo">⌘</span><h1>ตลาด+ (Market+)</h1></div>
+    <div class="crumbs"><a href="index.html">← กลับหน้าดาวน์โหลด</a> · <a href="command-center.html">คู่มือ Command Center</a></div>
+
+    <div class="card">
+      <h2>คืออะไร</h2>
+      <p>ส่วนขยายช่วยค้นหา<b>ตลาดกลาง</b>แบบละเอียด — กรองตาม<b>ความสามารถของไอเทม</b> (ความสามารถติดตัว + ออปชันพิเศษ เช่น “ลดดาเมจที่ได้รับ +5%”) และ<b>ซื้อ/รับของได้ทันที</b></p>
+      <p class="note">ใช้ได้เฉพาะเว็บ <code>https://www.aetheria-online.in.th</code> · รองรับ Chrome / Edge และ Zen / Firefox</p>
+      <p class="note">เวอร์ชันแสดงที่มุมซ้ายบนของหน้าต่าง ตลาด+ (เช่น v25.10.5.1430)</p>
+    </div>
+
+    <div class="card">
+      <h2>ติดตั้ง — Chrome / Edge (แนะนำ: ชุดติดตั้ง)</h2>
+      <ol>
+        <li>ดาวน์โหลด <b>ชุดติดตั้งแนะนำ</b> จาก<a href="index.html">หน้าดาวน์โหลด</a> แล้ว<b>แตกไฟล์</b>เป็นโฟลเดอร์ (ข้างในมี <code>chrome\</code>, <code>UPDATE-CHROME.cmd</code>, คู่มือ)</li>
+        <li>เปิด <code>chrome://extensions</code> (Edge: <code>edge://extensions</code>) → เปิดสวิตช์ <b>Developer mode</b> (มุมขวาบน)</li>
+        <li>กด <b>Load unpacked</b> → เลือกโฟลเดอร์ <code>chrome</code> ที่แตกออกมา</li>
+        <li>เปิดหรือรีเฟรชหน้าเกม → จะเห็นปุ่มสีทอง <b>“ตลาด+ ค้นหาละเอียด”</b> มุมขวาล่าง</li>
+      </ol>
+      <p class="note">⚠ เก็บโฟลเดอร์ไว้ในที่ถาวร (ห้ามลบ/ย้าย) เพราะ Chrome จะอ่านจากโฟลเดอร์นี้ทุกครั้งที่เปิดเบราว์เซอร์</p>
+      <p class="note">ตอนเปิด Chrome จะมีการ์ดเตือน “ส่วนขยายโหมดผู้พัฒนา” — กดปิดได้เลย ไม่กระทบการทำงาน</p>
+    </div>
+
+    <div class="card">
+      <h2>ติดตั้ง — Zen / Firefox</h2>
+      <h4>แบบถาวร (แนะนำ — มีอัปเดตอัตโนมัติ)</h4>
+      <ol>
+        <li>ดาวน์โหลดไฟล์ <code>.xpi</code> (ถ้ามีในหน้าดาวน์โหลด)</li>
+        <li>ลากไฟล์เข้าหน้าต่าง Zen (หรือ <code>about:addons</code> → ไอคอนเฟือง ⚙ → “Install Add-on From File…”)</li>
+        <li>ยืนยันการติดตั้ง — เสร็จ อยู่ถาวร และจะอัปเดตตัวเองเมื่อมีเวอร์ชันใหม่</li>
+      </ol>
+      <h4>แบบชั่วคราว (โหมด dev — ไม่ต้องเซ็นไฟล์)</h4>
+      <ol>
+        <li>แตกไฟล์ <code>aetheria-market-plus-firefox.zip</code> เป็นโฟลเดอร์</li>
+        <li>เปิด <code>about:debugging#/runtime/this-firefox</code> → กด <b>Load Temporary Add-on…</b></li>
+        <li>เลือกไฟล์ <code>manifest.json</code> ในโฟลเดอร์ที่แตก (เลือก “ไฟล์” ไม่ใช่โฟลเดอร์)</li>
+        <li>เปิดหรือรีเฟรชหน้าเกม → ปุ่มสีทองจะขึ้น</li>
+      </ol>
+      <p class="note">หมายเหตุ: แบบชั่วคราวจะหายเมื่อปิด Zen (ต้องโหลดซ้ำ) และไม่มีการอัปเดตอัตโนมัติ</p>
+    </div>
+
+    <div class="card">
+      <h2>ติดตั้ง — Userscript (ง่ายสุด ใช้ได้ทั้ง Chrome และ Zen)</h2>
+      <ol>
+        <li>ติดตั้งส่วนขยาย <b>Tampermonkey</b> หรือ <b>Violentmonkey</b></li>
+        <li>เปิดลิงก์ <code>aetheria-market-plus.user.js</code> จาก<a href="index.html">หน้าดาวน์โหลด</a> → กดยืนยันติดตั้ง</li>
+        <li>เข้าเกม → ปุ่มสีทองจะขึ้น</li>
+      </ol>
+      <p class="note ok">Userscript จะอัปเดตอัตโนมัติทุกครั้งที่มีเวอร์ชันใหม่</p>
+    </div>
+
+    <div class="card">
+      <h2>วิธีใช้งาน</h2>
+      <ol>
+        <li>กดปุ่ม <b>“ตลาด+ ค้นหาละเอียด”</b> (มุมขวาล่าง — ต้องเข้าเกมก่อน)</li>
+        <li>เลือก หมวด / ประเภท / ราคา / ความหายาก ที่ต้องการ</li>
+        <li>กด <b>“สแกนตลาด”</b> — ระบบดึงรายการทั้งหมดของหมวดนั้น (ใช้เวลาสักครู่)</li>
+        <li>เลือกชิป <b>ความสามารถ</b> เช่น “ลดดาเมจที่ได้รับ” — ผลลัพธ์กรองทันที
+          <br><span class="note">ชิปทั้งสองส่วน (attributes / affixes) จับคู่กับ “ความสามารถทั้งหมดของไอเทม” อัตโนมัติ — เลือกจากส่วนไหนก็เจอเหมือนกัน</span>
+          <br><span class="note">เลือกหลายชิปได้ + เลือกโหมด “ต้องมีทั้งหมด” หรือ “อย่างใดอย่างหนึ่ง” — ดูสรุปตัวกรองที่แถบเหนือรายการเสมอ (แสดงจำนวนที่พบจริง)</span></li>
+        <li>กด <b>“ซื้อ”</b> → ยืนยัน → ไอเทมเข้ากระเป๋า (ถ้าเปิด “รับของอัตโนมัติหลังซื้อ”)
+          <br><span class="note">ถ้าไม่เปิด ให้กด “รับของทั้งหมด” เพื่อรับของจากกล่องรับของ</span></li>
+      </ol>
+      <p class="note">ผลสแกนครั้งล่าสุดถูกจำไว้ — เปิดใหม่ไม่ต้องสแกนซ้ำ (กด “สแกนตลาด” เพื่ออัปเดต · ถ้าเปลี่ยนตัวกรองฝั่งเซิร์ฟเวอร์ ระบบจะเตือนให้สแกนใหม่)</p>
+    </div>
+
+    <div class="card">
+      <h2>การอัปเดตเวอร์ชัน</h2>
+      <ul>
+        <li><b>Chrome (ชุดติดตั้ง):</b> ดับเบิลคลิก <code>UPDATE-CHROME.cmd</code> → รอจนขึ้น “อัปเดตสำเร็จ” → ไปที่ <code>chrome://extensions</code> กดปุ่มรีโหลด (↻) → รีเฟรชหน้าเกม</li>
+        <li><b>Userscript:</b> อัตโนมัติ</li>
+        <li><b>Zen (.xpi ถาวร):</b> อัตโนมัติ (เช็คทุก ~วัน หรือ about:addons → Check for updates)</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>แก้ปัญหาเบื้องต้น</h2>
+      <ul>
+        <li><b>ปุ่มไม่ขึ้น</b> → ต้องอยู่เว็บ <code>https://www.aetheria-online.in.th</code> เท่านั้น แล้วรีเฟรชหน้า</li>
+        <li><b>สแกนไม่สำเร็จ / หมดเวลา</b> → ตรวจว่าตัวละครออนไลน์อยู่ แล้วลองใหม่ (ระบบลองซ้ำให้อัตโนมัติ 3 ครั้ง)</li>
+        <li><b>ผลลัพธ์ไม่ตรงกับที่ตั้งใจ</b> → ดูแถบสรุปตัวกรองเหนือรายการ (เช่น “ต้องมีทั้งหมด — พบ N รายการ”) ถ้าตัวเลขไม่ตรง ให้กดสแกนตลาดใหม่</li>
+        <li><b>Chrome ขึ้น “ส่วนขยายเสียหาย/โหลดไม่ได้” หลังรีสตาร์ท</b> → โฟลเดอร์ถูกย้าย/ลบ ให้แตกไฟล์ใหม่แล้ว Load unpacked อีกครั้ง</li>
+      </ul>
+    </div>
+
+    <div class="footer">Aetheria Tools — สำหรับสมาชิกที่ได้รับอนุญาตเท่านั้น</div>
+  </div>
+</div>
+</body>
+</html>

@@ -39,6 +39,10 @@ aetheria/market-tool/web-ext-artifacts/
 aetheria/market-tool/dist/
 aetheria/market-tool/aetheria-market-plus.user.js
 
+# ── Publish pipeline outputs ────────────────────────────────
+_site/
+aetheria/command-center/release/
+
 # ── Mirrored game files (downloaded, large, third-party) ────
 # ~2.6 MB game bundle + styles + pages/headers/scans:
 aetheria/index-main.js

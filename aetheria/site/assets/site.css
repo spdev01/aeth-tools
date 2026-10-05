@@ -1,0 +1,71 @@
+/* Aetheria tools site — dark + gold theme */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html:not(.gate-ok) #page { display: none; }
+body {
+  background: radial-gradient(circle at 30% 0%, #1b2740, #0e1420 60%);
+  color: #f3f0e8;
+  font: 15px/1.65 'Noto Sans Thai', system-ui, sans-serif;
+  min-height: 100vh;
+}
+a { color: #ffd166; }
+code, pre { font-family: 'JetBrains Mono', Consolas, monospace; font-size: 13px; }
+code { background: #ffffff14; border-radius: 4px; padding: 1px 6px; }
+pre { background: #0a0f1a; border: 1px solid #ffffff1f; border-radius: 8px; padding: 10px 12px; overflow-x: auto; }
+
+.wrap { max-width: 860px; margin: 0 auto; padding: 28px 18px 60px; }
+.top { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.top .logo { font-size: 22px; color: #ffd166; }
+.top h1 { font-size: 22px; margin: 0; color: #ffd166; }
+.top .sub { color: #a9b1c2; font-size: 13px; }
+.crumbs { margin: 4px 0 22px; font-size: 13px; color: #a9b1c2; }
+.crumbs a { text-decoration: none; }
+
+.card {
+  background: #121826f2; border: 2px solid #c9a45c; border-radius: 12px;
+  padding: 18px 20px; margin: 0 0 20px; box-shadow: 0 8px 30px #00000080;
+}
+.card h2 { margin: 0 0 4px; color: #ffd166; font-size: 18px; }
+.card .muted { color: #a9b1c2; font-size: 13px; }
+.card .ver { color: #8de0a6; font-size: 13px; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0 4px; }
+.btn {
+  display: inline-block; background: #ffd166; color: #1a1a1a !important; font-weight: 700;
+  border-radius: 8px; padding: 9px 14px; text-decoration: none; border: none; cursor: pointer;
+}
+.btn.alt { background: #1c2740; color: #ffd166 !important; border: 1px solid #c9a45c; }
+.btn.small { padding: 6px 10px; font-size: 13px; }
+
+h3 { color: #ffd166; margin: 22px 0 6px; font-size: 16px; }
+h4 { margin: 16px 0 4px; font-size: 14px; color: #f3f0e8; }
+ul, ol { margin: 6px 0; padding-left: 22px; }
+li { margin: 3px 0; }
+.note { color: #a9b1c2; font-size: 13px; }
+.warn { color: #ff9f43; }
+.ok { color: #8de0a6; }
+hr { border: none; border-top: 1px solid #ffffff1f; margin: 20px 0; }
+.footer { color: #5c6879; font-size: 12px; text-align: center; margin-top: 30px; }
+
+/* gate overlay */
+#gate {
+  position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle at 30% 20%, #1b2740, #0a0f18 70%);
+}
+.gate-card {
+  background: #121826f2; border: 2px solid #c9a45c; border-radius: 14px;
+  padding: 30px 30px 24px; width: min(380px, 92vw); text-align: center;
+  box-shadow: 0 12px 50px #000000b0;
+}
+.gate-logo { font-size: 34px; color: #ffd166; }
+.gate-card h1 { font-size: 19px; color: #ffd166; margin: 6px 0 8px; }
+.gate-card p { color: #a9b1c2; font-size: 13px; margin: 6px 0; }
+#gate-form { display: flex; gap: 8px; margin-top: 14px; }
+#gate-pass {
+  flex: 1; background: #0e1420; border: 1px solid #ffffff2e; border-radius: 8px;
+  color: #f3f0e8; padding: 9px 10px; font: inherit; min-width: 0;
+}
+#gate-form button {
+  background: #ffd166; color: #1a1a1a; border: none; border-radius: 8px;
+  padding: 9px 14px; font: inherit; font-weight: 700; cursor: pointer;
+}
+.gate-err { color: #ff6b6b !important; min-height: 18px; }

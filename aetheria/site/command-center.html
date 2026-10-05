@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Command Center — คู่มือติดตั้งและใช้งาน</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/site.css" />
+<script src="assets/gate.js"></script>
+</head>
+<body>
+<div id="page">
+  <div class="wrap">
+    <div class="top"><span class="logo">⌘</span><h1>Command Center</h1></div>
+    <div class="crumbs"><a href="index.html">← กลับหน้าดาวน์โหลด</a> · <a href="market-watch.html">คู่มือ ตลาด+</a></div>
+
+    <div class="card">
+      <h2>คืออะไร</h2>
+      <p>ศูนย์บัญชาการสำหรับจัดการ<b>บัญชี / ตัวละคร / บอทหลายตัว</b> สำหรับทดสอบเกม Aetheria — ทำงานบนเครื่องของคุณเอง 100% (เว็บเซิร์ฟเวอร์ใน localhost)</p>
+      <p class="note">เวอร์ชันแสดงมุมซ้ายบนของหน้า Dashboard (เช่น v25.10.5.1430)</p>
+    </div>
+
+    <div class="card">
+      <h2>สิ่งที่ต้องมี</h2>
+      <ul>
+        <li><b>Node.js 18 ขึ้นไป</b> → <a href="https://nodejs.org" target="_blank" rel="noopener">nodejs.org</a> (ติดตั้งแบบ LTS)</li>
+        <li>Windows / macOS / Linux</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>ติดตั้ง</h2>
+      <ol>
+        <li>ดาวน์โหลด <code>aetheria-command-center.zip</code> จาก<a href="index.html">หน้าดาวน์โหลด</a></li>
+        <li>แตกไฟล์เป็นโฟลเดอร์ เช่น <code>D:\AetheriaCommandCenter</code> (ข้างในมี <code>server\</code>, <code>public\</code>, <code>package.json</code>, <code>UPDATE-CC.cmd</code>)</li>
+        <li>เปิด Terminal / PowerShell ในโฟลเดอร์นั้น แล้วรัน:
+          <pre>npm install</pre></li>
+        <li>รันเซิร์ฟเวอร์:
+          <pre>npm start</pre></li>
+        <li>เปิดเบราว์เซอร์ไปที่ <code>http://127.0.0.1:4310</code></li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h2>วิธีใช้งาน</h2>
+      <h4>แท็บ Dashboard — ควบคุมบอท</h4>
+      <ul>
+        <li>การ์ดบอทแต่ละตัวโชว์สถานะ / เลเวล / แผนที่ / กิจกรรมล่าสุด (ตีมอน, เดินทาง, พัก ฯลฯ)</li>
+        <li>เลือกบอทด้วย checkbox แล้วใช้ปุ่ม: <b>▶ Play selected</b> / <b>⏸ Pause selected</b> / <b>⏹ Stop selected</b> / <b>⛔ STOP ALL</b></li>
+        <li>แถบล่าง = log สดรวม (ติ๊ก follow เพื่อเลื่อนตามอัตโนมัติ)</li>
+      </ul>
+      <h4>แท็บ Accounts — จัดการบัญชีและตัวละคร</h4>
+      <ul>
+        <li><b>Create accounts:</b> กำหนดจำนวน → สร้างบัญชี + ตัวละครอัตโนมัติ (แนะนำทีละ 5–10)</li>
+        <li><b>Import accounts:</b> นำเข้าบัญชีที่มีอยู่ (บรรทัดละ <code>userId:password</code>)</li>
+        <li>ตารางบัญชี: ดูรหัสผ่านได้ (ปุ่ม reveal / hide / copy) และสร้างตัวละครเพิ่ม / รีเฟรชข้อมูล</li>
+      </ul>
+      <h4>แท็บ Stress — เตรียมบอทสำหรับทดสอบ</h4>
+      <ul>
+        <li>เลือกตัวละครที่จะเข้า roster (include) แล้วกดเริ่ม — บอทจะเข้าสู่เกมและทำงานตามสคริปต์อัตโนมัติ</li>
+        <li>ติดตามสถานะได้ที่แท็บ Dashboard</li>
+      </ul>
+      <p class="note">เปลี่ยนพอร์ต: <code>PORT=5000 npm start</code> · Windows PowerShell: <code>$env:PORT=5000</code> แล้วค่อย <code>npm start</code></p>
+    </div>
+
+    <div class="card">
+      <h2>การอัปเดตเวอร์ชัน</h2>
+      <ol>
+        <li>ในโฟลเดอร์โปรแกรม ดับเบิลคลิก <b>UPDATE-CC.cmd</b> → รอจนขึ้น “อัปเดตสำเร็จ” (ข้อมูลใน <code>data\</code> ไม่ถูกแตะต้อง)</li>
+        <li>ปิดเซิร์ฟเวอร์เก่า (Ctrl+C) แล้วรัน <code>npm install</code> และ <code>npm start</code> อีกครั้ง</li>
+      </ol>
+      <p class="note">เวอร์ชันมุมซ้ายบนของหน้าเว็บจะเปลี่ยนเป็นเวอร์ชันใหม่ทันที</p>
+    </div>
+
+    <div class="card">
+      <h2>แก้ปัญหาเบื้องต้น</h2>
+      <ul>
+        <li><b>npm ไม่รู้จัก</b> → ยังไม่ได้ติดตั้ง Node.js หรือยังไม่รีสตาร์ท terminal</li>
+        <li><b>พอร์ต 4310 ถูกใช้อยู่</b> → ปิดโปรแกรมเดิม หรือเปลี่ยนพอร์ตตามด้านบน</li>
+        <li><b>เปิดหน้าเว็บแล้วไม่มีข้อมูล</b> → ต้องเปิดในเครื่องเดียวกับที่รันเซิร์ฟเวอร์</li>
+        <li><b>บอทไม่เริ่ม</b> → ดู log ใน Dashboard (เช่น ติด rate limit ของเกม ให้รอแล้วลองใหม่)</li>
+        <li><b>ย้ายเครื่อง</b> → คัดลอกทั้งโฟลเดอร์ (รวม <code>data\</code>) ได้เลย</li>
+      </ul>
+    </div>
+
+    <div class="footer">Aetheria Tools — สำหรับสมาชิกที่ได้รับอนุญาตเท่านั้น</div>
+  </div>
+</div>
+</body>
+</html>

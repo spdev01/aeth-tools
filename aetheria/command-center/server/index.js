@@ -13,6 +13,8 @@ import { previewNames } from './namegen.js';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const PUBLIC = path.join(here, '..', 'public');
 const PORT = parseInt(process.env.PORT || '4310', 10);
+let VERSION = '0.0.0';
+try { VERSION = JSON.parse(fs.readFileSync(path.join(here, '..', 'package.json'), 'utf8')).version || VERSION; } catch { /* ignore */ }
 
 // ---------- live hub ----------
 const wss = new WebSocketServer({ noServer: true });
@@ -54,6 +56,7 @@ const server = http.createServer(async (req, res) => {
   const p = url.pathname;
   try {
     if (p === '/api/state') return json(res, 200, stateView());
+    if (p === '/api/meta') return json(res, 200, { name: 'aetheria-command-center', version: VERSION });
     if (p === '/api/namegen/preview') return json(res, 200, { names: previewNames(6) });
 
     if (p === '/api/accounts/register' && req.method === 'POST') {
@@ -157,7 +160,7 @@ server.on('upgrade', (req, socket, head) => {
 });
 
 server.listen(PORT, '127.0.0.1', () => {
-  console.log(`Aetheria Command Center → http://127.0.0.1:${PORT}`);
+  console.log(`Aetheria Command Center v${VERSION} → http://127.0.0.1:${PORT}`);
   console.log(`data dir: ${store.dir}`);
   console.log(`bots dir: ${path.join(store.dir, 'bots')}`);
 });

@@ -15,6 +15,7 @@
   <div class="brand">
     <span class="logo">⌘</span>
     <div class="bt"><b>Aetheria</b><span>Command Center</span></div>
+    <span class="muted" id="cc-ver" style="font-size:11px;opacity:.75;margin-left:6px"></span>
   </div>
   <div class="kpis" id="kpis"></div>
   <div class="conn" id="conn"><i></i><span>LIVE</span></div>
@@ -103,5 +104,12 @@
 </footer>
 
 <script src="/app.js"></script>
+<script>
+  // show app version (stamped into package.json at release build)
+  fetch('/api/meta').then(function (r) { return r.json(); }).then(function (m) {
+    var el = document.getElementById('cc-ver');
+    if (el && m && m.version) el.textContent = 'v' + m.version;
+  }).catch(function () { });
+</script>
 </body>
 </html>

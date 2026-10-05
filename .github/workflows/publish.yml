@@ -1,0 +1,98 @@
+# Publish both tools to GitHub Pages on every push.
+#   - version = build time (yy.mm.dd.hhmm) — auto-increments on every push
+#   - Market+: userscript auto-update, Chrome updater files, Zen updates.json (+ optional AMO signing)
+#   - Command Center: release zip + updater + version beacon
+#   - Pages: password-gated pages + un-gated download/update files
+#
+# One-time setup (see aetheria/PUBLISHING-TH.md):
+#   1) push this repo to GitHub (private ok — Pages on private repos needs GitHub Pro)
+#   2) Settings -> Pages -> Source: "GitHub Actions"
+#   3) optional signing secrets: AMO_API_KEY, AMO_API_SECRET
+name: publish
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Compute version (yy.mm.dd.hhmm)
+        id: ver
+        run: echo "version=$(node aetheria/tools/version.mjs)" >> "$GITHUB_OUTPUT"
+
+      - name: Page base URL
+        id: base
+        run: echo "url=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}" >> "$GITHUB_OUTPUT"
+
+      - name: Build Market+
+        env:
+          MARKETPLUS_VERSION: ${{ steps.ver.outputs.version }}
+          DEPLOY_BASE: ${{ steps.base.outputs.url }}
+        run: cd aetheria/market-tool && node build.mjs
+
+      - name: AMO signing secrets present?
+        id: amo
+        env:
+          KEY: ${{ secrets.AMO_API_KEY }}
+          SECRET: ${{ secrets.AMO_API_SECRET }}
+        run: if [ -n "$KEY" ] && [ -n "$SECRET" ]; then echo "ok=1" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Sign Zen/Firefox xpi (optional)
+        if: steps.amo.outputs.ok == '1'
+        continue-on-error: true
+        env:
+          WEB_EXT_API_KEY: ${{ secrets.AMO_API_KEY }}
+          WEB_EXT_API_SECRET: ${{ secrets.AMO_API_SECRET }}
+          MARKETPLUS_VERSION: ${{ steps.ver.outputs.version }}
+          BASE: ${{ steps.base.outputs.url }}
+        run: |
+          cd aetheria/market-tool
+          mkdir -p web-ext-artifacts
+          npx --yes web-ext sign --source-dir dist/firefox --channel unlisted --artifacts-dir web-ext-artifacts
+          first=$(ls web-ext-artifacts/*.xpi | head -n 1)
+          cp "$first" "web-ext-artifacts/aetheria-market-plus-${MARKETPLUS_VERSION}.xpi"
+          node tools/zen-updates.mjs --url-template "${BASE}/aetheria-market-plus-{version}.xpi" --out dist/updates.json
+
+      - name: Build Command Center
+        env:
+          CC_VERSION: ${{ steps.ver.outputs.version }}
+          CC_ZIP_URL: ${{ steps.base.outputs.url }}/command-center/aetheria-command-center.zip
+          CC_VERSION_URL: ${{ steps.base.outputs.url }}/command-center/version.txt
+        run: node aetheria/command-center/tools/build-release.mjs
+
+      - name: Assemble site
+        env:
+          SITE_VERSION: ${{ steps.ver.outputs.version }}
+          XPI_DIR: aetheria/market-tool/web-ext-artifacts
+        run: node aetheria/tools/assemble-site.mjs
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

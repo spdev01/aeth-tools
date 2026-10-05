@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Aetheria Tools — ศูนย์ดาวน์โหลด</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/site.css" />
+<script src="assets/gate.js"></script>
+</head>
+<body>
+<div id="page">
+  <div class="wrap">
+    <div class="top"><span class="logo">⌘</span><h1>Aetheria Tools</h1></div>
+    <div class="crumbs">ศูนย์ดาวน์โหลด · <a href="market-watch.html">คู่มือ Market+</a> · <a href="command-center.html">คู่มือ Command Center</a></div>
+
+    <div class="card">
+      <h2>ตลาด+ (Market+) — ส่วนขยายตลาดกลาง</h2>
+      <div class="muted">ค้นหาไอเทมตลาดกลางตามความสามารถ (ความสามารถติดตัว + ออปชันพิเศษ) และซื้อ/รับของได้ทันที — รองรับ Chrome / Edge และ Zen / Firefox</div>
+      <div class="row">เวอร์ชันล่าสุด: <span class="ver" id="ver-market">…</span></div>
+      <div class="row">
+        <a class="btn" href="aetheria-market-plus-bundle.zip">⬇ ชุดติดตั้งแนะนำ (Chrome + ตัวอัปเดต + คู่มือ)</a>
+        <a class="btn alt" href="aetheria-market-plus.user.js">Userscript (Chrome/Zen)</a>
+        <a class="btn alt" href="aetheria-market-plus-chrome.zip">Chrome zip (เดี่ยว)</a>
+      </div>
+      <div class="muted" style="margin-top:10px">
+        Zen / Firefox แบบติดตั้งถาวร: ดาวน์โหลดไฟล์ <code>.xpi</code> ที่เซ็นแล้ว (ถ้ามีในหน้านี้) แล้วลากเข้าหน้าต่าง Zen —
+        หากยังไม่มี ให้ใช้ Userscript หรือโหลดแบบชั่วคราวตามคู่มือ
+      </div>
+      <div class="row"><a class="btn small alt" href="market-watch.html">📖 คู่มือติดตั้ง + วิธีใช้งาน</a></div>
+    </div>
+
+    <div class="card">
+      <h2>Command Center — ศูนย์บัญชาการบอท</h2>
+      <div class="muted">จัดการบัญชี ตัวละคร และบอทหลายตัวสำหรับทดสอบเกม (รันบนเครื่องคุณเอง ผ่าน http://127.0.0.1:4310)</div>
+      <div class="row">เวอร์ชันล่าสุด: <span class="ver" id="ver-cc">…</span></div>
+      <div class="row">
+        <a class="btn" href="command-center/aetheria-command-center.zip">⬇ ดาวน์โหลด (zip)</a>
+      </div>
+      <div class="row"><a class="btn small alt" href="command-center.html">📖 คู่มือติดตั้ง + วิธีใช้งาน</a></div>
+    </div>
+
+    <div class="card">
+      <h2>การอัปเดต</h2>
+      <ul>
+        <li><b>Userscript:</b> อัปเดตอัตโนมัติ (ไม่ต้องทำอะไร)</li>
+        <li><b>Chrome (ชุดติดตั้งแนะนำ):</b> ดับเบิลคลิก <code>UPDATE-CHROME.cmd</code> → กดรีโหลดที่ chrome://extensions</li>
+        <li><b>Zen (.xpi ที่ติดตั้งถาวร):</b> อัปเดตอัตโนมัติเมื่อผู้ดูแลออกเวอร์ชันใหม่</li>
+        <li><b>Command Center:</b> ดับเบิลคลิก <code>UPDATE-CC.cmd</code> ในโฟลเดอร์โปรแกรม</li>
+      </ul>
+    </div>
+
+    <div class="footer">Aetheria Tools — สำหรับสมาชิกที่ได้รับอนุญาตเท่านั้น</div>
+  </div>
+
+  <script>
+    fetch('latest-version.txt').then(function (r) { return r.text(); }).then(function (v) {
+      document.getElementById('ver-market').textContent = v.trim();
+    }).catch(function () { document.getElementById('ver-market').textContent = '(ไม่พบข้อมูลเวอร์ชัน)'; });
+    fetch('command-center/version.txt').then(function (r) { return r.text(); }).then(function (v) {
+      document.getElementById('ver-cc').textContent = v.trim();
+    }).catch(function () { document.getElementById('ver-cc').textContent = '(ไม่พบข้อมูลเวอร์ชัน)'; });
+  </script>
+</div>
+</body>
+</html>

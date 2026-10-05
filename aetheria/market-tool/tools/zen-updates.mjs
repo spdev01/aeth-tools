@@ -6,13 +6,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { computeVersion } from '../../tools/version.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, '..');
 
-const core = fs.readFileSync(path.join(ROOT, 'core.js'), 'utf8');
-const VERSION = (core.match(/const VERSION = '([0-9.]+)'/) || [])[1];
-if (!VERSION) throw new Error('VERSION not found in core.js');
+const VERSION = process.env.MARKETPLUS_VERSION || computeVersion();
 
 const args = process.argv.slice(2);
 const getArg = (n) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : undefined; };
