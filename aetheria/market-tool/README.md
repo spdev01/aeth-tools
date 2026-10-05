@@ -90,9 +90,16 @@ A user-facing guides ship in `dist/` — share them alongside any route above:
 
 ## Features
 
-- Server-side filters: category / kind / rarity / name / price range / refine / sort.
+- Server-side filters: category / kind / **class (อาชีพ)** / rarity / name / price range / refine / sort.
+  - The class dropdown mirrors the game's own market filter: roster fetched live from the
+    same-origin `/classes` API (33 classes), Thai labels, grouped by job tier — e.g.
+    “ชุดเกราะ that อัศวิน can use”.
 - **Ability chips**: innate attributes (39 types) + affixes (23 types), AND / OR mode —
   e.g. “ชุดเกราะ that has ลดดาเมจที่ได้รับ”.
+- **Per-stat value ranges (optional)**: selecting a chip reveals `≥` / `≤` inputs inside it —
+  leave empty for “any value”, fill min/max for finer control, e.g.
+  “ลดดาเมจที่ได้รับ 7–10 + โอกาสบล็อก”. Results re-filter live as you type; the twin chip
+  (stats that exist as both attribute and affix) stays in sync automatically.
 - **สแกนตลาด**: scans every page of the current filter set with strict pacing
   (~30 ms/op; full armor market ≈ 80 pages ≈ 6–8 s), progress + cancel.
 - Results: item (+refine/slots), price, seller, colored ability badges; auctions

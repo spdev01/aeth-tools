@@ -180,6 +180,20 @@
     ATTACK_RANGE: 'ระยะโจมตี (ช่อง)', ATK_STR_OVER_99: 'ATK (STR>99)'
   };
   const CATS = [['weapon', 'อาวุธ'], ['armor', 'ชุดเกราะ'], ['accessory', 'ประดับ/เจม'], ['usable', 'ใช้ได้'], ['card', 'การ์ด'], ['refine', 'แร่/ตีบวก'], ['material', 'วัตถุดิบ'], ['other', 'อื่นๆ']];
+  // baked class roster (fallback when /classes cannot be fetched); refreshed live from the game API
+  const CLASSES_FALLBACK = [
+    ['novice', 'โนวิซ', 0], ['swordsman', 'นักดาบ', 1], ['mage', 'นักเวท', 1], ['archer', 'นักธนู', 1],
+    ['acolyte', 'นักบวชฝึกหัด', 1], ['merchant', 'พ่อค้า', 1], ['thief', 'โจร', 1],
+    ['knight', 'อัศวิน', 2], ['crusader', 'ครูเซเดอร์', 2], ['wizard', 'จอมเวท', 2], ['sage', 'นักปราชญ์', 2],
+    ['hunter', 'นักล่า', 2], ['bard', 'กวี', 2], ['dancer', 'นักเต้น', 2], ['priest', 'พรีสต์', 2],
+    ['monk', 'มองค์', 2], ['blacksmith', 'ช่างตีเหล็ก', 2], ['alchemist', 'นักเล่นแร่แปรธาตุ', 2],
+    ['assassin', 'นักฆ่า', 2], ['rogue', 'โร้ก', 2],
+    ['dragon-knight', 'อัศวินมังกร', 3], ['paladin', 'พาลาดิน', 3], ['revenant', 'เรเวแนนท์', 3],
+    ['stormweaver', 'จอมเวทพายุ', 3], ['frost-sage', 'ปราชญ์น้ำแข็ง', 3], ['sniper', 'สไนเปอร์', 3],
+    ['high-priest', 'ไฮพรีสต์', 3], ['champion', 'แชมเปียน', 3], ['whitesmith', 'ไวท์สมิธ', 3],
+    ['creator', 'ครีเอเตอร์', 3], ['assassin-cross', 'แอสแซสซินครอส', 3], ['stalker', 'สตอล์คเกอร์', 3],
+    ['draken-paladin', 'พาลาดินมังกร', 4, false]
+  ];
   const KINDS = {
     weapon: [['Sword', 'ดาบ'], ['TwoHandSword', 'ดาบสองมือ'], ['Dagger', 'มีดสั้น'], ['Axe', 'ขวาน'], ['TwoHandAxe', 'ขวานสองมือ'], ['Spear', 'หอก'], ['TwoHandSpear', 'หอกสองมือ'], ['Mace', 'กระบอง'], ['Staff', 'คทา'], ['Bow', 'ธนู'], ['Knuckle', 'สนับมือ'], ['Katar', 'คาตาร์'], ['Instrument', 'เครื่องดนตรี'], ['Whip', 'แส้'], ['Ammo', 'ลูกธนู/กระสุน']],
     armor: [['Armor', 'เสื้อเกราะ'], ['Helmet', 'หมวก (บน)'], ['HeadMid', 'หมวก (กลาง)'], ['HeadLow', 'หมวก (ล่าง)'], ['Shield', 'โล่'], ['Cape', 'ผ้าคลุม'], ['Boot', 'รองเท้า'], ['Glove', 'ถุงมือ'], ['Costume', 'คอสตูม']],
@@ -301,15 +315,20 @@
   .amk-head .amk-status{color:#a9b1c2;font-size:11px;margin-left:auto}
   .amk-x{background:none;border:none;color:#a9b1c2;font-size:15px;cursor:pointer}
   .amk-body{display:flex;flex:1;min-height:0}
-  .amk-side{width:250px;min-width:250px;border-right:1px solid #ffffff1f;padding:8px;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
+  .amk-side{width:264px;min-width:264px;border-right:1px solid #ffffff1f;padding:8px;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
   .amk-main{flex:1;min-width:0;display:flex;flex-direction:column}
   .amk-filters{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px;border-bottom:1px solid #ffffff1f}
   .amk-filters label{display:flex;flex-direction:column;gap:2px;color:#a9b1c2;font-size:11px}
   .amk-filters select,.amk-filters input{background:#0e1420;border:1px solid #ffffff2e;border-radius:6px;color:#f3f0e8;padding:4px 6px;font:inherit;min-width:0}
   .amk-filters .amk-wide{grid-column:1/3}
   .amk-chips{display:flex;flex-wrap:wrap;gap:4px}
-  .amk-chip{border:1px solid #ffffff2e;border-radius:999px;padding:2px 8px;cursor:pointer;color:#cdd3df;background:#0e142066;font-size:11px;user-select:none}
+  .amk-chip{display:inline-flex;align-items:center;gap:3px;border:1px solid #ffffff2e;border-radius:999px;padding:2px 8px;cursor:pointer;color:#cdd3df;background:#0e142066;font-size:11px;user-select:none}
   .amk-chip.on{background:#ffd166;color:#1a1a1a;border-color:#ffd166;font-weight:700}
+  .amk-rng{display:none;align-items:center;gap:2px}
+  .amk-chip.on .amk-rng{display:inline-flex}
+  .amk-rng i{font-style:normal;font-size:10px;font-weight:700;color:#1a1a1a}
+  .amk-rng input{width:46px;padding:1px 3px;border:1px solid #00000055;border-radius:5px;background:#0e1420;color:#ffd166;font:inherit;font-size:10px;text-align:center;min-width:0}
+  .amk-rng input::placeholder{color:#8a93a6}
   .amk-sechead{color:#ffd166;font-weight:700;margin:4px 0 2px;font-size:11px}
   .amk-actions{display:flex;gap:6px;padding:8px;border-bottom:1px solid #ffffff1f;align-items:center;flex-wrap:wrap}
   .amk-btn{background:#1c2740;border:1px solid #c9a45c;color:#ffd166;border-radius:8px;padding:6px 10px;font:inherit;font-weight:700;cursor:pointer}
@@ -347,7 +366,7 @@
   const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
 
   const ui = {
-    panel: null, raw: [], filterAffixes: new Set(), filterAttrs: new Set(), mode: 'and', token: null, scanning: false, lastScanAt: 0,
+    panel: null, raw: [], filterAffixes: new Set(), filterAttrs: new Set(), statRanges: new Map(), mode: 'and', token: null, scanning: false, lastScanAt: 0,
     mount() {
       const style = el('style'); style.textContent = CSS; document.head.appendChild(style);
       const launch = el('button', 'amk-launch', 'ตลาด+ ค้นหาละเอียด');
@@ -366,12 +385,13 @@
             <div class="amk-filters" id="amk-f">
               <label>หมวด<select data-k="category"></select></label>
               <label>ประเภท<select data-k="kind"></select></label>
+              <label>อาชีพ<select data-k="job"></select></label>
               <label>ความหายาก<select data-k="rarity"></select></label>
               <label>เรียง<select data-k="sort"></select></label>
+              <label>ตีบวก ≥<input data-k="minRefine" inputmode="numeric" placeholder="0"></label>
               <label class="amk-wide">ชื่อไอเทม<input data-k="q" type="text" placeholder="เช่น Red Bandana"></label>
               <label>ราคาต่ำสุด<input data-k="minPrice" inputmode="numeric" placeholder="0"></label>
               <label>ราคาสูงสุด<input data-k="maxPrice" inputmode="numeric" placeholder="ว่าง = ไม่จำกัด"></label>
-              <label>ตีบวก ≥<input data-k="minRefine" inputmode="numeric" placeholder="0"></label>
             </div>
             <div class="amk-sechead">ความสามารถติดตัว (attributes)</div>
             <div class="amk-chips" id="amk-attrs"></div>
@@ -379,7 +399,7 @@
             <div class="amk-chips" id="amk-affixes"></div>
             <label class="amk-muted"><input type="radio" name="amk-mode" value="and" checked> ต้องมีทั้งหมด</label>
             <label class="amk-muted"><input type="radio" name="amk-mode" value="or"> มีอย่างใดอย่างหนึ่ง</label>
-            <div class="amk-note">โน้ต: ชิปทั้ง 2 ส่วนจับคู่กับ “ความสามารถทั้งหมดของไอเทม” อัตโนมัติ — เลือกจากส่วนไหนก็เจอเหมือนกัน</div>
+            <div class="amk-note">โน้ต: เลือกชิปแล้วกำหนดช่วงค่า ≥ / ≤ ได้ทันทีในชิป (เว้นว่าง = ทุกค่า) · ชิปทั้ง 2 ส่วนจับคู่กับ “ความสามารถทั้งหมดของไอเทม” — เลือกจากส่วนไหนก็เจอเหมือนกัน</div>
           </div>
           <div class="amk-main">
             <div class="amk-actions">
@@ -401,6 +421,7 @@
       this.fillSelect(p.querySelector('[data-k=category]'), CATS, 'ทุกหมวด');
       this.fillSelect(p.querySelector('[data-k=rarity]'), RARITIES, 'ทุกระดับ');
       this.fillSelect(p.querySelector('[data-k=sort]'), [['price_asc', 'ราคาต่ำ → สูง'], ['price_desc', 'ราคาสูง → ต่ำ'], ['newest', 'ลงขายล่าสุด'], ['ending', 'ใกล้หมดเวลา']], null);
+      this.fillJobSelect(p.querySelector('[data-k=job]'));
       p.querySelector('[data-k=category]').value = 'armor';
       this.syncKinds();
       p.querySelector('[data-k=category]').addEventListener('change', () => this.syncKinds());
@@ -454,9 +475,12 @@
       try {
         const cat = this.panel.querySelector('[data-k=category]');
         if (base.category) { cat.value = base.category; this.syncKinds(); }
-        ['kind', 'rarity', 'sort', 'q', 'minPrice', 'maxPrice', 'minRefine'].forEach((k) => {
+        ['kind', 'rarity', 'sort', 'q', 'minPrice', 'maxPrice', 'minRefine', 'job'].forEach((k) => {
           const inp = this.panel.querySelector('[data-k=' + k + ']');
-          if (inp && base[k] != null && base[k] !== '') inp.value = base[k];
+          if (inp && base[k] != null && base[k] !== '') {
+            inp.value = base[k];
+            if (inp.tagName === 'SELECT' && inp.value !== String(base[k])) inp.dataset.want = base[k]; // options may still be loading
+          }
         });
       } catch (e) { /* noop */ }
     },
@@ -467,10 +491,82 @@
         this.els.warn.className = 'amk-warn' + (v ? ' on' : '');
       }
     },
+    // ---- class/job filter (mirrors the game's market dropdown; roster fetched from /classes)
+    fetchClasses() {
+      if (!this._clsP) {
+        this._clsP = (async () => {
+          try {
+            const r = await W.fetch('/classes');
+            const j = await r.json();
+            const list = ((j && j.classes) || []).map((c) => ({ id: c.id, th: c.thai || c.name || c.id, tier: typeof c.tier === 'number' ? c.tier : 1, playable: c.playable !== false }));
+            if (list.length) return list;
+          } catch (e) { /* fall back to the baked roster */ }
+          return CLASSES_FALLBACK.map(([id, th, tier, playable]) => ({ id, th, tier, playable: playable !== false }));
+        })();
+      }
+      return this._clsP;
+    },
+    fillJobSelect(sel) {
+      if (!sel) return;
+      const tiers = ['เริ่มต้น', 'อาชีพขั้นที่ 1', 'อาชีพขั้นที่ 2', 'อาชีพขั้นที่ 3', 'อาชีพขั้นที่ 4'];
+      this.fetchClasses().then((list) => {
+        if (!this.panel || !document.body.contains(sel)) return;
+        const keep = sel.dataset.want || sel.value;
+        sel.innerHTML = '';
+        const any = el('option', null, 'ทุกอาชีพ'); any.value = ''; sel.appendChild(any);
+        const groups = new Map();
+        for (const c of list) {
+          const t = Math.max(0, Math.min(4, c.tier | 0));
+          if (!groups.has(t)) { const og = document.createElement('optgroup'); og.label = tiers[t] || ('ขั้น ' + t); groups.set(t, og); sel.appendChild(og); }
+          const o = el('option', null, c.th); o.value = c.id; groups.get(t).appendChild(o);
+        }
+        if (keep && sel.querySelector('option[value="' + String(keep).replace(/"/g, '\\"') + '"]')) sel.value = keep;
+        delete sel.dataset.want;
+      });
+    },
+    // ---- per-stat value ranges (optional min/max, shown inside selected chips)
+    rangeVal(k, which) { const r = this.statRanges.get(k); return r && r[which] != null ? String(r[which]) : ''; },
+    setRange(k, which, raw) {
+      const s = String(raw || '').replace(/,/g, '').trim();
+      let v = null;
+      if (s !== '') { const n = parseFloat(s); if (isFinite(n)) v = n; }
+      const r = this.statRanges.get(k) || { min: null, max: null };
+      r[which] = v;
+      if (r.min == null && r.max == null) this.statRanges.delete(k); else this.statRanges.set(k, r);
+      this.syncRangeInputs(k);
+      this.render();
+    },
+    // keep the twin chip (same stat appears in both attribute & affix groups) in sync
+    syncRangeInputs(k) {
+      if (!this.panel) return;
+      const minv = this.rangeVal(k, 'min'), maxv = this.rangeVal(k, 'max');
+      this.panel.querySelectorAll('.amk-chip[data-stat="' + k + '"]').forEach((chip) => {
+        const ins = chip.querySelectorAll('.amk-rng input');
+        if (ins[0] && ins[0] !== document.activeElement && ins[0].value !== minv) ins[0].value = minv;
+        if (ins[1] && ins[1] !== document.activeElement && ins[1].value !== maxv) ins[1].value = maxv;
+      });
+    },
     chip(key, label, set, cls) {
-      const c = el('span', 'amk-chip ' + (cls || ''), label);
+      const c = el('span', 'amk-chip ' + (cls || ''), null);
+      c.dataset.stat = key;
+      c.appendChild(el('span', 'amk-chip-t', label));
+      const rng = el('span', 'amk-rng', null);
+      const mk = (which, sym, ph) => {
+        rng.appendChild(el('i', null, sym));
+        const inp = document.createElement('input');
+        inp.type = 'text'; inp.inputMode = 'decimal';
+        inp.placeholder = ph;
+        inp.title = (which === 'min' ? 'ค่าต่ำสุด' : 'ค่าสูงสุด') + ' (เว้นว่าง = ไม่จำกัด)';
+        inp.value = this.rangeVal(key, which);
+        inp.addEventListener('click', (e) => e.stopPropagation());
+        inp.addEventListener('pointerdown', (e) => e.stopPropagation());
+        inp.addEventListener('input', () => this.setRange(key, which, inp.value));
+        rng.appendChild(inp);
+      };
+      mk('min', '≥', 'ต่ำสุด'); mk('max', '≤', 'สูงสุด');
+      c.appendChild(rng);
       if (set.has(key)) c.classList.add('on'); // reflect real state on reopen
-      c.addEventListener('click', () => { set.has(key) ? set.delete(key) : set.add(key); c.classList.toggle('on'); this.render(); });
+      c.addEventListener('click', () => { set.has(key) ? set.delete(key) : set.add(key); c.classList.toggle('on'); this.syncRangeInputs(key); this.render(); });
       return c;
     },
     readForm() {
@@ -512,13 +608,27 @@
     match(l) {
       // UNION semantics: a selected chip matches if the ability is EITHER an innate
       // attribute OR an affix — so it does not matter which chip group was clicked.
+      // Each selected chip can additionally carry an optional min/max value range.
       const wanted = new Set([...this.filterAffixes, ...this.filterAttrs]);
       if (!wanted.size) return true;
       const it = l.item || {};
-      const have = new Set();
-      (it.attributes || []).forEach((a) => have.add(a.type));
-      (it.affixes || []).forEach((a) => have.add(a.type));
-      const tests = [...wanted].map((k) => have.has(k));
+      const seen = new Set(); const nums = new Map();
+      const scan = (arr) => {
+        (arr || []).forEach((a) => {
+          seen.add(a.type);
+          const n = typeof a.value === 'number' ? a.value : parseFloat(String(a.value));
+          if (isFinite(n)) { const list = nums.get(a.type) || []; list.push(n); nums.set(a.type, list); }
+        });
+      };
+      scan(it.attributes); scan(it.affixes);
+      const ok = (k) => {
+        if (!seen.has(k)) return false;
+        const r = this.statRanges.get(k);
+        if (!r || (r.min == null && r.max == null)) return true;
+        const list = nums.get(k) || [];
+        return list.some((v) => (r.min == null || v >= r.min) && (r.max == null || v <= r.max));
+      };
+      const tests = [...wanted].map(ok);
       return this.mode === 'and' ? tests.every(Boolean) : tests.some(Boolean);
     },
     render() {
@@ -530,8 +640,16 @@
       if (this.els.summary) {
         const wanted = [...new Set([...this.filterAffixes, ...this.filterAttrs])];
         const lbl = (k) => AFFIX_TH[k] || ATTR_TH[k] || k;
+        const rtxt = (k) => {
+          const r = this.statRanges.get(k);
+          if (!r) return '';
+          if (r.min != null && r.max != null) return ' (' + r.min + '–' + r.max + ')';
+          if (r.min != null) return ' (≥' + r.min + ')';
+          if (r.max != null) return ' (≤' + r.max + ')';
+          return '';
+        };
         this.els.summary.textContent = wanted.length
-          ? 'ตัวกรอง: ' + wanted.map(lbl).join(' + ') + ' — ' + (this.mode === 'and' ? 'ต้องมีทั้งหมด' : 'อย่างใดอย่างหนึ่ง') + ' — พบ ' + fmt(rows.length) + ' รายการ'
+          ? 'ตัวกรอง: ' + wanted.map((k) => lbl(k) + rtxt(k)).join(' + ') + ' — ' + (this.mode === 'and' ? 'ต้องมีทั้งหมด' : 'อย่างใดอย่างหนึ่ง') + ' — พบ ' + fmt(rows.length) + ' รายการ'
           : 'ยังไม่ได้เลือกความสามารถ — แสดงทั้งหมด ' + fmt(this.raw.length) + ' รายการ';
       }
       list.innerHTML = '';
@@ -593,6 +711,7 @@
     tick() { if (!this.panel) return; this.zeny(); setTimeout(() => this.tick(), 2000); }
   };
 
+  W.__amkTool = { ui, Market }; // dev/testing hook (harmless in production)
   Market.bind();
   function boot() { try { ui.mount(); } catch (e) { LOG('mount failed', e); } }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
