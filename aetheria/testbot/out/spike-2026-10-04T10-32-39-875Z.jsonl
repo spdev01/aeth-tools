@@ -1,4 +1,0 @@
-{"step":"auth.reuse","ok":true}
-{"step":"characters.list","status":200,"json":{"slots":3,"nameRules":{"minLength":3,"maxLength":16,"pattern":"^[A-Za-z0-9ก-๙_]+$","uniqueScope":"server","reservedWords":true},"characters":[{"characterId":10011810,"slot":0,"name":"ScoutA1","classId":"novice","className":"Novice","baseLevel":1,"jobLevel":1,"mapName":"เมืองหลวงโซลเฮเวน","online":false,"deleteAt":null}],"deleteGraceHours":24}}
-{"step":"characters.ready","characterId":10011810}
-{"step":"world.enter","status":200,"keys":["mapId","ticket","displayName","roomId","channel","endpoint"],"json":{"mapId":"capital","ticket":"<ticket-392chars>","displayName":"เมืองหลวงโซลเฮเวน","roomId":"Q8FRMUN4p","channel":8,"endpoint":"https://g4.aetheria-online.in.th"},"text":null}

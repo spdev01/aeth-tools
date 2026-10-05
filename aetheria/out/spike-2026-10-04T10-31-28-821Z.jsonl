@@ -1,2 +1,0 @@
-{"step":"auth.guest","status":429,"json":{"error":"ลองมากเกินไป รอสักครู่แล้วลองใหม่"},"text":null}
-{"step":"auth.guest","error":"no token field found","raw":{"error":"ลองมากเกินไป รอสักครู่แล้วลองใหม่"}}

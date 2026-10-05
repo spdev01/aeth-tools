@@ -1,2 +1,0 @@
-{"t":"2026-10-04T11:53:41.400Z","evt":"run_start","data":{"upto":26,"logFile":"E:\\GitHub\\lumivaraonline\\aetheria\\testbot\\out\\run-2026-10-04T11-53-41-398Z.jsonl","cursor":22,"char":"ScoutA1"}}
-{"t":"2026-10-04T11:53:43.372Z","evt":"UNCAUGHT","data":"TypeError: Cannot read properties of null (reading 'characters')\n    at file:///E:/GitHub/lumivaraonline/aetheria/testbot/src/runner.js:631:40\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)"}

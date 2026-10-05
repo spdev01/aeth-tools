@@ -1,2 +1,0 @@
-supervisor start args=[--upto 26]
-r start args=[--upto 26]
