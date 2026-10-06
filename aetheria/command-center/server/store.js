@@ -8,10 +8,12 @@ const here = path.dirname(fileURLToPath(import.meta.url)); // .../command-center
 const DATA_DIR = process.env.CC_DATA ? path.resolve(process.env.CC_DATA) : path.join(here, '..', 'data');
 const FILE = path.join(DATA_DIR, 'store.json');
 
-const empty = () => ({ accounts: [], characters: [], bots: [], meta: { nextAccountId: 1, nextCharacterId: 1, nextBotId: 1 } });
+const empty = () => ({ accounts: [], characters: [], bots: [], settings: { collector: null, tracked: [], autoCollect: { enabled: false, everyMin: 360, minZeny: 15000, minStacks: 1, lastAt: 0 } }, meta: { nextAccountId: 1, nextCharacterId: 1, nextBotId: 1 } });
 
 let state;
 try { state = JSON.parse(fs.readFileSync(FILE, 'utf8')); } catch { state = empty(); }
+if (!state.settings) state.settings = { collector: null, tracked: [] };
+if (!state.settings.autoCollect) state.settings.autoCollect = { enabled: false, everyMin: 360, minZeny: 15000, minStacks: 1, lastAt: 0 };
 
 let writeQueued = false;
 function persist() {
@@ -43,4 +45,5 @@ export const store = {
   findCharacter: (id) => state.characters.find((c) => c.id === id),
   findBot: (id) => state.bots.find((b) => b.id === id),
   charsOfAccount: (accountId) => state.characters.filter((c) => c.accountId === accountId),
+  getSettings: () => state.settings,
 };

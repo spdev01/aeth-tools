@@ -16,8 +16,12 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const argv = process.argv.slice(2);
 const arg = (k, d) => { const i = argv.indexOf(k); return i >= 0 ? argv[i + 1] : d; };
 const UPTO = parseInt(arg('--upto', '999'), 10);
+// the sell policy everywhere protects exactly three things: whitelist items, cards, and the bot's own potions.
+// cards are matched by NAME (inventory snapshots carry no `type` field): "Snowman Card" yes, "Cardigan" no.
+const CARD_RE = /(?:\bcard\b|การ์ด)/i;
 const CHAR_NAME = arg('--char', null);
 const FRESH = argv.includes('--fresh');
+const MODE = arg('--mode', process.env.AETHERIA_MODE || 'leveling'); // leveling | farming | collector
 
 // ---------------- external control (command center) ----------------
 // control.json {cmd:'run'|'pause'|'stop'} polled by loops; status.json mirrors the latest snapshot for the UI
@@ -26,8 +30,32 @@ const STATUS_FILE = path.join(OUT, 'status.json');
 const readControl = () => { try { return JSON.parse(fs.readFileSync(CONTROL_FILE, 'utf8')); } catch { return null; } };
 const writeStatus = (obj) => { try { fs.writeFileSync(STATUS_FILE, JSON.stringify({ ...obj, ts: Date.now(), pid: process.pid })); } catch {} };
 let _ctrlState = 'running';
+
+// ---- runtime directives (command center): control.json {cmd, rev, auto, weave, autoChannel, collect, grant, farm} ----
+let _dirRev = -1;
+function applyDirectives(bot) {
+  const ctl = readControl();
+  if (!ctl) return null;
+  if (ctl.rev != null && ctl.rev !== _dirRev) {
+    _dirRev = ctl.rev;
+    bot.autoOverride = ctl.auto ?? null;
+    bot.weaveOverride = (Array.isArray(ctl.weave) && ctl.weave.length) ? ctl.weave : null;
+    bot.autoChannel = ctl.autoChannel !== false;
+    bot.collectCfg = ctl.collect ?? null;
+    if (Array.isArray(ctl.keep)) bot.keepItemIds = ctl.keep;
+    bot.errandCfg = ctl.errand ?? null;
+    // arm collect grants once per revision — the server clears the grant only after the collectDone
+    // heartbeat (~20s), and re-reading it would trigger a duplicate empty collect in that window.
+    // A fresh process starts at _dirRev = -1, so a pending grant still fires after a crash/restart.
+    if (ctl.grant) bot.pendingGrant = ctl.grant;
+    if (bot.log) bot.log('directives_applied', { rev: ctl.rev, auto: !!ctl.auto, weave: bot.weaveOverride, autoChannel: bot.autoChannel, collect: !!ctl.collect, keep: (ctl.keep ?? []).length, errand: !!ctl.errand?.enabled, grant: !!ctl.grant });
+  }
+  return ctl;
+}
+
 async function controlWait(bot) {
   for (;;) {
+    applyDirectives(bot);
     const cmd = readControl()?.cmd ?? 'run';
     if (cmd === 'stop') {
       try { if (bot?.char?.auto?.enabled) bot.c.autoEnabled(false); } catch {}
@@ -154,7 +182,22 @@ class Bot {
         return;
       }
       if (type === 'notice') { if ((this._notices = (this._notices || 0) + 1) <= 8) this.log('notice', data); return; }
-      if (type === 'inventory') { s.inventory = data; return; }
+      if (type === 'inventory') {
+        // Server pushes vary: full snapshots are flat; some updates omit items; trade-style payloads nest them
+        // ({slot,qty,item:{...}}). Replace only on a real item list (normalizing nested → flat), else merge —
+        // a wholesale replace on a partial push made the bag go blind (items invisible to sell/keep/trade logic).
+        if (data && Array.isArray(data.items)) {
+          const items = data.items.map((it) => {
+            if (!it || !it.item || it.itemId != null) return it;
+            const { item, slot, qty, refine } = it;
+            return { ...item, slot, qty, refine: refine ?? item.refine ?? null };
+          });
+          s.inventory = { ...(s.inventory ?? {}), ...data, items };
+        } else {
+          s.inventory = { ...(s.inventory ?? {}), ...(data ?? {}), items: (s.inventory?.items ?? []) };
+        }
+        return;
+      }
       if (type === 'npc_dialog') { s.dialog = data; s.dialogSeq++; this.log('npc_dialog', data); return; }
       if (type === 'shop') { s.shop = data; this.log('shop', data); return; }
       if (type === 'market') { s.market = data; this.log('market', data); return; }
@@ -177,6 +220,26 @@ class Bot {
       if (type === 'respawned') { s.death = null; this.combat.hp = this.combat.maxHp; this.combat.sp = this.combat.maxSp; this.log('respawned', data); return; }
       if (type === 'chat') { s.chats.push(data); if (s.chats.length > 300) s.chats.shift(); return; }
       if (type === 'collection') { s.collection = data; return; }
+      if (type === 'channels') { s.channels = data; if (!this._chLogged) { this._chLogged = true; this.log('channels_probe', data); } return; }
+      if (type === 'invite') { s.invite = data; this.log('invite', data); return; }
+      if (type === 'trade') { s.trade = data; s.tradeSeq = (s.tradeSeq || 0) + 1; this.log('trade_msg', data); return; }
+      if (type === 'storage') {
+        // same payload-shape variants as inventory — replace only on a real item list (normalizing nested), else merge
+        const src = s.storage ?? {};
+        if (data && Array.isArray(data.items)) {
+          const items = data.items.map((it) => {
+            if (!it || !it.item || it.itemId != null) return it;
+            const { item, slot, qty, refine } = it;
+            return { ...item, slot, qty, refine: refine ?? item.refine ?? null };
+          });
+          s.storage = { ...src, ...data, items };
+        } else {
+          s.storage = { ...src, ...(data ?? {}), items: src.items ?? [] };
+        }
+        this._storeSnapAt = Date.now(); // "storage last seen" timestamp — carried in status for the command center
+        this.log('storage_msg', { slots: data?.slots ?? null, items: (s.storage.items ?? []).length, zeny: data?.zeny ?? null });
+        return;
+      }
       if (type === 'skill_catalog') return;
       if (!s.unknownDumped.has(type)) { s.unknownDumped.add(type); this.log('message:' + type, data); }
     });
@@ -201,7 +264,16 @@ class Bot {
   async deathRecover() {
     this.log('death_recover', this.s.death);
     this.c.send('respawn', { to: 'save' });
-    await this.waitFor(() => !this.s.death, 'respawned', 20000).catch(() => {});
+    const revived = await this.waitFor(() => !this.s.death, 'respawned', 20000).catch(() => false);
+    if (!revived) {
+      // respawn command didn't take. The server force-releases corpses after autoReleaseSeconds, but a tight
+      // reconnect loop restarts that window (observed: infinite death loop for ~30 min on bot 43). Wait the
+      // release out in the CURRENT session instead of reconnecting — a fresh session then starts clean.
+      const releaseS = Math.min(330, (this.s.death?.autoReleaseSeconds ?? 300) + 20);
+      this.log('death_await_autorelease', { seconds: releaseS });
+      await this.waitFor(() => !this.s.death, 'auto-release', releaseS * 1000).catch(() => {});
+      this.log('death_await_done', { alive: !this.s.death });
+    }
     await sleep(2000);
     // fresh session = server-side ground truth. (same-session resume leaves auto_set refused —
     // verified live 12:10-12:13: char alive but setAuto rejected, zero combat for minutes)
@@ -257,7 +329,7 @@ class Bot {
   }
 
   // n2 Bor "General Goods": Red Potion (90301) 50z. Sells junk first if broke, buys as many as budget allows.
-  async buyPotions(target = 25) {
+  async buyPotions(target = 25, itemName = 'Red Potion') {
     const have = this.potCount();
     if (have >= target) { this.log('pot_ok', { have }); return have; }
     await this.ensureMap('capital').catch(() => {});
@@ -268,7 +340,8 @@ class Bot {
       zeny = this.char?.zeny ?? 0;
     }
     const budget = Math.max(0, zeny - 200); // keep a small reserve
-    const want = Math.min(target - have, Math.floor(budget / 50));
+    const unit = itemName === 'Orange Potion' ? 200 : itemName === 'White Potion' ? 1200 : 50;
+    const want = Math.min(target - have, Math.floor(budget / unit));
     if (want <= 0) { this.log('pot_no_budget', { have, zeny }); return have; }
     await this.walkToNpc(NPCS.n2);
     await this.talk('n2');
@@ -276,8 +349,8 @@ class Bot {
     await this.chooseByKeyword('ซื้อของหน่อย', { timeout: 6000 });
     try { await this.waitFor(() => this.s.shop, 'shop', 8000); } catch {}
     const shop = this.s.shop;
-    const red = (shop?.items ?? []).find((x) => x.name === 'Red Potion');
-    if (red) { this.c.send('shop_buy', { itemId: red.itemId, qty: want }); this.log('buy_potions', { want, have, zeny }); await sleep(2500); }
+    const red = (shop?.items ?? []).find((x) => x.name === itemName);
+    if (red) { this.c.send('shop_buy', { itemId: red.itemId, qty: want }); this.log('buy_potions', { item: itemName, want, have, zeny }); await sleep(2500); }
     else this.log('pot_no_shop', { items: (shop?.items ?? []).slice(0, 6).map((x) => x.name) });
     this.c.npcClose(); await sleep(400);
     this.c.invSort(); await sleep(900);
@@ -313,7 +386,8 @@ class Bot {
   // Our own combat skill usage — the server's auto-skill engine proved unreliable, so we
   // weave casts ourselves at mobs that were just hit near us (hits carry target pos, no attackerId).
   weaveTick(skills) {
-    if (!skills?.length || this.s.death || !this.isConnected()) return;
+    const use = this.weaveOverride ?? skills;
+    if (!use?.length || this.s.death || !this.isConnected()) return;
     const ch = this.char; if (!ch || ch.auto?.enabled === false) return;
     const now = Date.now();
     if (now - this._lastWeave < 1350) return;
@@ -333,7 +407,7 @@ class Bot {
     const sp = this.combat.sp;
     if (sp != null && sp < 30) return; // keep SP margin for the auto engine + regen
     this._lastWeave = now;
-    const sid = skills[this.weaves % skills.length];
+    const sid = use[this.weaves % use.length];
     this.weaves++;
     this.c.cast(sid, pick.id);
     this.log('skill_use', { s: sid, t: pick.id, sp });
@@ -374,11 +448,27 @@ class Bot {
     };
   }
   startHeartbeat(intervalMs = 20000) {
-    const tick = () => { try { this.log('HEARTBEAT', this.snap()); writeStatus({ ...this.snap(), state: _ctrlState }); } catch (e) { try { this.log('HEARTBEAT_ERR', String(e)); } catch {} } };
+    const tick = () => {
+      try {
+        this.log('HEARTBEAT', this.snap());
+        const api = (inv) => (inv?.items ?? []).slice(0, 120).map((it) => ({ slot: it.slot, itemId: it.itemId, name: it.name, qty: it.qty, refine: it.refine ?? null }));
+        const st = this.s.storage;
+        if (st) this._storeSnap = { slots: st.slots ?? null, zeny: st.zeny ?? null, items: (st.items ?? []).slice(0, 300).map((it) => ({ slot: it.slot, itemId: it.itemId, name: it.name, qty: it.qty, refine: it.refine ?? null })) };
+        writeStatus({
+          ...this.snap(), state: _ctrlState, mode: MODE,
+          channel: this.s.channels?.current ?? null,
+          connected: this.isConnected(),
+          inventory: api(this.s.inventory), storage: this._storeSnap ?? null, storageAt: this._storeSnapAt ?? null,
+          wantCollect: !!this.wantCollect, pendingGrant: !!this.pendingGrant, collectDone: this.lastCollectDone ?? null,
+        });
+      } catch (e) { try { this.log('HEARTBEAT_ERR', String(e)); } catch {} }
+    };
+    this._hbTick = tick; // pushStatus() can force an immediate heartbeat (fast UI feedback)
     tick();
     if (this._hbTimer) clearInterval(this._hbTimer);
     this._hbTimer = setInterval(tick, intervalMs);
   }
+  pushStatus() { try { this._hbTick?.(); } catch {} }
 
   isConnected() { try { return !!(this.c.ws && this.c.ws.readyState === 1); } catch { return false; } }
 
@@ -429,14 +519,41 @@ class Bot {
     } catch (e) { this.log('relogin_fail', { err: String((e && e.message) || e) }); return false; }
   }
 
-  // items to sell at the vendor: sellPrice>0, not protected (cards/enchants), keep consumables & refine mats & gems
+  // items to sell at the vendor: everything sellable that is NOT whitelisted, not a card and not one of the
+  // bot's own potions — same policy as sellJunkExcept
   sellableLines() {
     const inv = this.s.inventory;
     if (!inv?.items) return [];
-    const keepRe = /gem|card|enchant|rune|butterfly|carrot|potion|phracon|elunium/i;
-    return inv.items
-      .filter((it) => (it.sellPrice ?? 0) > 0 && !['Card', 'Enchantment'].includes(it.type) && !keepRe.test(it.name))
+    const keep = this.keepIds();
+    const base = inv.items
+      .filter((it) => (it.sellPrice ?? 0) > 0
+        && !keep.has(it.itemId)
+        && !CARD_RE.test(it.name ?? '')
+        && it.autoPotion !== 'HP' && it.autoPotion !== 'SP'
+        && !/(potion|ยา)/i.test(it.name ?? ''))
       .map((it) => ({ slot: it.slot, qty: it.qty }));
+    return [...base, ...this._consumablePolicyLines()]; // surplus consumables ride along
+  }
+  // Consumables policy (2026-10-06, user rule): keep ONLY the configured potion (farm.potItem) up to the
+  // refill threshold (farm.restockQty); every other potion-like item (carrots, event potions, other tiers) is sold.
+  // Whitelisted items are never touched. Items the vendor refuses (sellPrice 0) stay in the bag.
+  _consumablePolicyLines() {
+    const keep = this.keepIds();
+    const keepName = (this.potItemName ?? 'Red Potion').toLowerCase();
+    let keepLeft = Math.max(0, this.restockQty ?? 45);
+    const out = [];
+    for (const it of (this.s.inventory?.items ?? [])) {
+      const consumable = it.autoPotion === 'HP' || it.autoPotion === 'SP' || /(potion|ยา)/i.test(it.name ?? '');
+      if (!consumable || keep.has(it.itemId)) continue;
+      let sellN = it.qty ?? 1;
+      if ((it.name ?? '').toLowerCase() === keepName && keepLeft > 0) {
+        const keepN = Math.min(sellN, keepLeft);
+        keepLeft -= keepN;
+        sellN -= keepN;
+      }
+      if (sellN > 0 && (it.sellPrice ?? 0) > 0) out.push({ slot: it.slot, qty: sellN });
+    }
+    return out;
   }
   async waitFor(pred, desc, timeout = 15000) {
     const t0 = Date.now();
@@ -448,6 +565,7 @@ class Bot {
   async setAuto(patch) {
     const base = this.char?.auto?.config ?? {};
     const cfg = { ...base, ...(patch ?? {}) };
+    if (this.autoOverride) for (const [k, v] of Object.entries(this.autoOverride)) if (v !== null && v !== undefined) cfg[k] = v;
     // the game stores auto skills as an array of skill-id STRINGS (auto panel code); normalize objects too
     if (Array.isArray(cfg.skills)) cfg.skills = cfg.skills.map((s) => (typeof s === 'string' ? s : (s?.id ?? s?.skillId))).filter(Boolean);
     // auto-potion lists = arrays of itemIds; derive from inventory items flagged autoPotion:'HP'|'SP'
@@ -579,7 +697,7 @@ class Bot {
 
   async bankProtected() {
     const inv = this.s.inventory;
-    const prot = (inv?.items ?? []).filter((it) => /card|rune|gem/i.test(it.name) && !/phracon|elunium/i.test(it.name));
+    const prot = (inv?.items ?? []).filter((it) => CARD_RE.test(it.name ?? ''));
     if (!prot.length) return 0;
     await this.walkToNpc(NPCS.n6);
     await this.talk('n6');
@@ -592,6 +710,365 @@ class Bot {
     this.log('banked', { count: n, items: prot.map((x) => x.name) });
     this.c.npcClose(); await sleep(400);
     return n;
+  }
+
+  // ---- storage (farming mode): deposit configured keep-items, never sell them ----
+  async depositKeepItems(keepIds, { npcKey = 'n6' } = {}) {
+    return this.depositItemsWhere((it) => keepIds.has(it.itemId), { npcKey });
+  }
+  async depositItemsWhere(pred, { npcKey = 'n6', label = 'storage' } = {}) {
+    const all = (this.s.inventory?.items ?? []).filter(pred);
+    if (!all.length) return 0;
+    await this.ensureMap('capital');
+    const npcPx = NPCS[npcKey] ?? NPCS.n6;
+    await this.walkToNpc(npcPx);
+    await this.talk(npcKey);
+    const opt = this.findOption(this.s.dialog, 'คลัง') ?? this.findOption(this.s.dialog, 'ฝาก') ?? this.findOption(this.s.dialog, 'storage');
+    if (!opt) { this.log('storage_npc_probe', { npc: npcKey, options: this.s.dialog?.options ?? null }); this.c.npcClose(); await sleep(400); return 0; }
+    this.s.storage = null;
+    this.c.npcOption(opt.index);
+    try { await this.waitFor(() => !!this.s.storage, 'storage window', 9000); } catch { this.log('storage_open_fail', { npc: npcKey }); return 0; }
+    let moved = 0, misses = 0, skipped = 0;
+    const stoQty = () => (this.s.storage?.items ?? []).reduce((s, it) => s + (it.qty ?? 1), 0);
+    const list = all.slice();
+    for (let guard = 0; guard < 140 && list.length; guard++) {
+      const it = list[0];
+      const invBefore = this.s.inventory?.items?.length ?? 0;
+      const stoBefore = stoQty();
+      this.c.storagePut(it.slot, it.qty);
+      const okPut = await this.waitFor(() => {
+        const invNow = this.s.inventory?.items?.length ?? 0;
+        return stoQty() > stoBefore || invNow < invBefore;
+      }, 'storage put', 3000).catch(() => false);
+      if (okPut) { moved++; misses = 0; list.shift(); }
+      else {
+        misses++;
+        this.log('storage_put_miss', { item: it?.name ?? null, qty: it?.qty ?? null });
+        if (misses >= 2) { this.log('storage_put_skip', { item: it?.name ?? null, note: 'item not depositable — skipping' }); list.shift(); misses = 0; skipped++; }
+      }
+      await sleep(300);
+    }
+    this.c.npcClose(); await sleep(500);
+    this.c.invSort(); await sleep(700);
+    this.log('storage_deposit_done', { moved, skipped, label });
+    return moved;
+  }
+
+  // after selling: get everything left that is neither whitelist nor one of the bot's own potions out of the bag
+  // (shop-refused / unsellable items) so the bag stays lean for grinding
+  async depositJunkToStorage(keepIds, { npcKey = 'n6' } = {}) {
+    return this.depositItemsWhere((it) => !keepIds.has(it.itemId)
+      && it.autoPotion !== 'HP' && it.autoPotion !== 'SP'
+      && !/(potion|ยา)/i.test(it.name ?? ''), { npcKey, label: 'junk' });
+  }
+
+  async sellJunkExcept(keepIds = new Set()) {
+    await this.ensureMap('capital').catch(() => {});
+    await this.walkToNpc(NPCS.n2);
+    await this.talk('n2');
+    const opt = this.findOption(this.s.dialog, 'ซื้อ') ?? { index: 0 };
+    this.s.shop = null;
+    this.c.npcOption(opt.index);
+    await this.waitFor(() => this.s.shop, 'shop', 8000).catch(() => {});
+    // sell EVERYTHING sellable that is not whitelisted (cards are protected; potions are kept up to a reserve)
+    const lines = (this.s.inventory?.items ?? [])
+      .filter((it) => (it.sellPrice ?? 0) > 0
+        && !keepIds.has(it.itemId)
+        && !CARD_RE.test(it.name ?? '')
+        && it.autoPotion !== 'HP' && it.autoPotion !== 'SP'
+        && !/(potion|ยา)/i.test(it.name ?? ''))
+      .map((it) => ({ slot: it.slot, qty: it.qty }));
+    // consumables: keep ONLY the configured potion up to the refill threshold; sell every other potion-like item
+    lines.push(...this._consumablePolicyLines());
+    const before = this.char?.zeny ?? 0;
+    if (lines.length) { this.c.shopSellMany(lines); this.log('sold_except_keep', { lines: lines.length }); await sleep(2000); }
+    this.c.npcClose(); await sleep(400);
+    return (this.char?.zeny ?? 0) - before;
+  }
+
+  // ---- channels ----
+  async channelsSnapshot({ refresh = true, since = 0 } = {}) {
+    if (refresh) this.c.channelList();
+    try { await this.waitFor(() => { const m = this.c.msgs.get('channels'); return m && Date.now() - m.at < 9000 && m.at >= since; }, 'channels msg', 9000); } catch { return null; }
+    return this.c.msgs.get('channels')?.data ?? null;
+  }
+  // channel_switch works like a travel: the server pushes a travel msg for the SAME map with a new room;
+  // the client must leave + rejoin that room to land on the new channel.
+  async applyChannelTravel({ timeout = 9000 } = {}) {
+    const got = await this.waitFor(() => { const t = this.s.travel; return t && t.mapId === this.c.mapId; }, 'channel travel msg', timeout).catch(() => false);
+    if (!got) return false;
+    const tr = this.s.travel; this.s.travel = null;
+    this.log('channel_travel_rejoin', { mapId: tr.mapId, roomId: tr.roomId, endpoint: tr.endpoint ?? null });
+    await this.c.rejoinRoom(tr);
+    await sleep(1500);
+    return true;
+  }
+  async switchToChannel(target, { tries = 3 } = {}) {
+    for (let i = 1; i <= tries; i++) {
+      const snap = await this.channelsSnapshot();
+      if (!snap) return false;
+      if (snap.current === target) { this.log('channel_ok', { channel: target }); return true; }
+      this.log('channel_switch_to', { channel: target, from: snap.current, attempt: i });
+      const tSwitch = Date.now();
+      this.s.travel = null; // drop any stale travel (e.g. left over from entering the map) — wait for THIS switch's response
+      this.c.channelSwitch(target);
+      await sleep(1200);
+      const rejoined = await this.applyChannelTravel();
+      if (rejoined) {
+        const snap2 = await this.channelsSnapshot({ since: tSwitch });
+        if (snap2?.current === target) { this.log('channel_ok', { channel: target, via: 'travel' }); return true; }
+        this.log('channel_switch_mismatch', { want: target, now: snap2?.current ?? null });
+      } else {
+        this.log('channel_no_travel', { attempt: i });
+      }
+      await sleep(1500);
+    }
+    const snap = await this.channelsSnapshot();
+    const ok = !!(snap && snap.current === target);
+    this.log('channel_switch_result', { ok, now: snap?.current ?? null });
+    return ok;
+  }
+  async ensureLeastPopulatedChannel() {
+    this._lastChanCheck = Date.now(); // any check resets the periodic 10-min timer (spawn/return/periodic share it)
+    const snap = await this.channelsSnapshot();
+    if (!snap || !Array.isArray(snap.channels)) { this.log('channel_no_data', {}); return false; }
+    if (snap.cooldownUntil && snap.cooldownUntil > Date.now()) { this.log('channel_cooldown', { until: snap.cooldownUntil }); return false; }
+    const here = snap.channels.find((c) => c.channel === snap.current) ?? null;
+    const cands = snap.channels.filter((c) => c.channel !== snap.current && c.players < (snap.hardCap ?? 1e9));
+    cands.sort((a, b) => a.players - b.players);
+    const best = cands[0];
+    if (!best || (here && best.players >= here.players)) { this.log('channel_keep', { current: snap.current, players: here?.players ?? null, best: best ? [best.channel, best.players] : null }); return false; }
+    this.log('channel_switch_to', { channel: best.channel, players: best.players, from: snap.current, fromPlayers: here?.players ?? null });
+    const tSwitch = Date.now();
+    this.s.travel = null; // drop any stale travel (e.g. left over from entering the map) — wait for THIS switch's response
+    this.c.channelSwitch(best.channel);
+    await sleep(1200);
+    const rejoined = await this.applyChannelTravel();
+    const snap2 = rejoined ? await this.channelsSnapshot({ since: tSwitch }) : null;
+    const ok = !!(snap2 && snap2.current === best.channel);
+    this.log('channel_switch_result', { ok, now: snap2?.current ?? null, rejoined });
+    return ok;
+  }
+
+  // farm-return channel policy: after ANY town trip (errand / collect / death), the FIRST thing a farm bot
+  // does once it's back on its grinding map is hop to the least-populated channel. Also resets the periodic
+  // 10-minute channel check so the two never double-fire.
+  async channelOnReturn() {
+    if (!this.autoChannel) return;
+    this._lastChanCheck = Date.now();
+    await this.ensureLeastPopulatedChannel().catch(() => {});
+  }
+
+  // ---- collector trade (slot granted by the command-center queue) ----
+  keepIds() { return new Set(this.keepItemIds ?? this.collectCfg?.keepItemIds ?? []); }
+  isKeepItem(it) { return !!it && this.keepIds().has(it.itemId); }
+
+  // open the storage window at n6 (walk + dialog). Returns true when s.storage is live.
+  async openStorage({ npcKey = 'n6' } = {}) {
+    await this.ensureMap('capital');
+    await this.walkToNpc(NPCS[npcKey] ?? NPCS.n6);
+    if (this.s.storage) return true;
+    await this.talk(npcKey);
+    const opt = this.findOption(this.s.dialog, 'คลัง') ?? this.findOption(this.s.dialog, 'ฝาก') ?? this.findOption(this.s.dialog, 'storage');
+    if (!opt) { this.log('storage_npc_probe', { npc: npcKey, options: this.s.dialog?.options ?? null }); this.c.npcClose(); await sleep(400); return false; }
+    this.s.storage = null;
+    this.c.npcOption(opt.index);
+    try { await this.waitFor(() => !!this.s.storage, 'storage window', 9000); } catch { this.log('storage_open_fail', { npc: npcKey }); return false; }
+    return true;
+  }
+
+  // manual storage refresh (command-center ⟳): drop the in-memory snapshot so openStorage truly re-reads,
+  // open → read → close, then push an immediate status so the dashboard updates without waiting a heartbeat
+  async refreshStorageSnapshot() {
+    this.s.storage = null; // a stale snapshot would make openStorage() return instantly with old data
+    const ok = await this.openStorage().catch(() => false);
+    this.c.npcClose(); await sleep(400);
+    this.pushStatus();
+    return ok;
+  }
+
+  // pull whitelist items out of storage into the bag (chunked). Returns stacks moved.
+  async withdrawKeepFromStorage(keepIds, { maxStacks = 24, npcKey = 'n6' } = {}) {
+    this.s.storage = null; // force a fresh walk + window open (stale snapshots make the takes silently fail)
+    const ok = await this.openStorage({ npcKey });
+    if (!ok) return 0;
+    let moved = 0, misses = 0;
+    const stoKeep = () => (this.s.storage?.items ?? []).filter((it) => keepIds.has(it.itemId));
+    const stoQty = () => stoKeep().reduce((s, it) => s + (it.qty ?? 1), 0);
+    const invQty = () => (this.s.inventory?.items ?? []).reduce((s, it) => s + (it.qty ?? 1), 0);
+    while (moved < maxStacks) {
+      const cand = stoKeep();
+      if (!cand.length) break;
+      if ((this.s.inventory?.items?.length ?? 0) >= 90) break; // bag full guard
+      const inv = this.s.inventory;
+      if (inv && inv.weightLimit && (inv.weight ?? 0) >= inv.weightLimit * 0.85) { this.log('withdraw_weight_guard', { weight: inv.weight, limit: inv.weightLimit }); break; }
+      const it = cand[0];
+      const q0 = stoQty(); const i0 = invQty();
+      this.c.storageTake(it.slot, it.qty);
+      const okTake = await this.waitFor(() => stoQty() < q0 || invQty() > i0, 'storage take', 3000).catch(() => false);
+      if (okTake) { moved++; misses = 0; } else { misses++; this.log('storage_take_miss', { item: it?.name ?? null }); if (misses >= 2) { this.log('storage_take_skip', { item: it?.name ?? null }); break; } }
+      await sleep(300);
+    }
+    this.c.npcClose(); await sleep(400);
+    this.log('storage_withdraw_done', { moved, remaining: Math.max(0, stoKeep().length) });
+    return moved;
+  }
+
+  // one-shot: empty non-whitelist items out of a storage (collector cleanup) — withdraw in chunks, sell at the NPC, repeat
+  async cleanupStorageNonKeep(keepIds, { maxRounds = 10, maxStacksPerRound = 24 } = {}) {
+    let moved = 0;
+    for (let r = 1; r <= maxRounds; r++) {
+      this.s.storage = null; // force a fresh window
+      const ok = await this.openStorage();
+      if (!ok) { this.log('cleanup_storage_fail', {}); break; }
+      const nonKeep = () => (this.s.storage?.items ?? []).filter((it) => !keepIds.has(it.itemId) && !CARD_RE.test(it.name ?? ''));
+      const stoQty = () => nonKeep().reduce((a, x) => a + (x.qty ?? 1), 0);
+      const invQty = () => (this.s.inventory?.items ?? []).reduce((a, x) => a + (x.qty ?? 1), 0);
+      let took = 0, misses = 0;
+      for (let guard = 0; guard < maxStacksPerRound; guard++) {
+        const cand = nonKeep();
+        if (!cand.length) break;
+        if ((this.s.inventory?.items?.length ?? 0) >= 90) break;
+        const it = cand[0];
+        const q0 = stoQty(); const i0 = invQty();
+        this.c.storageTake(it.slot, it.qty);
+        const okTake = await this.waitFor(() => stoQty() < q0 || invQty() > i0, 'cleanup take', 3000).catch(() => false);
+        if (okTake) { took++; misses = 0; } else { misses++; if (misses >= 2) break; }
+        await sleep(300);
+      }
+      this.c.npcClose(); await sleep(400);
+      moved += took;
+      this.log('cleanup_withdrew', { round: r, took, remaining: nonKeep().length });
+      if (took === 0) break;
+      await this.sellJunkExcept(keepIds).catch(() => {});
+      if (!nonKeep().length) break;
+    }
+    return { moved };
+  }
+
+  // step 0 of a collect turn: pull non-whitelist junk out of THIS bot's own storage, sell what sells at the
+  // vendor, stow whatever the shop refuses back into storage. Exact sellability is unknown until an item is in
+  // the bag (storage snapshots carry no sellPrice), so this withdraws → sells → stows back in bounded rounds
+  // and remembers vendor-refused itemIds so they are not churned again in the same run.
+  async sweepStorageJunk(keepIds, { maxRounds = 3, maxStacksPerRound = 20 } = {}) {
+    let total = 0;
+    const balky = new Set(); // itemIds the vendor refused this run — never re-withdraw them
+    const isJunk = (it) => !keepIds.has(it.itemId)
+      && !CARD_RE.test(it.name ?? '')
+      && it.autoPotion !== 'HP' && it.autoPotion !== 'SP'
+      && !/(potion|ยา)/i.test(it.name ?? '')
+      && !balky.has(it.itemId);
+    for (let r = 1; r <= maxRounds; r++) {
+      this.s.storage = null; // fresh window each round — stale snapshots make takes silently fail
+      const ok = await this.openStorage().catch(() => false);
+      if (!ok) { this.log('junk_sweep_storage_fail', { round: r }); break; }
+      let took = 0, misses = 0;
+      for (let guard = 0; guard < maxStacksPerRound; guard++) {
+        const cand = (this.s.storage?.items ?? []).filter(isJunk);
+        if (!cand.length) break;
+        if ((this.s.inventory?.items?.length ?? 0) >= 88) break; // keep a little bag room
+        const inv = this.s.inventory;
+        if (inv && inv.weightLimit && (inv.weight ?? 0) >= inv.weightLimit * 0.8) { this.log('junk_sweep_weight_guard', {}); break; }
+        const it = cand[0];
+        const q0 = cand.reduce((a, x) => a + (x.qty ?? 1), 0);
+        const i0 = (this.s.inventory?.items ?? []).reduce((a, x) => a + (x.qty ?? 1), 0);
+        this.c.storageTake(it.slot, it.qty);
+        const okTake = await this.waitFor(() => {
+          const q1 = (this.s.storage?.items ?? []).filter(isJunk).reduce((a, x) => a + (x.qty ?? 1), 0);
+          const i1 = (this.s.inventory?.items ?? []).reduce((a, x) => a + (x.qty ?? 1), 0);
+          return q1 < q0 || i1 > i0;
+        }, 'junk take', 3000).catch(() => false);
+        if (okTake) { took++; misses = 0; } else { misses++; this.log('junk_sweep_take_miss', { item: it?.name ?? null }); if (misses >= 2) break; }
+        await sleep(300);
+      }
+      this.c.npcClose(); await sleep(400);
+      if (took === 0) break;
+      total += took;
+      this.log('junk_sweep_withdrew', { round: r, took });
+      await this.sellJunkExcept(keepIds).catch(() => {});
+      // everything non-keep left in the bag was refused by the vendor — exclude it from further rounds
+      for (const it of (this.s.inventory?.items ?? [])) if (isJunk(it)) balky.add(it.itemId);
+      await this.depositJunkToStorage(keepIds).catch(() => {});
+    }
+    return total;
+  }
+
+  async collectToCollector(g) {
+    const t0 = Date.now();
+    const keep = this.keepIds();
+    const RESERVE = 10000; // never hand over the last 10k — the bot needs walking-around zeny
+    const RUN_LIMIT_MS = 25 * 60 * 1000;
+    this.log('collect_start', { collector: g.collector, channel: g.channel, whitelist: [...keep] });
+    try { this.c.autoEnabled(false); } catch {}
+    await this.ensureMap('capital');
+    if (g.channel != null) await this.switchToChannel(g.channel).catch(() => {});
+    const spot = (g.spot && g.spot.x != null) ? g.spot : { x: 880, y: 1520 };
+    this.c.moveToPx(spot.x, spot.y);
+    await sleep(2200);
+    // NEW POLICY (2026-10-06): bots NEVER touch storage (no deposits, no withdrawals, no sweeps).
+    // Everything travels: bag → vendor (sellables) → collector (whitelist + zeny, batched trades).
+    // 1) dump junk at the vendor so only whitelist + zeny travel (potions/gems are protected by sellableLines)
+    try {
+      const sellable = (this.s.inventory?.items ?? []).filter((it) => (it.sellPrice ?? 0) > 0 && !keep.has(it.itemId) && !CARD_RE.test(it.name ?? '') && it.autoPotion !== 'HP' && it.autoPotion !== 'SP' && !/(potion|ยา)/i.test(it.name ?? ''));
+      if (sellable.length) { await this.sellJunkExcept(keep); this.c.moveToPx(spot.x, spot.y); await sleep(1800); }
+    } catch (e) { this.log('collect_sell_fail', String((e && e.message) || e)); }
+    let rounds = 0, offered = 0, zenyMoved = 0, stacksMoved = 0, noProgAt = 0;
+    const bagKeep = () => (this.s.inventory?.items ?? []).filter((it) => keep.has(it.itemId));
+    while (Date.now() - t0 < RUN_LIMIT_MS && rounds < 80) {
+      // the server can drop sockets (4001/1006 bursts) — recover instead of spinning on a dead connection
+      if (!this.isConnected()) {
+        this.log('collect_disconnected', { round: rounds });
+        try { await this.reconnect(); this.log('collect_reconnected', { map: this.c.mapId }); }
+        catch (e) { this.log('collect_reconnect_fail', String((e && e.message) || e)); await sleep(5000); continue; }
+        if (this.c.mapId !== 'capital') await this.ensureMap('capital').catch(() => {});
+        if (g.channel != null) await this.switchToChannel(g.channel).catch(() => {});
+        this.c.moveToPx(spot.x, spot.y);
+        await sleep(1800);
+        continue;
+      }
+      const zeny = this.char?.zeny ?? 0;
+      const giveZeny = Math.max(0, zeny - RESERVE);
+      const items = bagKeep();
+      if (!items.length && giveZeny < 500) break; // everything handed over
+      // recipient bag full? collector deposits on its side; give it a moment before retrying
+      if (noProgAt && Date.now() - noProgAt < 60000) { await sleep(5000); continue; }
+      noProgAt = 0;
+      rounds++;
+      const seq = this.s.tradeSeq || 0;
+      this.log('trade_request_send', { round: rounds, collector: g.collector, stacks: items.length, zeny: giveZeny });
+      this.c.tradeRequest(g.collector);
+      const opened = await this.waitFor(() => (this.s.tradeSeq || 0) > seq, 'trade open', 15000).catch(() => false);
+      if (!opened) { this.log('trade_open_timeout', { round: rounds, invite: this.s.invite ?? null }); await sleep(3000); continue; }
+      const offer = items.slice(0, 10).map((it) => ({ slot: it.slot, qty: it.qty }));
+      this.c.tradeOffer(offer, giveZeny);
+      offered += offer.length;
+      await sleep(1500);
+      this.c.tradeLock();
+      this.log('trade_locked_mine', { round: rounds, offer: offer.length, zeny: giveZeny });
+      const bothLocked = await this.waitFor(() => { const t = this.s.trade; return !!(t && t.mine?.locked && t.theirs?.locked); }, 'both locked', 30000).catch(() => false);
+      if (bothLocked) { this.c.tradeConfirm(); this.log('trade_confirm_sent', { round: rounds }); }
+      else this.log('trade_lock_timeout', { round: rounds, state: this.s.trade ?? null });
+      const bag0 = bagKeep().reduce((s, it) => s + (it.qty ?? 1), 0);
+      const zeny0 = this.char?.zeny ?? 0;
+      const done = await this.waitFor(() => {
+        const t = this.s.trade;
+        const cleared = !t || t.closed === true || t.done === true;
+        const shrunk = bagKeep().reduce((s, it) => s + (it.qty ?? 1), 0) < bag0 || (this.char?.zeny ?? 0) < zeny0;
+        return cleared || shrunk;
+      }, 'trade done', 45000).catch(() => false);
+      const bagNow = bagKeep().reduce((s, it) => s + (it.qty ?? 1), 0);
+      const zenyNow = this.char?.zeny ?? 0;
+      const movedNow = bagNow < bag0 || zenyNow < zeny0;
+      if (movedNow) { stacksMoved += Math.max(0, offer.length); zenyMoved += Math.max(0, zeny0 - zenyNow); }
+      else { this.log('collect_no_progress', { round: rounds, note: 'collector bag full — waiting for it to store' }); noProgAt = Date.now(); }
+      this.log('trade_round_end', { round: rounds, done, moved: movedNow });
+      if (!done) { this.c.tradeCancel(); await sleep(2000); }
+      else this.s.trade = null;
+      await sleep(1500);
+    }
+    try { this.c.npcClose(); } catch {}
+    // 3) no storage pass — leftover unsellables stay in the bag by policy (bots never touch storage)
+    this.log('collect_done', { rounds, offered, stacks: stacksMoved, zeny: zenyMoved, ms: Date.now() - t0 });
   }
 
   // Turn-key budget rule: if zeny is short, go farm until the bag fills, sell, repeat.
@@ -667,21 +1144,27 @@ class Bot {
     if (!exit) throw new Error(`no exit ${this.c.mapId} -> ${nextMap}`);
     this.s.travel = null;
     const t0 = Date.now();
+    const arrived = () => this.c.mapId === nextMap;
     while (Date.now() - t0 < 90 * 1000) {
+      // the server sometimes moves us without (or after) a travel msg — landing IS the success condition
+      if (arrived()) { this.log('traveled_landed', { now: this.c.mapId }); return; }
       if (this.s.death) throw new Error('died en route — will recover and retry');
       this.c.moveToPx(exit.cx, exit.cy);
-      try { await this.waitFor(() => this.s.travel, 'travel message', 6500); } catch { continue; }
+      try { await this.waitFor(() => this.s.travel || arrived(), 'travel message', 6500); } catch { continue; }
+      if (!this.s.travel && arrived()) { this.log('traveled_landed', { now: this.c.mapId }); return; }
       const tr = this.s.travel;
-      this.log('travel_msg', { mapId: tr.mapId, roomId: tr.roomId, channel: tr.channel, endpoint: tr.endpoint, displayName: tr.displayName });
-      await this.c.rejoinRoom(tr);
-      await sleep(1200);
+      if (tr) {
+        this.log('travel_msg', { mapId: tr.mapId, roomId: tr.roomId, channel: tr.channel, endpoint: tr.endpoint, displayName: tr.displayName });
+        await this.c.rejoinRoom(tr);
+        await sleep(1200);
+      }
       this.log('traveled', { now: this.c.mapId });
       return;
     }
     throw new Error(`travel ${this.c.mapId}->${nextMap} timeout`);
   }
 
-  async farm({ until, auto = {}, timeoutMin = 600, label = '', map = null, statPlan = null, weave = null }) {
+  async farm({ until, auto = {}, timeoutMin = 600, label = '', map = null, statPlan = null, weave = null, errand = null }) {
     await this.setAuto(auto);
     // inventory arrives ~right after join; re-apply once it's here so auto-potion itemIds fill in
     if (!this.s.inventory) await this.waitFor(() => !!this.s.inventory, 'inventory', 20000).catch(() => {});
@@ -692,17 +1175,66 @@ class Bot {
     let last = 0, lastStat = 0;
     while (Date.now() - t0 < timeoutMin * 60 * 1000) {
       await controlWait(this);
+      if (this.pendingGrant) {
+        const g = this.pendingGrant; this.pendingGrant = null;
+        this.log('collect_granted', g);
+        try { await this.collectToCollector(g); this.lastCollectDone = { at: Date.now(), collector: g.collector }; this.wantCollect = false; }
+        catch (e) { this.log('collect_fail', String((e && e.message) || e)); this.lastCollectDone = { at: Date.now(), error: true }; }
+        if (map && this.c.mapId !== map) await this.ensureMap(map);
+        if (map) await this.channelOnReturn(); // back at the grind spot → least-populated channel first
+        await this.setAuto(auto);
+      }
+      // bag-full errand (sell non-whitelist, restock) — runs even while a collector turn is queued,
+      // so the bot keeps farming while it waits. NEW POLICY (2026-10-06): errands never touch storage.
+      if (this.errandCfg?.enabled && !this.pendingGrant) {
+        const w3 = this.s.inventory;
+        const pctE = w3 ? (w3.weight / w3.weightLimit) * 100 : 0;
+        const usedE = w3?.items?.length ?? 0;
+        if ((pctE >= (this.errandCfg.atWeightPct ?? 70) || usedE >= 90) && Date.now() - (this._lastErrandAt || 0) > 90000 && Date.now() > (this._errandGateAt ?? 0)) {
+          this._lastErrandAt = Date.now();
+          const keep = this.keepIds();
+          this.log('errand_bag_full', { weightPct: Math.round(pctE), used: usedE });
+          try {
+            this.c.autoEnabled(false);
+            await this.ensureMap('capital');
+            await this.sellJunkExcept(keep); // whitelist stays in the bag — it travels to the collector, never to storage
+            await this.buyPotions(45).catch(() => {});
+            this.log('errand_done', {});
+          } catch (e) { this.log('errand_fail', String((e && e.message) || e)); }
+          // if the errand couldn't get weight back under control, give it 6 min before retrying (breaks errand storms)
+          const wA = this.s.inventory; const pctA = wA ? (wA.weight / wA.weightLimit) * 100 : 0;
+          this._errandGateAt = pctA >= (this.errandCfg.atWeightPct ?? 70) - 5 ? Date.now() + 6 * 60 * 1000 : 0;
+          if (map && this.c.mapId !== map) await this.ensureMap(map);
+          if (map) await this.channelOnReturn(); // errand trip done → least-populated channel first
+          await this.setAuto(auto);
+        }
+      }
+      if (this.collectCfg?.enabled && !this.wantCollect) {
+        const w2 = this.s.inventory;
+        const pctW = w2 ? (w2.weight / w2.weightLimit) * 100 : 0;
+        const usedW = w2?.items?.length ?? 0;
+        if (pctW >= (this.collectCfg.atWeightPct ?? 70) || usedW >= 90) { this.wantCollect = true; this.log('collect_wanted', { weightPct: Math.round(pctW), used: usedW }); }
+      }
+      if (this.autoChannel && Date.now() - (this._lastChanCheck || 0) > 10 * 60 * 1000) {
+        this._lastChanCheck = Date.now();
+        await this.ensureLeastPopulatedChannel().catch(() => {});
+      }
       if (!this.isConnected()) {
         this.log('farm_disconnected', {});
         await this.reconnect();
         if (map && this.c.mapId !== map) await this.ensureMap(map);
         await this.setAuto(auto);
       }
-      // turn-key: if we're on the wrong map (e.g. after death respawn or any drift), go back and resume
+      // turn-key: if we're on the wrong map (e.g. after death respawn or any drift), go back and resume.
+      // Backoff: when transfers are congested a failed return must NOT retry every loop pass — that
+      // hammers the server's transfer pipeline and keeps every stranded bot in an idle travel loop.
       if (map && this.c.mapId !== map && !this.s.death) {
-        this.log('wrong_map_return', { at: this.c.mapId, target: map });
-        await this.ensureMap(map);
-        await this.setAuto(auto);
+        if (Date.now() < (this._mapRetryAt ?? 0)) { /* travel backoff — letting the pipeline drain */ }
+        else {
+          this.log('wrong_map_return', { at: this.c.mapId, target: map });
+          try { await this.ensureMap(map); this._mapRetryAt = 0; await this.setAuto(auto); }
+          catch (e) { this._mapRetryAt = Date.now() + 2 * 60 * 1000; this.log('map_return_fail', String((e && e.message) || e)); }
+        }
       }
       const ch = this.char;
       if (ch && until(ch)) { this.log('farm_done', { label, baseLevel: ch.baseLevel, jobLevel: ch.jobLevel }); return; }
@@ -723,19 +1255,30 @@ class Bot {
       if (this.s.death) {
         await this.deathRecover();
         if (map && this.c.mapId !== map) await this.ensureMap(map);
+        if (map) await this.channelOnReturn(); // death respawn → walk of shame → best channel
         await this.setAuto(auto);
       } else if (ch && ch.auto?.enabled === false) {
         const w = this.s.inventory; const pct = w ? (w.weight / w.weightLimit) * 100 : 0;
         this.log('auto_off', { weightPct: Math.round(pct) });
-        if (pct > 70) {
-          // bag filling → bank protected items, sell the rest, restock potions, come back
+        if (pct >= (this.errandCfg?.atWeightPct ?? 70) && Date.now() > (this._errandGateAt ?? 0)) {
+          // bag filling → errand (farming mode supplies its own), else bank/sell/restock, come back
           this.c.autoEnabled(false); await sleep(700);
-          await this.ensureMap('capital');
-          await this.bankProtected();
-          await this.sellJunk();
-          await this.buyPotions(45).catch(() => {});
-          await this.ensureMap(map ?? this.c.mapId);
-          await this.setAuto(auto);
+          if (errand) {
+            try { await errand(this); } catch (e) { this.log('errand_fail', String((e && e.message) || e)); }
+          } else {
+            await this.ensureMap('capital');
+            await this.sellJunk(); // no banking — storage is off-limits for bots (policy 2026-10-06)
+            await this.buyPotions(45).catch(() => {});
+          }
+          // same gate as the main errand path — a non-draining trip must not immediately repeat
+          const wA = this.s.inventory; const pctA = wA ? (wA.weight / wA.weightLimit) * 100 : 0;
+          this._errandGateAt = pctA >= (this.errandCfg?.atWeightPct ?? 70) - 5 ? Date.now() + 6 * 60 * 1000 : 0;
+          try { await this.ensureMap(map ?? this.c.mapId); this._mapRetryAt = 0; }
+          catch (e) { this._mapRetryAt = Date.now() + 2 * 60 * 1000; this.log('errand_return_fail', String((e && e.message) || e)); }
+          if (!map || this.c.mapId === map) {
+            if (map) await this.channelOnReturn(); // back at the grind spot → least-populated channel first
+            await this.setAuto(auto);
+          }
         } else {
           await this.setAuto(auto); // transient stop → just re-enable
         }
@@ -1038,59 +1581,9 @@ const PLAN = [
       const autoCfg = { huntRadiusTiles: 'all', pickupLoot: true, hpPercent: 75, spPercent: 40, skills: [{ id: 'bash', level: 10 }] };
       await bot.farm({ until: (c) => c.jobLevel >= 50, map: 'goblin_trail', auto: autoCfg, statPlan: { fixed: { DEX: 20, AGI: 20 }, dump: 'STR' }, label: 'goblin j50', timeoutMin: 600, weave: ['bash'] });
     } },
-  { id: '23b-gems-refine-equip', run: async () => {
-      // gems come from field drops now (market purchase step removed). Refine up to 3 gems to +4 and equip.
-      const gems = (bot.s.inventory?.items ?? []).filter((x) => /gem/i.test(x.name)).slice(0, 3);
-      if (!gems.length) { log('gem_skip', { reason: 'no gems in bag' }); return; }
-      log('gem_plan', { gems: gems.map((g) => `${g.name}(${g.itemId})`) });
-      const gemIds = new Set(gems.map((g) => g.itemId));
-      await bot.ensureMap('capital');
-      await bot.walkToNpc(NPCS.n3);
-      await bot.talk('n3');
-      bot.s.refine = null;
-      await bot.chooseByKeyword('ตีบวกอุปกรณ์', { timeout: 6000 });
-      try { await bot.waitFor(() => bot.s.refine, 'refine mode', 8000); } catch { log('gem_refine_mode_fail', {}); }
-      let restocks = 0;
-      for (let round = 0; round < 30; round++) {
-        const entry = (bot.s.refine?.items ?? []).find((x) => gemIds.has(x.item?.itemId) && x.to <= 4);
-        if (!entry) { log('gem_refine_done', { round }); break; }
-        if ((entry.material?.have ?? 0) < 1 || (bot.char?.zeny ?? 0) < entry.zeny) {
-          log('gem_refine_blocked', { mat: entry.material?.have, zeny: bot.char?.zeny, cost: entry.zeny, item: entry.item?.name });
-          if (++restocks > 2) { log('gem_refine_giveup', {}); break; }
-          bot.c.npcClose(); await sleep(500);
-          await bot.talk('n3');
-          bot.s.shop = null;
-          await bot.chooseByKeyword('ซื้อแร่ตีบวก', { timeout: 6000 });
-          try { await bot.waitFor(() => bot.s.shop, 'ore shop', 8000); } catch {}
-          const el = (bot.s.shop?.items ?? []).find((x) => x.name === 'Rough Elunium');
-          const need = Math.max(1, 12 - (entry.material?.have ?? 0));
-          const qty = Math.min(need, Math.max(0, Math.floor(((bot.char?.zeny ?? 0) - 300) / ((el?.price || 200)))));
-          if (el && qty > 0) { bot.c.send('shop_buy', { itemId: el.itemId, qty }); log('gem_buy_elunium', { qty }); await sleep(1600); }
-          bot.c.npcClose(); await sleep(500);
-          await bot.talk('n3');
-          bot.s.refine = null;
-          await bot.chooseByKeyword('ตีบวกอุปกรณ์', { timeout: 6000 });
-          try { await bot.waitFor(() => bot.s.refine, 'refine mode retry', 8000); } catch {}
-          continue;
-        }
-        const seq = bot.s.refineSeq;
-        bot.c.send('refine', { source: entry.source, blessing: false });
-        log('gem_refine_send', { item: entry.item?.name, to: entry.to, cost: entry.zeny });
-        await sleep(2200);
-        if ((bot.s.refineSeq ?? 0) === seq) log('gem_refine_no_update', {});
-      }
-      bot.c.npcClose(); await sleep(500);
-      bot.c.invSort(); await sleep(800);
-      // equip the gems (user flow: ใส่ไอเท็มดาบและ Gem — sword already equipped in 21)
-      for (const g of gems) {
-        const it = (bot.s.inventory?.items ?? []).find((x) => x.itemId === g.itemId);
-        if (!it) { log('gem_equip_missing', { itemId: g.itemId }); continue; }
-        bot.c.send('equip', { slot: it.slot });
-        log('gem_equip', { name: it.name, slot: it.slot, refine: it.refine ?? 0 });
-        await sleep(1300);
-      }
-      bot.c.invSort(); await sleep(600);
-    } },
+  // REMOVED per operator 2026-10-05 — gems are no longer refined/equipped during leveling.
+  // No-op stub kept so existing per-bot plan cursors (index-based positions) stay aligned.
+  { id: '23b-gems-refine-equip', run: async () => { log('gem_step_removed', {}); } },
   { id: '23c-orc-egg', run: async () => {
       // Event Lily (n9 @2032,1626): free Orc Baby Egg at base ≥15 — once per character. Equip to hatch it.
       if ((bot.char?.baseLevel ?? 0) < 15) { log('orc_egg_low_level', { base: bot.char?.baseLevel }); return; }
@@ -1176,7 +1669,130 @@ const PLAN = [
     } },
 ];
 
+// ---------------- modes ----------------
+async function runFarmingMode() {
+  let cfg = null;
+  for (;;) {
+    await controlWait(bot);
+    const ctl = applyDirectives(bot);
+    if (ctl?.farm) cfg = ctl.farm;
+    const f = cfg ?? { map: 'frost_pass', keep: [], hpPercent: 75, restockQty: 45, potItem: 'Red Potion' };
+    bot.restockQty = f.restockQty ?? 45; // consumables policy: keep only this potion, and only up to this count
+    bot.potItemName = f.potItem ?? 'Red Potion';
+    // union with the bot's own whitelist (ctl.keep, card-expanded) — the whitelist travels to the collector
+    const keepIds = new Set([...(f.keep ?? []), ...bot.keepIds()]);
+    bot.stepId = 'farm-mode:' + f.map;
+    bot.log('farm_mode_start', { map: f.map, keep: [...keepIds] });
+    // NEW POLICY (2026-10-06): errands never touch storage — sell sellable non-whitelist, restock,
+    // whitelist stays in the bag for the next collect turn (batched trade to the collector)
+    const errand = async (b) => {
+      b.log('farm_errand_start', {});
+      await b.ensureMap('capital');
+      await b.sellJunkExcept(keepIds);
+      await b.buyPotions(f.restockQty ?? 45, f.potItem ?? 'Red Potion').catch(() => {});
+      b.log('farm_errand_done', {});
+    };
+    try {
+      if (Date.now() < (bot._mapRetryAt ?? 0)) { await sleep(15000); continue; } // travel backoff — don't spam congestion
+      await bot.ensureMap(f.map);
+      bot._mapRetryAt = 0;
+      if (bot.autoChannel) await bot.ensureLeastPopulatedChannel().catch(() => {});
+      await bot.farm({
+        until: () => false, timeoutMin: 24 * 60, map: f.map, label: 'farm-mode', errand,
+        auto: { huntRadiusTiles: 'all', pickupLoot: true, hpPercent: f.hpPercent ?? 75, spPercent: 40, skills: [{ id: 'bash', level: 10 }] },
+        weave: bot.weaveOverride ?? ['bash', 'bowling-bash'],
+      });
+    } catch (e) {
+      bot.log('STEP_FAIL', { step: 'farm-mode', err: String((e && e.message) || e) });
+      if (bot.s.death) { try { await bot.deathRecover(); } catch {} }
+      await sleep(10000);
+    }
+  }
+}
+
+async function runCollectorMode() {
+  bot.stepId = 'collector';
+  await bot.ensureMap('capital').catch(() => {});
+  bot.log('collector_mode_ready', {});
+  for (;;) {
+    await controlWait(bot);
+    const ctl = applyDirectives(bot);
+    const cc = ctl?.collect;
+    // storage is WRITE-ONLY by policy (2026-10-06): the collector deposits but never withdraws — cleanup disabled.
+    if (ctl?.cleanup?.at && ctl.cleanup.at !== bot._cleanupAt) {
+      bot._cleanupAt = ctl.cleanup.at;
+      bot.log('collector_cleanup_disabled', { note: 'storage is write-only (deposits only) by policy' });
+    }
+    // the collector MUST stay connected — unlike the farm loop, collector mode has no other recovery path
+    if (!bot.isConnected()) {
+      bot.log('collector_disconnected', {});
+      try { await bot.reconnect(); bot.log('collector_reconnected', {}); } catch (e) { bot.log('collector_reconnect_fail', String((e && e.message) || e)); }
+      bot._colChan = null; bot._lastSpotAt = 0; // re-assert channel + spot after reconnect
+      await sleep(2000);
+      continue;
+    }
+    if (cc?.channel != null && bot._colChan !== cc.channel && Date.now() - (bot._lastChanTry || 0) > 60000) {
+      bot._lastChanTry = Date.now();
+      const ok = await bot.switchToChannel(cc.channel).catch(() => false);
+      if (ok) bot._colChan = cc.channel;
+    }
+    const spot = (cc?.spot && cc.spot.x != null) ? cc.spot : null;
+    if (spot && Date.now() - (bot._lastSpotAt || 0) > 60000) { bot._lastSpotAt = Date.now(); bot.c.moveToPx(spot.x, spot.y); }
+    // manual storage refresh (command-center ⟳): one-shot per request, deferred while a trade is in flight
+    const rfReq = readControl()?.refreshStorage;
+    if (rfReq && rfReq !== bot._rfAt && !bot.s.trade && !bot.s.invite) {
+      bot._rfAt = rfReq;
+      if (Date.now() - rfReq < 10 * 60 * 1000) { // stale flags survive restarts — only honor fresh clicks
+        bot.log('storage_refresh_start', {});
+        try {
+          const ok = await bot.refreshStorageSnapshot();
+          bot.log('storage_refresh_done', { ok, stacks: (bot.s.storage?.items ?? []).length });
+        } catch (e) { bot.log('storage_refresh_fail', String((e && e.message) || e)); }
+      }
+      if (spot) { bot.c.moveToPx(spot.x, spot.y); bot._lastSpotAt = Date.now(); }
+    }
+    if (bot.s.invite && bot.s.invite.kind === 'trade') { bot.c.trade({ action: 'accept' }); bot.log('trade_accept', bot.s.invite); bot.s.invite = null; }
+    const t = bot.s.trade;
+    if (t && t.mine && !t.mine.locked && bot._lockSeq !== bot.s.tradeSeq) {
+      bot.c.tradeOffer([], 0); await sleep(700); bot.c.tradeLock();
+      bot._lockSeq = bot.s.tradeSeq;
+      bot.log('collector_locked', { seq: bot.s.tradeSeq });
+    } else if (t && t.mine?.locked && t.theirs?.locked && bot._confirmSeq !== bot.s.tradeSeq) {
+      bot.c.tradeConfirm();
+      bot._confirmSeq = bot.s.tradeSeq;
+      bot.log('collector_confirmed', { seq: bot.s.tradeSeq, zeny: bot.char?.zeny ?? 0 });
+    }
+    // bag nearly full → empty it into storage so donors can keep transferring
+    const invc = bot.s.inventory;
+    const usedNow = invc?.items?.length ?? 0;
+    const capNow = invc?.slots ?? invc?.capacity ?? 100;
+    const wPct = invc ? (invc.weight / invc.weightLimit) * 100 : 0;
+    if (!bot.s.trade && !bot.s.invite && (usedNow >= capNow - 20 || wPct >= 85) && Date.now() - (bot._lastEmpty || 0) > 120000) {
+      bot._lastEmpty = Date.now();
+      bot.log('collector_bag_full', { used: usedNow, cap: capNow, weightPct: Math.round(wPct) });
+      try { await bot.depositItemsWhere(() => true, { npcKey: 'n6', label: 'collector' }); }
+      catch (e) { bot.log('collector_empty_fail', String((e && e.message) || e)); }
+      bot.c.moveToPx(spot?.x ?? 880, spot?.y ?? 1520);
+      await sleep(1500);
+    }
+    await sleep(1500);
+  }
+}
+
 // ---------------- execute (turn-key: never abort — retry forever with reconnect) ----------------
+if (MODE === 'collector') { await runCollectorMode(); }
+else if (MODE === 'farming') { await runFarmingMode(); }
+// pending collect grant: handle before starting the plan (don't trek to the grind map first)
+{
+  await controlWait(bot);
+  applyDirectives(bot);
+  if (bot.pendingGrant) {
+    const g = bot.pendingGrant; bot.pendingGrant = null;
+    bot.log('collect_granted', g);
+    try { await bot.collectToCollector(g); bot.lastCollectDone = { at: Date.now(), collector: g.collector }; bot.wantCollect = false; }
+    catch (e) { bot.log('collect_fail', String((e && e.message) || e)); bot.lastCollectDone = { at: Date.now(), error: true }; }
+  }
+}
 for (let i = runState.cursor; i < PLAN.length && i < UPTO; i++) {
   const step = PLAN[i];
   bot.stepId = step.id;

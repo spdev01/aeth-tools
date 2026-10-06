@@ -5,8 +5,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { store } from './store.js';
+import { cardItemIds } from './wiki.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
+const STORESNAP_FILE = path.join(here, '..', 'data', 'collector-storage.json');
+const KILLLOG_FILE = path.join(here, '..', 'data', 'kill-log.json');
 const TESTBOT = path.resolve(here, '..', '..', 'testbot');
 const RUNNER = path.join(TESTBOT, 'src', 'runner.js');
 const BOTS_DIR = path.join(store.dir, 'bots');
@@ -37,12 +40,107 @@ const EVT_BRIEF = (evt, d) => {
   } catch { return {}; }
 };
 
+// local-day key for the kill log (the dashboard machine is the fleet's own clock)
+const dayKey = (iso) => { const d = new Date(iso); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+
 export class BotManager {
   constructor({ onUpdate = () => {}, onEvent = () => {} } = {}) {
     this.onUpdate = onUpdate;
     this.onEvent = onEvent;
     this.runtime = new Map(); // botId -> { proc, dir, state, status, tail* , pendingStart }
+    this.tradeQueue = []; // botIds waiting for a collector trade slot
+    this.activeTrade = null; // botId currently trading
+    // restore persisted queue state — a server restart must not lose waiting turns or double-grant the active bot
+    try {
+      const qs = store.getSettings?.()?.collectQueue;
+      if (qs && typeof qs === 'object') {
+        this.tradeQueue = (qs.queue ?? []).map((x) => parseInt(x, 10)).filter((id) => { const b = store.findBot(id); return !!b && b.mode !== 'collector'; });
+        for (const h of (qs.holds ?? [])) { const b = store.findBot(parseInt(h, 10)); if (b && b.mode !== 'collector') this.rt(b.id).collectHold = true; }
+        const act = parseInt(qs.active, 10);
+        if (Number.isFinite(act)) {
+          const b = store.findBot(act);
+          if (b && b.mode !== 'collector') {
+            this.activeTrade = act;
+            const rt = this.rt(act);
+            rt.grantAt = qs.grantAt ?? Date.now();
+            rt.grantPending = true; // the runner still holds its control.json grant — don't grant anyone else
+          }
+        }
+      }
+    } catch {}
+    // collector's last-seen storage snapshot — persisted so the dashboard can show where items sit even
+    // after the collector restarts (donors never open storage; the collector is the only storer)
+    this.storeSnap = null; // { at, zeny, slots, items: { itemId: qty } }
+    try { const raw = JSON.parse(fs.readFileSync(STORESNAP_FILE, 'utf8')); if (raw && typeof raw === 'object' && raw.items) this.storeSnap = raw; } catch {}
+    this.fleet = { regular: new Map(), collectorBag: new Map() };
+    // persistent kill log — rows: "<day>|<botId>|<monster>" -> count; tails: per-bot "how far its newest
+    // JSONL was processed" { file, off, lastTs } so a server restart resumes without re-counting (ts-dedup
+    // is the second guard). Cleared only via the dashboard's 🗑 button.
+    this.killLog = { v: 1, rows: {}, tails: {} };
+    try { const raw = JSON.parse(fs.readFileSync(KILLLOG_FILE, 'utf8')); if (raw && typeof raw === 'object' && raw.rows) this.killLog = raw; } catch {}
+    this._killDirty = false;
     this._poller = setInterval(() => this.poll(), 2000);
+  }
+
+  // persist the trade queue so restarts are seamless (runners keep their control.json grants either way)
+  _saveQueue() {
+    try {
+      const s = store.getSettings?.();
+      if (!s) return;
+      s.collectQueue = { queue: [...this.tradeQueue], active: this.activeTrade, holds: this.heldList(), grantAt: this.activeTrade != null ? (this.runtime.get(this.activeTrade)?.grantAt ?? Date.now()) : null, at: Date.now() };
+      store.save?.();
+    } catch {}
+  }
+
+  // near-real-time fleet item totals: farming bots contribute their BAGS only (they never touch storage by
+  // policy); the collector contributes bag + its last-seen storage snapshot (persisted, with its timestamp).
+  _ledgerTick() {
+    const regular = new Map();
+    const collectorBag = new Map();
+    let snapSrc = null, snapAt = 0;
+    for (const [botId, rt] of this.runtime) {
+      const s = rt.status; if (!s) continue;
+      const isCol = store.findBot(botId)?.mode === 'collector';
+      const tgt = isCol ? collectorBag : regular;
+      for (const it of (s.inventory ?? [])) if (it.itemId != null) tgt.set(it.itemId, (tgt.get(it.itemId) ?? 0) + (it.qty ?? 1));
+      // a collector storage snapshot only counts when it carries a read-timestamp (fresh window read)
+      if (isCol && Array.isArray(s.storage?.items) && (s.storageAt ?? 0) > snapAt) { snapSrc = s.storage; snapAt = s.storageAt; }
+    }
+    this.fleet = { regular, collectorBag };
+    if (snapSrc && snapAt > (this.storeSnap?.at ?? 0)) {
+      const items = {};
+      for (const it of snapSrc.items) if (it.itemId != null) items[it.itemId] = (items[it.itemId] ?? 0) + (it.qty ?? 1);
+      this.storeSnap = { at: snapAt, zeny: snapSrc.zeny ?? null, slots: snapSrc.slots ?? null, items };
+      try { fs.writeFileSync(STORESNAP_FILE, JSON.stringify(this.storeSnap)); } catch {}
+    }
+  }
+  fleetView() {
+    return {
+      updatedAt: Date.now(),
+      regular: Object.fromEntries(this.fleet?.regular ?? []),
+      collectorBag: Object.fromEntries(this.fleet?.collectorBag ?? []),
+      collectorStorage: this.storeSnap ?? null,
+    };
+  }
+  // command-center ⟳ — ask the collector to re-open its storage and report a fresh snapshot
+  requestStorageRefresh(botId) {
+    const rt = this.rt(botId);
+    let cur = {}; try { cur = JSON.parse(fs.readFileSync(path.join(rt.dir, 'control.json'), 'utf8')); } catch {}
+    cur.refreshStorage = Date.now();
+    fs.writeFileSync(path.join(rt.dir, 'control.json'), JSON.stringify(cur));
+    this.onUpdate();
+    return { ok: true, requestedAt: cur.refreshStorage };
+  }
+
+  // ---- kill log (persistent; wiped only via the dashboard) ----
+  _saveKills() {
+    try { fs.writeFileSync(KILLLOG_FILE, JSON.stringify(this.killLog)); this._killSavedAt = Date.now(); this._killDirty = false; } catch {}
+  }
+  killView() { return { rows: this.killLog.rows, at: this._killSavedAt ?? null }; }
+  clearKills() {
+    this.killLog.rows = {}; // tails stay — they are how we avoid re-counting already-processed files
+    this._saveKills();
+    return { ok: true, clearedAt: Date.now() };
   }
 
   // ---- store helpers ----
@@ -67,10 +165,95 @@ export class BotManager {
     return this.runtime.get(botId);
   }
 
-  control(botId, cmd) {
+  control(botId, cmd, extra = {}) {
     const rt = this.rt(botId);
-    fs.writeFileSync(path.join(rt.dir, 'control.json'), JSON.stringify({ cmd }));
+    let cur = {}; try { cur = JSON.parse(fs.readFileSync(path.join(rt.dir, 'control.json'), 'utf8')); } catch {}
+    fs.writeFileSync(path.join(rt.dir, 'control.json'), JSON.stringify({ ...cur, cmd, ...extra }));
   }
+
+  // Push runtime config (auto-combat, weave, channel, collect, farm) to a bot via control.json.
+  applySettings(botId, cfg) {
+    const rt = this.rt(botId);
+    let cur = {}; try { cur = JSON.parse(fs.readFileSync(path.join(rt.dir, 'control.json'), 'utf8')); } catch {}
+    const rev = (cur.rev ?? 0) + 1;
+    // "keep all cards" toggle: when on, every card item id rides with the whitelist into control.json — the
+    // runner's keep machinery then protects/banks/trades cards exactly like whitelist items. keepRaw preserves
+    // the user's explicit list so toggling off restores it (the expanded list must never leak back into raw).
+    const cards = cfg.cards !== undefined ? !!cfg.cards : !!cur.cards;
+    const rawKeep = cfg.keep !== undefined ? cfg.keep : (cur.keepRaw !== undefined ? cur.keepRaw : (cur.keep ?? []));
+    const keep = cards ? [...new Set([...rawKeep, ...cardItemIds()])] : rawKeep;
+    fs.writeFileSync(path.join(rt.dir, 'control.json'), JSON.stringify({ ...cur, ...cfg, cards, keep, keepRaw: rawKeep, cmd: cur.cmd === 'stop' ? 'run' : (cur.cmd ?? 'run'), rev }));
+    const bot = store.findBot(botId);
+    if (bot) { bot.cfg = { ...(bot.cfg ?? {}), ...cfg }; store.save(); }
+    rt.cfg = { ...(rt.cfg ?? {}), ...cfg };
+    this.onUpdate();
+    return { ok: true, rev };
+  }
+  grantCollect(botId, grant) {
+    const rt = this.rt(botId);
+    let cur = {}; try { cur = JSON.parse(fs.readFileSync(path.join(rt.dir, 'control.json'), 'utf8')); } catch {}
+    fs.writeFileSync(path.join(rt.dir, 'control.json'), JSON.stringify({ ...cur, grant, rev: (cur.rev ?? 0) + 1, cmd: cur.cmd === 'stop' ? 'run' : (cur.cmd ?? 'run') }));
+    rt.grantAt = Date.now();
+    this.onUpdate();
+  }
+  clearGrant(botId) {
+    const rt = this.rt(botId);
+    let cur = {}; try { cur = JSON.parse(fs.readFileSync(path.join(rt.dir, 'control.json'), 'utf8')); } catch {}
+    if (!cur.grant) return;
+    const { grant, ...rest } = cur;
+    fs.writeFileSync(path.join(rt.dir, 'control.json'), JSON.stringify({ ...rest, rev: (cur.rev ?? 0) + 1 }));
+    this.onUpdate();
+  }
+  enqueueCollect(botId) {
+    const bot = store.findBot(botId);
+    if (!bot || bot.mode === 'collector') return { ok: false, error: 'not a collectible bot' };
+    const rt = this.rt(botId);
+    rt.collectHold = false; // explicitly queuing releases a skip-hold
+    if (!this.tradeQueue.includes(botId) && this.activeTrade !== botId) this.tradeQueue.push(botId);
+    this._saveQueue();
+    this.onUpdate();
+    return { ok: true, queue: [...this.tradeQueue], active: this.activeTrade };
+  }
+
+  // ✕ — remove a waiting bot from this round; the hold keeps it out of auto-queueing until its want-cycle resets or it is queued again
+  dequeueCollect(botId, { hold = true } = {}) {
+    if (this.activeTrade === botId) return { ok: false, error: 'bot is trading right now — it finishes on its own (auto-skip after 10 min)' };
+    const i = this.tradeQueue.indexOf(botId);
+    if (i === -1) return { ok: false, error: 'not in the queue' };
+    this.tradeQueue.splice(i, 1);
+    if (hold) this.rt(botId).collectHold = true;
+    this._saveQueue();
+    this.onUpdate();
+    return { ok: true, queue: [...this.tradeQueue], active: this.activeTrade, held: this.heldList() };
+  }
+
+  // ⏹ — empty the waiting queue (the active bot keeps trading); every removed bot is held out of auto-queueing
+  clearWaiting() {
+    const n = this.tradeQueue.length;
+    for (const id of this.tradeQueue) this.rt(id).collectHold = true;
+    this.tradeQueue = [];
+    this._saveQueue();
+    this.onUpdate();
+    return { ok: true, removed: n, active: this.activeTrade, held: this.heldList() };
+  }
+
+  // ↺ — release held bots (one if id given): they auto-queue again if they still want to hand over
+  releaseCollect(id = null) {
+    const ids = id != null ? [parseInt(id, 10)] : [...this.runtime.keys()];
+    const released = [];
+    for (const bId of ids) {
+      const rt = this.runtime.get(bId);
+      if (!rt || !rt.collectHold) continue;
+      rt.collectHold = false;
+      released.push(bId);
+      const st = rt.status;
+      if (st?.wantCollect && this.activeTrade !== bId && !this.tradeQueue.includes(bId) && !rt.grantPending) this.tradeQueue.push(bId);
+    }
+    if (released.length) { this._saveQueue(); this.onUpdate(); }
+    return { ok: true, released, queue: [...this.tradeQueue], active: this.activeTrade, held: this.heldList() };
+  }
+
+  heldList() { const out = []; for (const [bId, rt] of this.runtime) if (rt.collectHold) out.push(bId); return out; }
 
   // ---- lifecycle ----
   async start(botId, { delayMs = 0 } = {}) {
@@ -92,7 +275,7 @@ export class BotManager {
     rt.lastEvt = null; // fresh spawn → don't show the previous session's activity badge
     rt.stopping = false;
     rt.startedAt = Date.now();
-    rt.proc = spawn(process.execPath, [RUNNER, '--upto', UPTO], {
+    rt.proc = spawn(process.execPath, [RUNNER, '--upto', UPTO, '--mode', bot.mode ?? 'leveling'], {
       cwd: TESTBOT,
       env: {
         ...process.env,
@@ -100,6 +283,7 @@ export class BotManager {
         AETHERIA_USER: account.userId,
         AETHERIA_PASS: account.password,
         AETHERIA_QUIET: '1',
+        AETHERIA_MODE: bot.mode ?? 'leveling',
       },
       stdio: ['ignore', 'pipe', 'pipe'],
       windowsHide: true,
@@ -155,6 +339,43 @@ export class BotManager {
     for (const bot of store.data.bots) this.stop(bot.id);
   }
 
+  // Reliable single restart for mode changes (UI stop→7s→play races the graceful-exit window and can be
+  // silently swallowed). stop → wait for the process to actually exit → drop any stale handle → start.
+  async restartBot(botId) {
+    const bot = store.findBot(botId);
+    if (!bot) return { ok: false, error: 'bot not found' };
+    const rt = this.rt(botId);
+    this.stop(botId);
+    const t0 = Date.now();
+    while (Date.now() - t0 < 45000) {
+      if (!rt.proc || rt.proc.exitCode !== null || rt.proc.signalCode !== null || rt.state === 'stopped') break;
+      await sleep(700);
+    }
+    if (rt.proc && rt.proc.exitCode === null && rt.proc.signalCode === null) { try { rt.proc.kill(); } catch {} await sleep(1200); }
+    rt.proc = null; // a stale dead handle would silently block start()
+    rt.stopping = false;
+    await this.start(botId);
+    return { ok: true, id: botId };
+  }
+
+  // Fleet restart: stop everything, wait for all exits, kill stragglers, drop stale handles, then start with ramp.
+  // Use after pushing mode changes (mode is read at spawn) or to reload runner code fleet-wide.
+  async restartAll({ rampMs = 3000 } = {}) {
+    await this.stopAll();
+    const t0 = Date.now();
+    const alive = () => [...this.runtime.values()].some((rt) => rt.proc && rt.proc.exitCode === null && rt.proc.signalCode === null);
+    while (alive() && Date.now() - t0 < 50000) await sleep(800);
+    for (const rt of this.runtime.values()) {
+      if (rt.proc && rt.proc.exitCode === null && rt.proc.signalCode === null) { try { rt.proc.kill(); } catch {} }
+      rt.proc = null;
+      rt.stopping = false;
+    }
+    await sleep(1500);
+    const bots = store.data.bots.slice();
+    for (let i = 0; i < bots.length; i++) this.start(bots[i].id, { delayMs: i * rampMs }).catch(() => {});
+    return { ok: true, count: bots.length, rampMs };
+  }
+
   async startMany(characterIds, { rampMs = 5000 } = {}) {
     const started = [];
     for (let i = 0; i < characterIds.length; i++) {
@@ -202,7 +423,90 @@ export class BotManager {
         rt.state = rt.lastExit?.code === 0 ? 'stopped' : (rt.lastExit ? 'error' : rt.state);
       }
     }
+    try { this._ledgerTick(); } catch {}
+    if (this._killDirty && Date.now() - (this._killSavedAt ?? 0) > 30000) this._saveKills();
+    this.pollCollect();
     this.onUpdate();
+  }
+
+  // ---- collect queue (trade to collector, one bot at a time) ----
+  pollCollect() {
+    const settings = store.getSettings?.() ?? {};
+    const col = settings.collector;
+    // ---- auto-collect scheduler: every X hours, queue only bots that actually have something to hand over ----
+    const ac = settings.autoCollect;
+    if (ac?.enabled && this.activeTrade == null && !this.tradeQueue.length) {
+      if (!ac.lastAt) { ac.lastAt = Date.now(); store.save?.(); }
+      const period = Math.max(15, ac.everyMin ?? 360) * 60000;
+      if (Date.now() - ac.lastAt > period) {
+        const ids = this.eligibleCollectBots(ac);
+        ac.lastAt = Date.now();
+        try { store.save?.(); } catch {}
+        if (ids.length) {
+          for (const id of ids) { if (!this.tradeQueue.includes(id)) this.tradeQueue.push(id); }
+          console.log(`[auto-collect] queued ${ids.length} bot(s): ${ids.join(',')}`);
+          this._saveQueue();
+          this.onUpdate?.();
+        }
+      }
+    }
+    let qDirty = false, hDirty = false;
+    for (const [botId, rt] of this.runtime) {
+      const bot = store.findBot(botId);
+      if (!bot || bot.mode === 'collector') continue;
+      const st = rt.status;
+      // a held bot (✕ removed) rejoins the pool once its want-cycle resets (wantCollect flips false, e.g. after a bounce)
+      if (rt.collectHold && st && st.wantCollect === false) { rt.collectHold = false; hDirty = true; }
+      if (st?.wantCollect && !rt.collectHold && !this.tradeQueue.includes(botId) && this.activeTrade !== botId && !rt.grantPending) { this.tradeQueue.push(botId); qDirty = true; }
+    }
+    if (qDirty || hDirty) this._saveQueue();
+    if (this.activeTrade != null) {
+      const rt = this.runtime.get(this.activeTrade);
+      const doneAt = rt?.status?.collectDone?.at ?? 0;
+      const stuck = Date.now() - (rt?.grantAt ?? 0) > 10 * 60 * 1000;
+      if ((doneAt && doneAt >= (rt?.grantAt ?? 0)) || stuck) {
+        try { this.clearGrant(this.activeTrade); } catch {}
+        if (rt) rt.grantPending = false;
+        this.activeTrade = null;
+        this._saveQueue();
+      }
+    }
+    if (this.activeTrade == null && this.tradeQueue.length && col?.charName) {
+      const botId = this.tradeQueue.shift();
+      const rt = this.runtime.get(botId);
+      if (rt) {
+        rt.grantPending = true;
+        this.grantCollect(botId, { collector: col.charName, channel: col.channel ?? 1, spot: col.spot ?? { x: 880, y: 1520 } });
+        this.activeTrade = botId;
+        this._saveQueue();
+      }
+    }
+  }
+
+  collectView() {
+    const settings = store.getSettings?.() ?? {};
+    return { queue: [...this.tradeQueue], active: this.activeTrade, held: this.heldList(), collector: settings.collector ?? null, tracked: settings.tracked ?? [], autoCollect: settings.autoCollect ?? null };
+  }
+
+  // bots that have whitelist items (bag or storage) or zeny waiting beyond the 10k reserve
+  eligibleCollectBots(ac = {}) {
+    const out = [];
+    for (const [botId, rt] of this.runtime) {
+      const bot = store.findBot(botId);
+      if (!bot || bot.mode === 'collector') continue;
+      if (rt.state !== 'running') continue;
+      if (rt.collectHold) continue; // ✕ skip honored by the auto-scheduler too
+      const st = rt.status;
+      const fresh = st && Date.now() - (st.ts ?? 0) < 120000;
+      if (!fresh || !st.selfId) continue;
+      if (this.activeTrade === botId || this.tradeQueue.includes(botId)) continue;
+      const keep = new Set(bot.cfg?.keep ?? []);
+      // donors have no storage by policy — eligibility looks at the bag only
+      const stacks = (st.inventory ?? []).filter((it) => keep.has(it.itemId)).length;
+      const zeny = st.zeny ?? 0;
+      if (stacks >= (ac.minStacks ?? 1) || zeny > 10000 + (ac.minZeny ?? 15000)) out.push(botId);
+    }
+    return out;
   }
 
   tailEvents(botId, rt) {
@@ -213,7 +517,12 @@ export class BotManager {
     const p = path.join(rt.dir, newest);
     let size = 0;
     try { size = fs.statSync(p).size; } catch { return; }
-    if (rt.tailFile !== newest) { rt.tailFile = newest; rt.tailOffset = 0; rt.tailCarry = ''; }
+    if (rt.tailFile !== newest) {
+      rt.tailFile = newest; rt.tailCarry = '';
+      // resume where this bot's log was left off (persisted kill-log tails) — 0 when the file is new
+      const remember = this.killLog.tails?.[botId];
+      rt.tailOffset = (remember && remember.file === newest && remember.off > 0 && remember.off <= size) ? remember.off : 0;
+    }
     if (size < rt.tailOffset) { rt.tailOffset = 0; rt.tailCarry = ''; }
     if (size === rt.tailOffset) return;
     const len = size - rt.tailOffset;
@@ -224,15 +533,27 @@ export class BotManager {
     const text = rt.tailCarry + buf.toString('utf8');
     const lines = text.split('\n');
     rt.tailCarry = lines.pop() ?? '';
+    const tl = this.killLog.tails[botId] ?? (this.killLog.tails[botId] = { file: newest, off: 0, last: '' });
+    let read = false;
     for (const line of lines) {
       if (!line.trim()) continue;
+      read = true;
       try {
         const evt = JSON.parse(line);
+        // kill log: count per (local day, bot, monster) — monotonic timestamps fence off re-reads
+        if (evt?.t && evt.t > (tl.last || '')) {
+          tl.last = evt.t;
+          if (evt.evt === 'kill') {
+            const key = dayKey(evt.t) + '|' + botId + '|' + (evt.data?.m ?? '?');
+            this.killLog.rows[key] = (this.killLog.rows[key] ?? 0) + 1;
+          }
+        }
         // remember the last meaningful event for the card activity badge (skip heartbeats)
         if (evt && evt.evt && evt.evt !== 'HEARTBEAT') rt.lastEvt = { evt: evt.evt, b: EVT_BRIEF(evt.evt, evt.data ?? {}), at: Date.now() };
         this.onEvent(botId, evt);
       } catch {}
     }
+    if (read) { tl.file = newest; tl.off = rt.tailOffset; this._killDirty = true; }
   }
 
   // ---- views for API/UI ----
@@ -252,6 +573,7 @@ export class BotManager {
         lastExit: rt?.lastExit ?? null,
         restarts: rt?.restarts ?? 0,
         activity: rt?.lastEvt ?? null,
+        cfg: bot.cfg ?? null,
       };
     });
   }

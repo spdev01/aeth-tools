@@ -813,7 +813,7 @@ Source of truth: `testbot/src/runner.js` → `PLAN`. Steps (production skips `de
 **Steps 27–31 (final operator sequence — replaces earlier DR-gear/Broad-Sword plans, both cancelled):**
 | # | id | summary |
 |---|---|---|
-| 23b | gems-refine-equip | refine in-bag gems (from drops) to +4 with Rough Elunium + equip |
+| 23b | gems-refine-equip | **REMOVED 2026-10-05** — no-op stub (kept so per-bot plan cursors stay aligned); formerly: refine in-bag gems to +4 + equip |
 | 23c | orc-egg | Event Lily (n9 @2032,1626): free **Orc Baby Egg** at base ≥15 (once per character); _hatch via `inv_use` (eggs are usable items, not equipment!) then `pet_set {petId}` to activate_ |
 | 27a | pet-hatch | safety/recovery step: hatch + activate pet from bag if not already |
 | 27 | travel-gale | route to `gale_high` (ที่ราบสูงเกล) |

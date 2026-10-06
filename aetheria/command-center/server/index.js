@@ -18,6 +18,8 @@ try { VERSION = JSON.parse(fs.readFileSync(path.join(here, '..', 'package.json')
 
 // ---------- live hub ----------
 const wss = new WebSocketServer({ noServer: true });
+import { initWiki, wikiSlices } from './wiki.js';
+initWiki().catch(() => {});
 const clients = new Set();
 const broadcast = (msg) => { const s = JSON.stringify(msg); for (const ws of clients) { try { if (ws.readyState === 1) ws.send(s); } catch {} } };
 
@@ -47,6 +49,9 @@ const stateView = () => ({
   accounts: store.data.accounts.map((a) => ({ ...a, password: undefined, chars: store.charsOfAccount(a.id).map((c) => ({ id: c.id, characterId: c.characterId, name: c.name, classId: c.classId, baseLevel: c.baseLevel, jobLevel: c.jobLevel, mapName: c.mapName, included: c.included })) })),
   characters: store.data.characters.map((c) => ({ ...c })),
   bots: manager.view(),
+  settings: store.getSettings(),
+  collect: manager.collectView(),
+  fleet: manager.fleetView(),
   jobs: jobsView(),
 });
 
@@ -84,6 +89,112 @@ const server = http.createServer(async (req, res) => {
       const account = store.findAccount(id);
       if (!account) return json(res, 404, { error: 'account not found' });
       return json(res, 200, { id: account.id, userId: account.userId, password: account.password ?? null });
+    }
+    if (p === '/api/wiki') return json(res, 200, wikiSlices());
+    if (p === '/api/kills' && req.method === 'GET') return json(res, 200, manager.killView());
+    if (p === '/api/kills/clear' && req.method === 'POST') return json(res, 200, manager.clearKills());
+    if (/^\/api\/bots\/\d+\/config$/.test(p) && req.method === 'POST') {
+      const id = parseInt(p.split('/')[3], 10);
+      const bot = store.findBot(id);
+      if (!bot) return json(res, 404, { error: 'bot not found' });
+      const body = await readBody(req);
+      const cfg = {};
+      for (const k of ['auto', 'weave', 'autoChannel', 'collect', 'errand', 'farm', 'cleanup', 'cards']) if (body[k] !== undefined) cfg[k] = body[k];
+      // per-bot whitelist (array of item ids); bots that never had one default to the global list
+      if (Array.isArray(body.keep)) cfg.keep = body.keep.map((x) => parseInt(x, 10)).filter(Number.isFinite).slice(0, 200);
+      else if (!(bot.cfg?.keep ?? []).length) cfg.keep = store.getSettings().tracked ?? [];
+      if (cfg.cards) await initWiki().catch(() => {}); // card ids must be loaded before the whitelist expansion
+      return json(res, 200, manager.applySettings(id, cfg));
+    }
+    if (p === '/api/bots/config-all' && req.method === 'POST') {
+      const body = await readBody(req);
+      const cfg = {};
+      for (const k of ['auto', 'weave', 'autoChannel', 'collect', 'errand', 'farm', 'cards']) if (body[k] !== undefined) cfg[k] = body[k];
+      if (Array.isArray(body.keep)) cfg.keep = body.keep.map((x) => parseInt(x, 10)).filter(Number.isFinite).slice(0, 200);
+      const mode = ['leveling', 'farming'].includes(body.mode) ? body.mode : null;
+      if (cfg.cards) await initWiki().catch(() => {});
+      let n = 0;
+      for (const bot of store.data.bots) {
+        if (bot.mode === 'collector') continue;
+        if (mode) bot.mode = mode;
+        const bc = { ...cfg };
+        // farming errands sell everything not in farm.keep — default it to the bot's own whitelist when absent
+        if (bc.farm) { bc.farm = { ...bc.farm }; if (!bc.farm.keep) bc.farm.keep = bot.cfg?.keep ?? store.getSettings().tracked ?? []; }
+        manager.applySettings(bot.id, bc);
+        n++;
+      }
+      if (mode) store.save();
+      return json(res, 200, { ok: true, applied: n, mode: mode ?? undefined });
+    }
+    if (/^\/api\/bots\/\d+\/collect$/.test(p) && req.method === 'POST') {
+      const id = parseInt(p.split('/')[3], 10);
+      return json(res, 200, manager.enqueueCollect(id));
+    }
+    if (/^\/api\/bots\/\d+\/refresh-storage$/.test(p) && req.method === 'POST') {
+      const id = parseInt(p.split('/')[3], 10);
+      const bot = store.findBot(id);
+      if (!bot) return json(res, 404, { error: 'bot not found' });
+      return json(res, 200, manager.requestStorageRefresh(id));
+    }
+    if (p === '/api/collect/dequeue' && req.method === 'POST') {
+      const body = await readBody(req);
+      return json(res, 200, manager.dequeueCollect(parseInt(body.id, 10), { hold: body.hold !== false }));
+    }
+    if (p === '/api/collect/clear-waiting' && req.method === 'POST') {
+      return json(res, 200, manager.clearWaiting());
+    }
+    if (p === '/api/collect/release' && req.method === 'POST') {
+      const body = await readBody(req);
+      return json(res, 200, manager.releaseCollect(body.id != null ? parseInt(body.id, 10) : null));
+    }
+    if (/^\/api\/bots\/\d+\/mode$/.test(p) && req.method === 'POST') {
+      const id = parseInt(p.split('/')[3], 10);
+      const bot = store.findBot(id);
+      if (!bot) return json(res, 404, { error: 'bot not found' });
+      const body = await readBody(req);
+      if (['leveling', 'farming', 'collector'].includes(body.mode)) { bot.mode = body.mode; store.save(); broadcast({ type: 'state_dirty' }); }
+      return json(res, 200, { ok: true, mode: bot.mode, hint: 'restart the bot to apply the new mode' });
+    }
+    if (/^\/api\/bots\/\d+\/restart$/.test(p) && req.method === 'POST') {
+      const id = parseInt(p.split('/')[3], 10);
+      return json(res, 200, await manager.restartBot(id));
+    }
+    if (p === '/api/bots/restart-all' && req.method === 'POST') {
+      const body = await readBody(req);
+      return json(res, 200, await manager.restartAll({ rampMs: Math.max(1000, parseInt(body.rampMs, 10) || 3000) }));
+    }
+    if (p === '/api/settings/collector' && req.method === 'POST') {
+      const body = await readBody(req);
+      const s = store.getSettings();
+      if (body.charName !== undefined || body.channel !== undefined || body.spotX !== undefined || body.spotY !== undefined) {
+        s.collector = {
+          charName: String(body.charName ?? s.collector?.charName ?? '').trim(),
+          channel: Math.max(1, parseInt(body.channel, 10) || s.collector?.channel || 1),
+          spot: { x: parseInt(body.spotX, 10) || s.collector?.spot?.x || 880, y: parseInt(body.spotY, 10) || s.collector?.spot?.y || 1520 },
+        };
+      }
+      if (body.autoCollect) {
+        const ac = s.autoCollect ?? { enabled: false, everyMin: 360, minZeny: 15000, minStacks: 1, lastAt: 0 };
+        if (body.autoCollect.enabled !== undefined) ac.enabled = !!body.autoCollect.enabled;
+        if (body.autoCollect.everyMin !== undefined) ac.everyMin = Math.max(15, parseInt(body.autoCollect.everyMin, 10) || 360);
+        if (ac.enabled && !ac.lastAt) ac.lastAt = Date.now();
+        s.autoCollect = ac;
+      }
+      store.save();
+      // push live directives to the collector bot if it exists
+      const cb = store.data.bots.find((b) => store.findCharacter(b.characterId)?.name === s.collector?.charName);
+      if (cb && s.collector) manager.applySettings(cb.id, { collect: { enabled: true, channel: s.collector.channel, spot: s.collector.spot } });
+      return json(res, 200, { ok: true, collector: s.collector, autoCollect: s.autoCollect });
+    }
+    if (p === '/api/settings/tracked' && req.method === 'POST') {
+      const body = await readBody(req);
+      const s = store.getSettings();
+      s.tracked = (Array.isArray(body.ids) ? body.ids : []).map((x) => parseInt(x, 10)).filter(Number.isFinite).slice(0, 200);
+      store.save();
+      // propagate the whitelist to every bot (errand deposit + collect transfers read it)
+      for (const bot of store.data.bots) { if (bot.mode === 'collector') continue; manager.applySettings(bot.id, { keep: s.tracked }); }
+      broadcast({ type: 'state_dirty' });
+      return json(res, 200, { ok: true, tracked: s.tracked });
     }
     if (/^\/api\/characters\/\d+$/.test(p) && req.method === 'PATCH') {
       const id = parseInt(p.split('/')[3], 10);

@@ -20,6 +20,7 @@ export class AetheriaClient {
     this.reflection = null;
     this.enter = null;
     this.reservation = null;
+    this.msgs = new Map(); // last message per type (await-style flows: channels, trade, storage, invite)
     this.lastError = null;
   }
   on(evt, fn) {
@@ -139,6 +140,9 @@ export class AetheriaClient {
     } else if (code === 0x0d) {
       try {
         const parts = [...decodeMulti(buf.subarray(1))];
+        const mtype = String(parts[0]);
+        this.msgs.set(mtype, { data: parts.length > 1 ? parts[1] : undefined, at: Date.now() });
+        if (this.msgs.size > 120) this.msgs.delete(this.msgs.keys().next().value);
         this.emit('message', parts[0], parts.length > 1 ? parts[1] : undefined);
       } catch (e) {
         this.emit('error', { kind: 'msgpack', head: buf.subarray(0, 40).toString('hex'), err: String(e) });
@@ -189,5 +193,14 @@ export class AetheriaClient {
   shopSellMany(lines) { this.send('shop_sell_many', { lines }); }
   storagePut(slot, qty) { this.send('storage_put', { slot, qty }); }
   storageTake(slot, qty) { this.send('storage_take', { slot, qty }); }
+  storageSort() { this.send('storage_sort', {}); }
+  storageZeny(action, amount) { this.send('storage_zeny', { action, amount }); }
   channelSwitch(channel) { this.send('channel_switch', { channel }); }
+  channelList() { this.send('channel_list'); }
+  trade(payload) { this.send('trade', payload); }
+  tradeRequest(name) { this.send('trade', { action: 'request', name }); }
+  tradeOffer(items, zeny) { this.send('trade', { action: 'offer', items, zeny }); }
+  tradeLock() { this.send('trade', { action: 'lock' }); }
+  tradeConfirm() { this.send('trade', { action: 'confirm' }); }
+  tradeCancel() { this.send('trade', { action: 'cancel' }); }
 }
