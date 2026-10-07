@@ -9,7 +9,7 @@ const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
 const state = {
   bots: [], jobs: null, accounts: [], characters: [],
   logs: new Map(), // botId -> [events]
-  selectedLog: null, sel: new Set(),
+  selectedLog: null, sel: new Set((() => { try { return JSON.parse(localStorage.getItem('cc.sel') || '[]'); } catch { return []; } })()),
   lv: new Map(), // botId -> { at, lv } — level-up celebration window
   act: new Map(), // botId -> { evt, b, at } — client-side activity feed (WS log stream)
   pw: new Map(), // accountId -> password (fetched on demand)
@@ -30,6 +30,7 @@ const state = {
   botModalId: null, botWatch: null,
   plans: [],
   cfgPlan: null,
+  groupFilter: null, // dashboard group filter: null = all · '__ungrouped__' · group name
 };
 
 // ---------- tabs ----------
@@ -382,9 +383,26 @@ function renderBotModal() {
   const skRows = sk.length
     ? sk.map(([id, lv]) => `<tr><td>${skillNameOf(id)} <span class="muted small">${id}</span></td><td class="bl-mono"><b>${lv}</b></td></tr>`).join('')
     : '<tr><td colspan="2" class="muted small">no skills in the last heartbeat — try again in a moment</td></tr>';
+  // equipment + gems (2026-10-07) — slot list mirrors the game's equipment panel: gear 12 · costumes · gems 1–4
+  const EQ_LABEL = { 'main-hand': '⚔ main hand', 'off-hand': '🛡 off hand', 'head-upper': '🎩 head upper', 'head-middle': '👓 head middle', 'head-lower': '📿 head lower', armor: '🧥 armor', garment: '🧣 garment', gloves: '🧤 gloves', legs: '👖 legs', boots: '🥾 boots', 'accessory-left': '💍 acc left', 'accessory-right': '💍 acc right', 'gem-1': '💎 gem 1', 'gem-2': '💎 gem 2', 'gem-3': '💎 gem 3', 'gem-4': '💎 gem 4', 'costume-head-upper': '👒 costume top', 'costume-head-mid': '👒 costume mid', 'costume-spirit': '👻 costume spirit', 'costume-head-low': '👒 costume low', 'costume-garment': '🧣 costume garment' };
+  const GEAR = ['main-hand', 'off-hand', 'head-upper', 'head-middle', 'head-lower', 'armor', 'garment', 'gloves', 'legs', 'boots', 'accessory-left', 'accessory-right'];
+  const GEMS = ['gem-1', 'gem-2', 'gem-3', 'gem-4'];
+  const eq = s.equipment ?? [];
+  const bySlot = new Map(eq.map((e) => [e.slot, e]));
+  const eqRow = (k) => {
+    const it = bySlot.get(k);
+    return `<tr><td class="muted">${EQ_LABEL[k] ?? k}</td><td>${it ? `<b>${esc(it.name)}</b>${it.refine ? ` <span class="rf">+${it.refine}</span>` : ''}` : '<span class="muted">—</span>'}</td></tr>`;
+  };
+  const gearRows = GEAR.map(eqRow).join('');
+  const gemRows = GEMS.map(eqRow).join('');
+  const gemCount = GEMS.filter((k) => bySlot.has(k)).length;
+  const hasCostumes = Object.keys(EQ_LABEL).some((k) => k.startsWith('costume-') && bySlot.has(k));
+  const bagGemAgg = new Map();
+  for (const it of (s.inventory ?? [])) if (/gem\s*\d+%/i.test(it.name ?? '')) bagGemAgg.set(it.name, (bagGemAgg.get(it.name) ?? 0) + (it.qty ?? 1));
+  const bagGems = [...bagGemAgg.entries()].sort((a, b2) => b2[1] - a[1]).map(([n, q]) => `<span class="tr-chip wh-chip">${esc(n)} ×${q}</span>`).join(' ') || '<span class="muted small">none in the bag</span>';
   const scrollCls = (s.weightScrolls ?? 0) >= 10 ? 'scroll-ok' : 'scroll-pend';
   $('botm-body').innerHTML = `
-    <div class="muted small" style="margin-bottom:8px">base <b>${s.base ?? '?'}</b>/job <b>${s.job ?? '?'}</b> · map <b>${s.map ?? '—'}</b>${s.channel != null ? ` · CH <b>${s.channel}</b>` : ''} · zeny <b>z ${fmt(s.zeny)}</b> · weight <b>${fmt(s.bag?.weight)}/${fmt(s.bag?.weightLimit)}</b> · 🧾 weight scrolls <b class="${scrollCls}" title="consumed weight-limit scrolls (permanent +weight, max 10)">${s.weightScrolls ?? 0}/10</b> · ${s.dead ? '<span class="dead">☠ dead</span>' : 'alive'}</div>
+    <div class="muted small" style="margin-bottom:8px">base <b>${s.base ?? '?'}</b>/job <b>${s.job ?? '?'}</b> · map <b>${s.map ?? '—'}</b>${s.channel != null ? ` · CH <b>${s.channel}</b>` : ''} · HP <b>${s.dead ? 0 : Math.round(s.hp ?? 0)}/${s.maxHp ?? '?'}</b> · SP <b>${Math.round(s.sp ?? 0)}/${s.maxSp ?? '?'}</b> · ⚔ <b>${fmt(s.killsTotal ?? 0)}</b> kills · zeny <b>z ${fmt(s.zeny)}</b> · weight <b>${fmt(s.bag?.weight)}/${fmt(s.bag?.weightLimit)}</b> · 🧾 <b class="${scrollCls}" title="consumed weight-limit scrolls (permanent +weight, max 10)">${s.weightScrolls ?? 0}/10</b> · ${s.dead ? '<span class="dead">☠ dead</span>' : 'alive'}</div>
     <div class="bm-grid">
       <div>
         <div class="cfg-lab">stats${(s.statusPoints ?? 0) > 0 ? ` — <span style="color:var(--gold)">${fmt(s.statusPoints)} unspent</span>` : ''}</div>
@@ -393,6 +411,17 @@ function renderBotModal() {
       <div>
         <div class="cfg-lab">skills${(s.skillPoints ?? 0) > 0 ? ` — <span style="color:var(--gold)">${fmt(s.skillPoints)} points unspent</span>` : ''}</div>
         <table class="bagt"><thead><tr><th>skill</th><th>lv</th></tr></thead><tbody>${skRows}</tbody></table>
+      </div>
+      <div>
+        <div class="cfg-lab">equipment</div>
+        <table class="bagt"><thead><tr><th>slot</th><th>item</th></tr></thead><tbody>${gearRows}</tbody></table>
+      </div>
+      <div>
+        <div class="cfg-lab">gems — <b>${gemCount}/4</b> equipped</div>
+        <table class="bagt"><thead><tr><th>slot</th><th>gem</th></tr></thead><tbody>${gemRows}</tbody></table>
+        <div class="cfg-lab" style="margin-top:8px">gems in the bag</div>
+        <div style="line-height:1.9;margin-top:4px">${bagGems}</div>
+        ${hasCostumes ? `<div class="cfg-lab" style="margin-top:8px">costumes</div><table class="bagt"><tbody>${Object.keys(EQ_LABEL).filter((k) => k.startsWith('costume-')).map(eqRow).join('')}</tbody></table>` : ''}
       </div>
     </div>`;
 }
@@ -466,6 +495,7 @@ function botCard(b) {
         <span class="ms">z ${fmt(s.zeny)}</span>
         <span class="ms ${(s.weightScrolls ?? 0) >= 10 ? 'scroll-ok' : 'scroll-pend'}" title="weight-limit scrolls consumed (permanent +weight, max 10)">🧾 ${s.weightScrolls ?? 0}/10</span>
         ${b.plan ? `<span class="ms plan-chip" title="plan \u201c${esc(b.plan.name)}\u201d applied ${new Date(b.plan.at ?? 0).toLocaleString()}">📋 ${esc(b.plan.name)}</span>` : ''}
+        ${b.group ? `<span class="ms" title="group">📁 ${esc(b.group)}</span>` : ''}
         ${s.pets?.owned ? `<span class="ms pet">pet ${s.pets.active ? '✓' : s.pets.owned}</span>` : ''}
       </div>
       <div class="vitals">
@@ -497,11 +527,131 @@ function renderCollectorSum(colBots) {
   sum.textContent = `${b.name} · ${b.state} · bag ${s.bag?.used ?? '?'} · z ${fmt(s.zeny)}${q ? ` · queue ${q}` : ''}`;
 }
 
+// ---------- groups (dashboard filter + bulk operations over a group) ----------
+const groupOf = (b) => (b.group ? String(b.group) : '');
+const saveSel = () => { try { localStorage.setItem('cc.sel', JSON.stringify([...state.sel])); } catch {} };
+function groupedBots() {
+  const f = state.groupFilter;
+  if (!f) return state.bots;
+  if (f === '__ungrouped__') return state.bots.filter((b) => !groupOf(b));
+  return state.bots.filter((b) => groupOf(b) === f);
+}
+let _groupBarSig = null;
+function renderGroupBar() {
+  const bar = $('group-bar');
+  if (!bar) return;
+  const bots = state.bots;
+  const groups = [...new Set(bots.map(groupOf).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+  if (state.groupFilter && state.groupFilter !== '__ungrouped__' && !groups.includes(state.groupFilter)) state.groupFilter = null;
+  const un = bots.filter((b) => !groupOf(b)).length;
+  // build the bar ONCE — the live re-renders every ~2s used to replace these buttons mid-click (clicks silently
+  // swallowed) and native prompt() can be suppressed by the browser after repeated dialogs → "group" felt broken
+  if (!bar.dataset.ready) {
+    bar.dataset.ready = '1';
+    bar.innerHTML =
+      '<span class="muted small" style="font-weight:700;letter-spacing:1px;margin-right:2px">GROUPS</span>' +
+      '<span id="gchips" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"></span>' +
+      '<span style="flex:1"></span>' +
+      '<span id="gmsg" class="muted small" style="margin-right:2px"></span>' +
+      '<button class="btn small" id="gset" title="assign the ticked bots to a group — create a new group or move them between groups">📁 assign ticked…</button>' +
+      '<span id="gedit" style="display:none;align-items:center;gap:4px">' +
+      '<input id="gname" placeholder="group name (empty = ungroup)" style="background:#0b1220;color:#e5e7eb;border:1px solid #2a3550;border-radius:6px;padding:4px 8px;font:inherit;width:190px" />' +
+      '<button class="btn small ok" id="gok">✓ apply</button>' +
+      '<button class="btn small" id="gx">✕</button>' +
+      '</span>' +
+      '<button class="btn small" id="rs-sel" title="restart the ticked bots (stop → wait → start — needed after mode changes)">↻ restart ticked</button>' +
+      '<button class="btn small" id="gsync" title="enroll included characters (Accounts tab) that have no dashboard bot yet">⟲ enroll</button>';
+    $('gset').onclick = () => {
+      $('gmsg').textContent = state.sel.size ? `${state.sel.size} ticked — type a name (empty = ungroup):` : 'tick bots first — or just click a group pill to select the whole group';
+      $('gedit').style.display = 'inline-flex';
+      $('gname').focus();
+    };
+    const doGroup = async () => {
+      const ids = [...state.sel];
+      const msg = $('gmsg');
+      if (!ids.length) { msg.textContent = 'tick bots first (checkbox on each card / row)'; return; }
+      const name = $('gname').value.trim();
+      const r = await api('/api/bots/group', 'POST', { ids, group: name });
+      msg.textContent = r.ok ? (r.group ? `✓ grouped ${r.updated} \u2192 \u201c${r.group}\u201d` : `✓ cleared group on ${r.updated} bot(s)`) : `\u2717 ${r.error ?? 'group failed'}`;
+      $('gedit').style.display = 'none';
+      $('gname').value = '';
+      refreshState();
+    };
+    $('gok').onclick = doGroup;
+    $('gname').onkeydown = (e) => { if (e.key === 'Enter') doGroup(); if (e.key === 'Escape') $('gedit').style.display = 'none'; };
+    $('gx').onclick = () => { $('gedit').style.display = 'none'; };
+    $('rs-sel').onclick = async () => {
+      const ids = [...state.sel];
+      if (!ids.length) { $('gmsg').textContent = 'tick bots first'; return; }
+      if (!confirm(`restart ${ids.length} ticked bot(s)?`)) return;
+      await api('/api/bots/restart-many', 'POST', { ids });
+      setTimeout(refreshState, 800);
+    };
+    $('gsync').onclick = async () => {
+      const r = await api('/api/bots/sync', 'POST', {});
+      $('gmsg').textContent = r.created ? `✓ enrolled ${r.created} new bot(s) — stopped` : 'nothing new to enroll';
+      refreshState();
+    };
+  }
+  const sig = JSON.stringify([groups, un, bots.length, state.groupFilter]);
+  if (sig === _groupBarSig) return;
+  _groupBarSig = sig;
+  // keep the toolbar checkbox honest about its scope — it selects exactly what the active filter shows
+  const labEl = $('sel-all')?.parentElement;
+  if (labEl) {
+    const tn = [...labEl.childNodes].find((n) => n.nodeType === 3);
+    if (tn) tn.textContent = ` select all shown (${groupedBots().length})`;
+  }
+  // one click on a group pill = view + tick that whole group (then ▶ Play selected / 📋 Plans → apply to selected)
+  const chip = (key, label, n, title) => `<button class="btn small${state.groupFilter === key ? ' ok' : ''}" data-gfilter="${esc(key)}" title="${esc(title)}">${label} <b>${n}</b></button>`;
+  const chips = $('gchips');
+  const cnt = (g) => bots.filter((b) => groupOf(b) === g).length;
+  chips.innerHTML =
+    chip('__all__', '🌐 all', bots.length, 'show every bot (does not select)') +
+    groups.map((g) => chip(g, `📁 ${esc(g)}`, cnt(g), `view + select all ${cnt(g)} bots in “${g}”`)).join('') +
+    (un ? chip('__ungrouped__', '∅ ungrouped', un, 'view + select all bots with no group') : '') +
+    (state.groupFilter && state.groupFilter !== '__ungrouped__' && groups.includes(state.groupFilter)
+      ? `<button class="btn small bad" id="gdissolve" title="remove “${esc(state.groupFilter)}” from its bots — they become ungrouped">🗑 dissolve “${esc(state.groupFilter)}”</button>`
+      : '');
+  chips.querySelectorAll('[data-gfilter]').forEach((el) => {
+    el.onclick = () => {
+      const k = el.dataset.gfilter;
+      const msg = $('gmsg');
+      if (k === '__all__') {
+        state.groupFilter = null;
+        renderBots();
+        msg.textContent = `showing all ${bots.length} bots`;
+        return;
+      }
+      state.groupFilter = k;
+      const members = groupedBots().filter((b) => b.mode !== 'collector');
+      // REPLACE the selection — clicking a group pill selects exactly that group (was additive → fleet+leveling
+      // accumulated to 100 ticked, which then showed up as “apply to 100 selected” in the Plans modal)
+      state.sel = new Set(members.map((b) => b.id));
+      saveSel();
+      renderBots();
+      msg.textContent = `${members.length} ticked — ▶ Play selected · ⏹ Stop selected · 📋 Plans → apply to selected`;
+    };
+  });
+  const gd = $('gdissolve');
+  if (gd) gd.onclick = async () => {
+    const k = state.groupFilter;
+    const members = state.bots.filter((b) => groupOf(b) === k);
+    const r = await api('/api/bots/group', 'POST', { ids: members.map((b) => b.id), group: '' });
+    state.groupFilter = null;
+    _groupBarSig = null;
+    $('gmsg').textContent = r.ok ? `✓ dissolved “${k}” — ${r.updated} bot(s) ungrouped` : `✗ ${r.error ?? 'failed'}`;
+    refreshState();
+    renderBots();
+  };
+}
+
 // fleet grid + collector pinned in its own section above
 function renderBots() {
   if (state.view === 'list') return renderBotsList();
+  renderGroupBar();
   $('empty-bots').classList.toggle('hidden', state.bots.length > 0);
-  const fleet = state.bots.filter((b) => b.mode !== 'collector');
+  const fleet = groupedBots().filter((b) => b.mode !== 'collector');
   const colBots = state.bots.filter((b) => b.mode === 'collector');
   const sec = $('collector-sec');
   if (sec) sec.classList.toggle('hidden', colBots.length === 0);
@@ -591,7 +741,7 @@ function botListRow(b) {
   const exits = `${b.lastExit ? `exit ${b.lastExit.code}` : ''}${b.restarts ? `${b.lastExit ? ' · ' : ''}↻${b.restarts}` : ''}`;
   return `<tr class="row-bot st-${b.state} ${state.selectedLog === b.id ? 'sel' : ''}" data-bot="${b.id}">
       <td><input type="checkbox" data-sel="${b.id}" ${state.sel.has(b.id) ? 'checked' : ''} /></td>
-      <td class="bl-name"><span class="dot"></span> <b>${b.name}</b> <span class="state st-${b.state}">${b.state}</span> <span class="idtag">#${b.id}</span>${exits ? ` <span class="muted small">${exits}</span>` : ''}</td>
+      <td class="bl-name"><span class="dot"></span> <b>${b.name}</b> <span class="state st-${b.state}">${b.state}</span> <span class="idtag">#${b.id}</span>${b.group ? ` <span class="ms" title="group">📁 ${esc(b.group)}</span>` : ''}${exits ? ` <span class="muted small">${exits}</span>` : ''}</td>
       <td>${activityBadge(b, s)}</td>
       <td><span class="badge">${s.classId ?? '?'}</span></td>
       <td class="bl-plan" title="${b.plan ? `plan: ${esc(b.plan.name)}` : 'no plan applied'} ">${b.plan ? '📋 ' + esc(b.plan.name) : '<span class="muted">—</span>'}</td>
@@ -625,8 +775,9 @@ function botListTable(bots) {
 }
 
 function renderBotsList() {
+  renderGroupBar();
   $('empty-bots').classList.toggle('hidden', state.bots.length > 0);
-  const fleet = state.bots.filter((b) => b.mode !== 'collector');
+  const fleet = groupedBots().filter((b) => b.mode !== 'collector');
   const colBots = state.bots.filter((b) => b.mode === 'collector');
   const sec = $('collector-sec');
   if (sec) sec.classList.toggle('hidden', colBots.length === 0);
@@ -954,7 +1105,7 @@ async function applyCfg(target) {
 // ---------- interactions ----------
 document.addEventListener('change', async (ev) => {
   const t = ev.target;
-  if (t.dataset.sel) { t.checked ? state.sel.add(+t.dataset.sel) : state.sel.delete(+t.dataset.sel); renderBots(); }
+  if (t.dataset.sel) { t.checked ? state.sel.add(+t.dataset.sel) : state.sel.delete(+t.dataset.sel); saveSel(); renderBots(); }
   if (t.dataset.inc) { await api(`/api/characters/${t.dataset.inc}`, 'PATCH', { included: t.checked }); refreshState(); }
   if (t.dataset?.mob) { t.checked ? state.cfgMobSel.add(t.dataset.mob) : state.cfgMobSel.delete(t.dataset.mob); }
   if (t.id === 'cfg-farmmap') {
@@ -963,7 +1114,7 @@ document.addEventListener('change', async (ev) => {
     $('cfg-restart').checked = true; // farm-map changes only take effect after a restart
     renderCfgMobs();
   }
-  if (t.id === 'sel-all') { for (const b of state.bots) (t.checked ? state.sel.add(b.id) : state.sel.delete(b.id)); renderBots(); }
+  if (t.id === 'sel-all') { for (const b of groupedBots()) (t.checked ? state.sel.add(b.id) : state.sel.delete(b.id)); saveSel(); renderBots(); }
 });
 
 document.addEventListener('click', async (ev) => {

@@ -660,6 +660,7 @@ export class BotManager {
         name: c?.name ?? `char#${bot.characterId}`,
         account: a?.userId ?? null,
         mode: bot.mode,
+        group: bot.group ?? null,
         state: this.stateOf(bot.id),
         status: rt?.status ?? null,
         lastExit: rt?.lastExit ?? null,

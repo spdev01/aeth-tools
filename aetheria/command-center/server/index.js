@@ -330,6 +330,48 @@ const server = http.createServer(async (req, res) => {
       return json(res, 200, { started });
     }
     if (p === '/api/bots/stop-all' && req.method === 'POST') { await manager.stopAll(); return json(res, 200, { ok: true }); }
+    // enroll every included character that has no dashboard bot yet (register/import only create account+character;
+    // the dashboard renders BOTS — without this they are invisible until the first start)
+    if (p === '/api/bots/sync' && req.method === 'POST') {
+      const created = [];
+      for (const c of store.data.characters) {
+        if (!c.included) continue;
+        if (store.data.bots.some((b) => b.characterId === c.id)) continue;
+        created.push(manager.ensureBot(c.id).id);
+      }
+      return json(res, 200, { ok: true, created: created.length, ids: created });
+    }
+    // set / clear the group of ticked bots (dashboard filter + bulk-select aid)
+    if (p === '/api/bots/group' && req.method === 'POST') {
+      const body = await readBody(req);
+      const ids = Array.isArray(body.ids) ? body.ids.map((x) => parseInt(x, 10)).filter(Number.isFinite) : [];
+      const group = body.group == null || String(body.group).trim() === '' ? null : String(body.group).trim().slice(0, 40);
+      let updated = 0;
+      for (const id of ids) {
+        const b = store.findBot(id);
+        if (!b) continue;
+        if (group) b.group = group; else delete b.group;
+        b.updatedAt = Date.now();
+        updated++;
+      }
+      store.save();
+      broadcast({ type: 'state_dirty' });
+      return json(res, 200, { ok: true, updated, group });
+    }
+    // start / stop an explicit BOT-id list (the sidebar Play uses characterIds; UI selections are bot ids)
+    if (p === '/api/bots/start-many' && req.method === 'POST') {
+      const body = await readBody(req);
+      const ids = Array.isArray(body.ids) ? body.ids.map((x) => parseInt(x, 10)).filter(Number.isFinite) : [];
+      const chars = ids.map((id) => store.findBot(id)?.characterId).filter((x) => x != null);
+      const started = await manager.startMany(chars, { rampMs: Math.max(0, Math.min(60000, body.rampMs ?? 2000)) });
+      return json(res, 200, { started });
+    }
+    if (p === '/api/bots/stop-many' && req.method === 'POST') {
+      const body = await readBody(req);
+      const ids = Array.isArray(body.ids) ? body.ids.map((x) => parseInt(x, 10)).filter(Number.isFinite) : [];
+      for (const id of ids) if (store.findBot(id)) manager.stop(id);
+      return json(res, 200, { ok: true, stopped: ids.length });
+    }
     if (p === '/api/jobs/create-characters' && req.method === 'POST') {
       const j = accounts.startCharJob({});
       return json(res, 200, { jobId: j.id, total: j.total });

@@ -615,6 +615,11 @@ class Bot {
       step: this.stepId,
       selfId: this.selfId(),
       weapon: ch?.equipment?.['main-hand']?.name ?? null,
+      // full equipment map for the dashboard detail modal — gear 12 slots + costume + gem-1..4; values are the
+      // same item objects the game's equipment panel renders (2026-10-07)
+      equipment: ch?.equipment
+        ? Object.entries(ch.equipment).filter(([, it]) => it && it.name).map(([slot, it]) => ({ slot, itemId: it.itemId ?? null, name: it.name, refine: it.refine ?? 0 }))
+        : null,
       map: c.mapId,
       lastMoveTile: lm ? [+(lm.x / 32).toFixed(1), +(lm.y / 32).toFixed(1)] : null,
       lastMoveAgeSec: lm ? Math.round((Date.now() - lm.t) / 1000) : null,
@@ -899,14 +904,47 @@ class Bot {
     return false;
   }
 
+  // Cap-aware dump (2026-10-07): the server silently refuses stat_up once a stat hits its cap (STR=99 observed
+  // — 445 pts/bot were stuck because this retried STR forever) AND refuses everything the bank can't afford
+  // (costs escalate: VIT 86 costs several points per +1). Strategy: sweep the candidates until one moves or the
+  // WHOLE list refuses; when nothing can move, log once and stay quiet until the bank grows (recheck ≤10 min).
+  // The old version re-swept every farm checkpoint (2.5s windows truncated the sweep → the give-up path never
+  // fired → dump_stat_switch spam every ~8s per bot: the "pts:2" flood, 2026-10-07).
   async dumpStat(stat, { waitMs = 60000 } = {}) {
+    const order = [...new Set([stat, 'VIT', 'AGI', 'DEX', 'LUK', 'INT'])];
+    const ch0 = this.char;
+    if (!ch0 || (ch0.statusPoints ?? 0) <= 0) return true;
+    // same point bank as the last exhausted sweep → pointless to retry now (unless the 10-min recheck is due)
+    if ((ch0.statusPoints ?? 0) === this._statDumpBlockedPts && Date.now() < (this._statDumpRetryAt ?? 0)) return true;
     const t0 = Date.now();
-    while (Date.now() - t0 < waitMs) {
+    const deadline = t0 + Math.max(waitMs, 45000); // enough to FINISH a full sweep (6 stats × 2 × 400ms ≈ 5s)
+    let ci = 0, stalls = 0, movedAny = false;
+    while (Date.now() < deadline) {
       const ch = this.char;
-      if (!ch || (ch.statusPoints ?? 0) <= 0) return true;
-      this.c.statUp(stat, 1);
-      await sleep(350);
+      if (!ch || (ch.statusPoints ?? 0) <= 0) { if (movedAny) { this._statDumpBlockedPts = 0; this._statDumpRetryAt = 0; } return true; }
+      const cur = order[Math.min(ci, order.length - 1)];
+      const pts0 = ch.statusPoints;
+      const val0 = ch.stats?.[cur] ?? 0;
+      this.c.statUp(cur, 1);
+      await sleep(400);
+      const ch2 = this.char;
+      const moved = (ch2?.statusPoints ?? 0) < pts0 || (ch2?.stats?.[cur] ?? 0) > val0;
+      if (moved) { movedAny = true; stalls = 0; continue; }
+      stalls++;
+      if (stalls >= 2 && ci < order.length - 1) {
+        ci++;
+        stalls = 0;
+        this.log('dump_stat_switch', { from: cur, to: order[ci], pts: ch2?.statusPoints ?? 0 });
+      } else if (stalls >= 2 && ci >= order.length - 1) {
+        // full sweep, zero movement: every stat is capped or unaffordable — stop churning until the bank grows
+        const pts = ch2?.statusPoints ?? 0;
+        if (pts !== this._statDumpBlockedPts) this.log('dump_stat_idle', { pts, note: 'no stat moved (capped or unaffordable) — waiting for more points' });
+        this._statDumpBlockedPts = pts;
+        this._statDumpRetryAt = Date.now() + 10 * 60 * 1000;
+        return true;
+      }
     }
+    if (movedAny) { this._statDumpBlockedPts = 0; this._statDumpRetryAt = 0; }
     return true;
   }
 
