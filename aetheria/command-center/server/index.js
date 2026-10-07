@@ -45,11 +45,21 @@ const jobTick = setInterval(() => broadcast({ type: 'jobs', jobs: jobsView() }),
 const json = (res, code, obj) => { res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8' }); res.end(JSON.stringify(obj)); };
 const readBody = (req) => new Promise((resolve) => { let b = ''; req.on('data', (c) => (b += c)); req.on('end', () => { try { resolve(JSON.parse(b || '{}')); } catch { resolve({}); } }); });
 
+// saved plans: sanitize a plan cfg down to the same shape /api/bots/config-many accepts
+const sanitizePlanCfg = (cfg = {}) => {
+  const out = {};
+  if (['leveling', 'farming'].includes(cfg.mode)) out.mode = cfg.mode;
+  for (const k of ['auto', 'weave', 'autoChannel', 'collect', 'errand', 'farm', 'cards']) if (cfg[k] !== undefined) out[k] = cfg[k];
+  if (Array.isArray(cfg.keep)) out.keep = cfg.keep.map((x) => parseInt(x, 10)).filter(Number.isFinite).slice(0, 200);
+  return out;
+};
+
 const stateView = () => ({
   accounts: store.data.accounts.map((a) => ({ ...a, password: undefined, chars: store.charsOfAccount(a.id).map((c) => ({ id: c.id, characterId: c.characterId, name: c.name, classId: c.classId, baseLevel: c.baseLevel, jobLevel: c.jobLevel, mapName: c.mapName, included: c.included })) })),
   characters: store.data.characters.map((c) => ({ ...c })),
   bots: manager.view(),
   settings: store.getSettings(),
+  plans: store.getSettings().plans ?? [],
   collect: manager.collectView(),
   fleet: manager.fleetView(),
   jobs: jobsView(),
@@ -126,6 +136,28 @@ const server = http.createServer(async (req, res) => {
       if (mode) store.save();
       return json(res, 200, { ok: true, applied: n, mode: mode ?? undefined });
     }
+    if (p === '/api/bots/config-many' && req.method === 'POST') {
+      // same as config-all, but only for the selected bot ids (dashboard checkboxes)
+      const body = await readBody(req);
+      const ids = (Array.isArray(body.ids) ? body.ids : []).map((x) => parseInt(x, 10)).filter(Number.isFinite);
+      const cfg = {};
+      for (const k of ['auto', 'weave', 'autoChannel', 'collect', 'errand', 'farm', 'cards']) if (body[k] !== undefined) cfg[k] = body[k];
+      if (Array.isArray(body.keep)) cfg.keep = body.keep.map((x) => parseInt(x, 10)).filter(Number.isFinite).slice(0, 200);
+      const mode = ['leveling', 'farming'].includes(body.mode) ? body.mode : null;
+      if (cfg.cards) await initWiki().catch(() => {});
+      let n = 0;
+      for (const id of ids) {
+        const bot = store.findBot(id);
+        if (!bot || bot.mode === 'collector') continue;
+        if (mode) bot.mode = mode;
+        const bc = { ...cfg };
+        if (bc.farm) { bc.farm = { ...bc.farm }; if (!bc.farm.keep) bc.farm.keep = bot.cfg?.keep ?? store.getSettings().tracked ?? []; }
+        manager.applySettings(bot.id, bc);
+        n++;
+      }
+      if (mode) store.save();
+      return json(res, 200, { ok: true, applied: n, mode: mode ?? undefined });
+    }
     if (/^\/api\/bots\/\d+\/collect$/.test(p) && req.method === 'POST') {
       const id = parseInt(p.split('/')[3], 10);
       return json(res, 200, manager.enqueueCollect(id));
@@ -135,6 +167,12 @@ const server = http.createServer(async (req, res) => {
       const bot = store.findBot(id);
       if (!bot) return json(res, 404, { error: 'bot not found' });
       return json(res, 200, manager.requestStorageRefresh(id));
+    }
+    if (/^\/api\/bots\/\d+\/kick$/.test(p) && req.method === 'POST') {
+      const id = parseInt(p.split('/')[3], 10);
+      const bot = store.findBot(id);
+      if (!bot) return json(res, 404, { error: 'bot not found' });
+      return json(res, 200, await manager.kickSession(id));
     }
     if (p === '/api/collect/dequeue' && req.method === 'POST') {
       const body = await readBody(req);
@@ -163,6 +201,11 @@ const server = http.createServer(async (req, res) => {
       const body = await readBody(req);
       return json(res, 200, await manager.restartAll({ rampMs: Math.max(1000, parseInt(body.rampMs, 10) || 3000) }));
     }
+    if (p === '/api/bots/restart-many' && req.method === 'POST') {
+      const body = await readBody(req);
+      return json(res, 200, await manager.restartMany(Array.isArray(body.ids) ? body.ids : []));
+    }
+    if (p === '/api/bots/disconnect-all' && req.method === 'POST') return json(res, 200, manager.disconnectAll());
     if (p === '/api/settings/collector' && req.method === 'POST') {
       const body = await readBody(req);
       const s = store.getSettings();
@@ -195,6 +238,72 @@ const server = http.createServer(async (req, res) => {
       for (const bot of store.data.bots) { if (bot.mode === 'collector') continue; manager.applySettings(bot.id, { keep: s.tracked }); }
       broadcast({ type: 'state_dirty' });
       return json(res, 200, { ok: true, tracked: s.tracked });
+    }
+    if (p === '/api/plans' && req.method === 'GET') return json(res, 200, { plans: store.getSettings().plans ?? [] });
+    if (p === '/api/plans/create' && req.method === 'POST') {
+      const body = await readBody(req);
+      const s = store.getSettings();
+      if (!Array.isArray(s.plans)) s.plans = [];
+      const name = String(body.name ?? '').trim().slice(0, 60);
+      if (!name) return json(res, 400, { error: 'name required' });
+      const cfg = sanitizePlanCfg(body.cfg ?? {});
+      const existing = s.plans.find((pl) => pl.name === name);
+      if (existing) { existing.cfg = cfg; existing.updatedAt = Date.now(); store.save(); return json(res, 200, { ok: true, plan: existing, overwritten: true }); }
+      const plan = { id: store.nextId('plan'), name, cfg, createdAt: Date.now(), updatedAt: Date.now() };
+      s.plans.push(plan);
+      store.save();
+      broadcast({ type: 'state_dirty' });
+      return json(res, 200, { ok: true, plan });
+    }
+    if (p === '/api/plans/rename' && req.method === 'POST') {
+      const body = await readBody(req);
+      const s = store.getSettings();
+      const id = parseInt(body.id, 10);
+      const name = String(body.name ?? '').trim().slice(0, 60);
+      if (!name) return json(res, 400, { error: 'name required' });
+      const pl = (s.plans ?? []).find((x) => x.id === id);
+      if (!pl) return json(res, 404, { error: 'plan not found' });
+      if ((s.plans ?? []).some((x) => x.id !== id && x.name === name)) return json(res, 409, { error: 'another plan already uses that name' });
+      pl.name = name;
+      pl.updatedAt = Date.now();
+      for (const bot of store.data.bots) if (bot.plan?.id === id) bot.plan.name = name; // keep bot labels in sync
+      store.save();
+      broadcast({ type: 'state_dirty' });
+      return json(res, 200, { ok: true, plan: pl });
+    }
+    if (p === '/api/plans/delete' && req.method === 'POST') {
+      const body = await readBody(req);
+      const s = store.getSettings();
+      const id = parseInt(body.id, 10);
+      const n = (s.plans ?? []).length;
+      s.plans = (s.plans ?? []).filter((pl) => pl.id !== id);
+      store.save();
+      broadcast({ type: 'state_dirty' });
+      return json(res, 200, { ok: true, removed: n - s.plans.length });
+    }
+    if (p === '/api/plans/apply' && req.method === 'POST') {
+      const body = await readBody(req);
+      const plan = (store.getSettings().plans ?? []).find((pl) => pl.id === parseInt(body.id, 10));
+      if (!plan) return json(res, 404, { error: 'plan not found' });
+      const ids = (Array.isArray(body.ids) ? body.ids : []).map((x) => parseInt(x, 10)).filter(Number.isFinite);
+      if (plan.cfg?.cards) await initWiki().catch(() => {});
+      const applied = [];
+      for (const id of ids) {
+        const bot = store.findBot(id);
+        if (!bot || bot.mode === 'collector') continue;
+        const cfg = JSON.parse(JSON.stringify(plan.cfg ?? {}));
+        const mode = cfg.mode; delete cfg.mode;
+        if (['leveling', 'farming'].includes(mode)) bot.mode = mode;
+        cfg.keep = Array.isArray(cfg.keep) ? cfg.keep : []; // always explicit → selling strictly follows THIS plan
+        if (cfg.farm) { cfg.farm = { ...cfg.farm }; if (!Array.isArray(cfg.farm.keep)) cfg.farm.keep = cfg.keep; }
+        manager.applySettings(bot.id, cfg);
+        bot.plan = { id: plan.id, name: plan.name, at: Date.now() };
+        applied.push(bot.id);
+      }
+      store.save();
+      let restarted = null;
+      if (body.restart && applied.length) restarted = await manager.restartMany(applied);
+      return json(res, 200, { ok: true, applied: applied.length, restarted });
     }
     if (/^\/api\/characters\/\d+$/.test(p) && req.method === 'PATCH') {
       const id = parseInt(p.split('/')[3], 10);

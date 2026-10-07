@@ -43,7 +43,7 @@ export function wikiSlices() {
   const w = wiki ?? {};
   return {
     items: (w.items ?? []).map((i) => ({ id: i.id, name: i.name, type: i.type ?? null, sellPrice: i.sellPrice ?? null })),
-    roItems: (w.ragnarokItems ?? []).map((i) => ({ id: i.id, name: i.name })),
+    roItems: (w.ragnarokItems ?? []).map((i) => ({ id: i.id, name: i.name, type: i.type ?? null })),
     monsters: (w.monsters ?? []).map((m) => ({
       id: m.id ?? m.monsterId ?? null,
       name: m.name ?? m.id ?? '?',

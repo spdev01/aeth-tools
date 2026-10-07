@@ -4,6 +4,7 @@ const api = async (path, method = 'GET', body) => {
   const res = await fetch(path, { method, headers: { 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
   return res.json().catch(() => ({}));
 };
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 const state = {
   bots: [], jobs: null, accounts: [], characters: [],
@@ -26,6 +27,9 @@ const state = {
   whOpen: new Set(), whRefreshing: false, whWatch: null,
   killData: null, killF: { view: 'monster', from: '', to: '', bot: 'all', mob: '' },
   killOpen: new Set(), killWatch: null, killArm: false,
+  botModalId: null, botWatch: null,
+  plans: [],
+  cfgPlan: null,
 };
 
 // ---------- tabs ----------
@@ -47,7 +51,7 @@ function connect() {
       state.bots = msg.bots; state.jobs = msg.jobs;
       for (const e of msg.events ?? []) { pushLog(e.botId, e); feedAct(e.botId, e); }
       renderAll();
-    } else if (msg.type === 'bots') { state.bots = msg.bots; state.jobs = msg.jobs; renderBots(); renderKpis(); renderCollector(); }
+    } else if (msg.type === 'bots') { state.bots = msg.bots; state.jobs = msg.jobs; if (!document.hidden) { renderBots(); renderKpis(); renderCollector(); } }
     else if (msg.type === 'jobs') { state.jobs = msg.jobs; renderJobs(); }
     else if (msg.type === 'log') { pushLog(msg.botId, msg.e); feedAct(msg.botId, msg.e); if (msg.botId === state.selectedLog) renderLog(); }
     else if (msg.type === 'state_dirty') { refreshState(); }
@@ -82,7 +86,7 @@ function feedAct(botId, e) {
 async function refreshState() {
   const s = await api('/api/state');
   state.accounts = s.accounts ?? []; state.characters = s.characters ?? []; state.bots = s.bots ?? state.bots; state.jobs = s.jobs ?? state.jobs;
-  state.settings = s.settings ?? state.settings; state.collect = s.collect ?? state.collect; state.fleet = s.fleet ?? state.fleet;
+  state.settings = s.settings ?? state.settings; state.collect = s.collect ?? state.collect; state.fleet = s.fleet ?? state.fleet; state.plans = s.plans ?? state.plans;
   renderAll();
 }
 
@@ -94,6 +98,7 @@ function renderAll() { renderKpis(); renderBots(); renderAccounts(); renderJobs(
 const ACTS = {
   combat: ['⚔', 'In combat', 'a-combat'],
   dead: ['☠', 'Dead', 'a-dead'],
+  suspect: ['☠?', 'Death msg (unconfirmed)', 'a-recover'],
   recovering: ['✚', 'Recovering', 'a-recover'],
   traveling: ['➜', 'Traveling', 'a-travel'],
   restocking: ['◈', 'Restocking', 'a-restock'],
@@ -126,6 +131,7 @@ function activityBadge(b, s) {
       if (kind === 'traveling' && a.b?.to) info = String(a.b.to);
       if (kind === 'npc' && a.b?.name) info = String(a.b.name).slice(0, 16);
     }
+    if (!kind && s.sus) kind = 'suspect';
     if (!kind && b.state === 'running') kind = s.auto ? 'farming' : 'idle';
     const lv = state.lv.get(b.id);
     if (lv && Date.now() - lv.at < 45000 && kind !== 'dead' && kind !== 'recovering') { kind = 'levelup'; info = lv.lv ? 'lv ' + lv.lv : ''; }
@@ -136,8 +142,8 @@ function activityBadge(b, s) {
 }
 
 function whitelistTotals() {
-  const tracked = [...allKeepIds()];
-  const rows = tracked.map((id) => ({ id, name: itemNameOf(id), bots: 0, botCount: 0, cBag: 0, cStore: 0, per: [] }));
+  const { keep, ids } = whitelistIds();
+  const rows = [...ids].map((id) => ({ id, name: itemNameOf(id), bots: 0, botCount: 0, cBag: 0, cStore: 0, per: [], auto: !keep.has(id) }));
   const byId = new Map(rows.map((r) => [r.id, r]));
   const store = state.fleet?.collectorStorage?.items ?? {};
   const per = new Map(); // botId -> { name, id, isCol, bag: {itemId: qty} }
@@ -167,7 +173,6 @@ function whitelistTotals() {
   return { rows, totals };
 }
 function openWhModal() {
-  const tracked = [...allKeepIds()];
   const { rows, totals } = whitelistTotals();
   const cs = state.fleet?.collectorStorage ?? null;
   const colCount = state.bots.filter((b) => b.mode === 'collector').length;
@@ -175,15 +180,15 @@ function openWhModal() {
   const ago = cs?.at ? `${Math.max(0, Math.round((Date.now() - cs.at) / 60000))}m ago` : '';
   const refreshing = !!state.whRefreshing;
   const grand = totals.bots + totals.cBag + (cs ? totals.cStore : 0);
-  $('wh-body').innerHTML = tracked.length
+  $('wh-body').innerHTML = rows.length
     ? `<div class="wh-tools">
         <span class="muted small">grand total <b>${fmt(grand)}</b> · bot bags <b>${fmt(totals.bots)}</b> · collector bag <b>${fmt(totals.cBag)}</b> · collector storage <b>${cs ? fmt(totals.cStore) : '—'}</b></span>
         <span class="wh-store"><span class="muted small">🏦 storage as of <b>${atTxt}</b>${ago ? ` <span class="muted">(${ago})</span>` : ''}</span><button id="wh-refresh" class="btn small" ${refreshing || !colCount ? 'disabled' : ''} title="ask the collector to open its storage and re-read it">${refreshing ? '⟳ refreshing…' : '⟳ refresh storage'}</button></span>
       </div>
       <table class="bagt wht"><thead><tr><th>item</th><th>🎒 bot bags</th><th title="number of farming bots holding this item">bots</th><th class="wh-sep">🧰 collector bag</th><th title="last snapshot the collector read from the storage NPC">🏦 collector storage</th><th>total</th></tr></thead><tbody>${rows.map((r) => `
-        <tr class="wh-item" data-whrow="${String(r.id)}" title="click for the per-character breakdown"><td><span class="wh-chev">${state.whOpen.has(String(r.id)) ? '▾' : '▸'}</span> ${r.name}</td><td class="bl-mono">${fmt(r.bots)}</td><td class="muted">${r.botCount}</td><td class="bl-mono wh-sep">${fmt(r.cBag)}</td><td class="bl-mono" title="${cs?.at ? 'last read ' + new Date(cs.at).toLocaleString() : 'collector has not read its storage yet'}">${cs ? fmt(r.cStore) : '—'}</td><td class="bl-mono"><b>${fmt(r.bots + r.cBag + (cs ? r.cStore : 0))}</b></td></tr>
+        <tr class="wh-item" data-whrow="${String(r.id)}" title="click for the per-character breakdown"><td><span class="wh-chev">${state.whOpen.has(String(r.id)) ? '▾' : '▸'}</span> ${r.name}${r.auto ? ' <span class="muted small" title="card seen in a character — counted &amp; kept automatically, no whitelist edit needed">🃏 auto</span>' : ''}</td><td class="bl-mono">${fmt(r.bots)}</td><td class="muted">${r.botCount}</td><td class="bl-mono wh-sep">${fmt(r.cBag)}</td><td class="bl-mono" title="${cs?.at ? 'last read ' + new Date(cs.at).toLocaleString() : 'collector has not read its storage yet'}">${cs ? fmt(r.cStore) : '—'}</td><td class="bl-mono"><b>${fmt(r.bots + r.cBag + (cs ? r.cStore : 0))}</b></td></tr>
         <tr class="wh-det hidden" data-whdet="${String(r.id)}"><td colspan="6">${r.per.length ? r.per.map((p) => `<span class="tr-chip wh-chip">${p.isCol ? '🧰 ' : ''}${p.name} <span class="muted">#${p.id}</span> · bag <b>${fmt(p.bag)}</b></span>`).join(' ') : '<span class="muted small">no character holds this item right now</span>'}</td></tr>`).join('')}</tbody></table>
-      <p class="muted small">bot bags = live sum across all farming bots (≤20s heartbeat lag) · collector bag = live · <b>collector storage</b> = last snapshot the collector read from the storage NPC (persisted — survives restarts; if it looks stale hit ⟳ refresh storage) · bots never store — the collector is the only storer · click an item for the per-character breakdown · union of every bot's own whitelist — edit per bot in its ⚙ config (Apply-to-all there sets every bot)</p>`
+      <p class="muted small">bot bags = live sum across all farming bots (≤20s heartbeat lag) · collector bag = live · <b>collector storage</b> = last snapshot the collector read from the storage NPC (persisted — survives restarts; if it looks stale hit ⟳ refresh storage) · bots never store — the collector is the only storer · click an item for the per-character breakdown · union of every bot's whitelist + <b>🃏 auto</b> rows for every card a character holds (counted &amp; kept automatically — no whitelist edits needed) — edit the explicit list per bot in its ⚙ config (Apply-to-all there sets every bot)</p>`
     : '<p class="muted small">nothing whitelisted yet — open a bot\'s ⚙ config and add items (they are never sold and get traded to the collector)</p>';
   for (const id of state.whOpen) {
     const det = $('wh-body').querySelector(`tr[data-whdet="${id}"]`);
@@ -344,6 +349,75 @@ function renderKillResults() {
   }
 }
 
+// ---------- bot detail modal (stats + skills + scrolls) ----------
+function openBotModal(id) {
+  state.botModalId = id;
+  renderBotModal();
+  $('bot-modal').classList.remove('hidden');
+  clearInterval(state.botWatch);
+  state.botWatch = setInterval(() => {
+    if (document.hidden || $('bot-modal').classList.contains('hidden')) return;
+    renderBotModal();
+  }, 3000);
+}
+function normSkills(sk) {
+  if (Array.isArray(sk)) return sk.map((e) => [e?.id ?? e?.skillId, e?.level ?? 1]).filter(([id]) => !!id);
+  if (sk && typeof sk === 'object') return Object.entries(sk).map(([id, v]) => [id, typeof v === 'object' ? (v?.level ?? 0) : (v ?? 0)]);
+  return [];
+}
+function renderBotModal() {
+  const b = state.bots.find((x) => x.id === state.botModalId);
+  if (!b) { $('botm-body').innerHTML = '<p class="muted small">bot not found</p>'; return; }
+  const s = b.status ?? {};
+  $('botm-title').innerHTML = `${b.name} <span class="muted">#${b.id} · ${b.mode} · ${s.classId ?? '?'}</span>`;
+  const st = s.stats ?? {};
+  const target = { DEX: 30, AGI: 30, VIT: 20 };
+  const statRows = ['STR', 'AGI', 'VIT', 'INT', 'DEX', 'LUK'].map((k) => {
+    const v = st[k] ?? 0;
+    const tgt = target[k];
+    const low = tgt != null && v < tgt;
+    return `<tr><td class="muted">${k}</td><td class="bl-mono"${low ? ' style="color:var(--gold)"' : ''}><b>${v}</b>${low ? ` <span class="muted small">/ ${tgt}</span>` : ''}</td></tr>`;
+  }).join('');
+  const sk = normSkills(s.skills).sort((a, b2) => b2[1] - a[1]);
+  const skRows = sk.length
+    ? sk.map(([id, lv]) => `<tr><td>${skillNameOf(id)} <span class="muted small">${id}</span></td><td class="bl-mono"><b>${lv}</b></td></tr>`).join('')
+    : '<tr><td colspan="2" class="muted small">no skills in the last heartbeat — try again in a moment</td></tr>';
+  const scrollCls = (s.weightScrolls ?? 0) >= 10 ? 'scroll-ok' : 'scroll-pend';
+  $('botm-body').innerHTML = `
+    <div class="muted small" style="margin-bottom:8px">base <b>${s.base ?? '?'}</b>/job <b>${s.job ?? '?'}</b> · map <b>${s.map ?? '—'}</b>${s.channel != null ? ` · CH <b>${s.channel}</b>` : ''} · zeny <b>z ${fmt(s.zeny)}</b> · weight <b>${fmt(s.bag?.weight)}/${fmt(s.bag?.weightLimit)}</b> · 🧾 weight scrolls <b class="${scrollCls}" title="consumed weight-limit scrolls (permanent +weight, max 10)">${s.weightScrolls ?? 0}/10</b> · ${s.dead ? '<span class="dead">☠ dead</span>' : 'alive'}</div>
+    <div class="bm-grid">
+      <div>
+        <div class="cfg-lab">stats${(s.statusPoints ?? 0) > 0 ? ` — <span style="color:var(--gold)">${fmt(s.statusPoints)} unspent</span>` : ''}</div>
+        <table class="bagt"><thead><tr><th>stat</th><th>value <span class="muted">(guide: DEX 30 → AGI 30 → VIT 20 → rest STR)</span></th></tr></thead><tbody>${statRows}</tbody></table>
+      </div>
+      <div>
+        <div class="cfg-lab">skills${(s.skillPoints ?? 0) > 0 ? ` — <span style="color:var(--gold)">${fmt(s.skillPoints)} points unspent</span>` : ''}</div>
+        <table class="bagt"><thead><tr><th>skill</th><th>lv</th></tr></thead><tbody>${skRows}</tbody></table>
+      </div>
+    </div>`;
+}
+
+// ---------- saved plans modal ----------
+function openPlansModal() { renderPlans(); $('plans-modal').classList.remove('hidden'); }
+function planCfgFromBot(bot) {
+  return { ...(bot.cfg ?? {}), mode: bot.mode, keep: (bot.cfg?.keep ?? []).slice() };
+}
+function renderPlans() {
+  const plans = state.plans ?? [];
+  const selCount = state.sel.size;
+  $('pl-selcount').textContent = selCount;
+  const src = $('pl-from');
+  const prev = src.value;
+  src.innerHTML = '<option value="blank">✨ start from scratch (blank plan)</option>' + state.bots.filter((b) => b.mode !== 'collector').map((b) => `<option value="${b.id}">#${b.id} ${esc(b.name)} — ${b.mode}</option>`).join('');
+  if (prev && [...src.options].some((o) => o.value === prev)) src.value = prev;
+  $('pl-list').innerHTML = plans.length
+    ? `<table class="bagt wht"><thead><tr><th>plan</th><th>bots on it</th><th>updated</th><th></th></tr></thead><tbody>${plans.map((pl) => {
+        const users = state.bots.filter((b) => b.plan?.id === pl.id);
+        return `<tr><td>📋 ${esc(pl.name)}</td><td class="muted" title="${esc(users.map((u) => u.name).join(', '))}">${users.length}</td><td class="muted">${pl.updatedAt ? new Date(pl.updatedAt).toLocaleString() : ''}</td><td style="text-align:right"><button class="btn small" data-pledit="${pl.id}" title="open the full plan editor (configure from scratch)">✎ edit</button> <button class="btn small ok" data-plapply="${pl.id}" ${selCount ? '' : 'disabled'} title="${selCount ? `apply to the ${selCount} ticked bot(s)` : 'tick bots on the dashboard first'}">▶ apply to ${selCount} selected</button> <button class="btn small" data-plupdate="${pl.id}" title="re-capture this plan from the source bot's live settings">⤓ update from source</button> <button class="btn small bad" data-pldel="${pl.id}" title="delete this plan (configs already applied stay)">🗑</button></td></tr>`;
+      }).join('')}</tbody></table>`
+    : '<p class="muted small">no plans yet — create one above by copying a running bot\'s live settings, or save the ⚙ config form with “💾 save as plan”</p>';
+}
+
 function renderKpis() {
   const b = state.bots;
   const by = (s) => b.filter((x) => x.state === s).length;
@@ -351,8 +425,8 @@ function renderKpis() {
   const kills = alive.reduce((a, x) => a + (x.status?.killsTotal ?? 0), 0);
   const zeny = alive.reduce((a, x) => a + (x.status?.zeny ?? 0), 0);
   const base = alive.filter((x) => x.status?.base).map((x) => x.status.base);
-  const wt = (state.settings?.tracked?.length ?? 0) ? whitelistTotals().totals : null;
-  const wh = wt ? wt.bots + wt.cBag + wt.cStore : null;
+  const wl = whitelistTotals();
+  const wh = wl.rows.length ? wl.totals.bots + wl.totals.cBag + wl.totals.cStore : null;
   const tiles = [
     ['k-ok', '●', by('running'), 'running'],
     ['k-sky', '⏸', by('paused'), 'paused'],
@@ -363,7 +437,7 @@ function renderKpis() {
   ];
   $('kpis').innerHTML = tiles.map(([cls, ic, v, l, id, title]) =>
     `<div class="kpi ${cls}${id ? ' clickable' : ''}"${id ? ` id="${id}"` : ''}${title ? ` title="${title}"` : ''}><div class="k-ic">${ic}</div><div class="k-tx"><div class="k-v">${v}</div><div class="k-l">${l}</div></div></div>`
-  ).join('') + `<div class="kpi k-wh clickable" id="kpi-wh" title="whitelist items — farming bot bags + collector bag + collector storage (last seen) — click for details"><div class="k-ic">🧺</div><div class="k-tx"><div class="k-v">${wh == null ? '—' : fmt(wh)}</div><div class="k-l">whitelist total</div></div></div>`;
+  ).join('') + `<div class="kpi k-wh clickable" id="kpi-wh" title="whitelist items + every card seen in a character — farming bot bags + collector bag + collector storage (last seen) — click for details"><div class="k-ic">🧺</div><div class="k-tx"><div class="k-v">${wh == null ? '—' : fmt(wh)}</div><div class="k-l">whitelist total</div></div></div>`;
   const kw = document.getElementById('kpi-wh');
   if (kw) kw.onclick = openWhModal;
   const kk = document.getElementById('kpi-kills');
@@ -387,9 +461,11 @@ function botCard(b) {
         <span class="badge">${s.classId ?? '?'}</span>
         <span class="lv">base <b>${s.base ?? '?'}</b></span>
         <span class="lv">job <b>${s.job ?? '?'}</b></span>
-        <span class="map">${s.map ?? '—'}</span>
+        <span class="map">${s.map ?? '—'}${s.channel != null ? ` · CH ${s.channel}` : ''}</span>
         <span class="ms">⚔ ${fmt(s.killsTotal)}</span>
         <span class="ms">z ${fmt(s.zeny)}</span>
+        <span class="ms ${(s.weightScrolls ?? 0) >= 10 ? 'scroll-ok' : 'scroll-pend'}" title="weight-limit scrolls consumed (permanent +weight, max 10)">🧾 ${s.weightScrolls ?? 0}/10</span>
+        ${b.plan ? `<span class="ms plan-chip" title="plan \u201c${esc(b.plan.name)}\u201d applied ${new Date(b.plan.at ?? 0).toLocaleString()}">📋 ${esc(b.plan.name)}</span>` : ''}
         ${s.pets?.owned ? `<span class="ms pet">pet ${s.pets.active ? '✓' : s.pets.owned}</span>` : ''}
       </div>
       <div class="vitals">
@@ -401,8 +477,10 @@ function botCard(b) {
         <button class="btn ok small" data-act="play" data-id="${b.id}" title="play">▶</button>
         <button class="btn warn small" data-act="pause" data-id="${b.id}" title="pause">⏸</button>
         <button class="btn bad small" data-act="stop" data-id="${b.id}" title="stop">⏹</button>
+        <button class="btn small" data-stat="${b.id}" title="stats & skills">📊</button>
         <button class="btn small" data-cfg="${b.id}" title="config (auto-combat, weave, channel, collect)">⚙</button>
         ${b.mode !== 'collector' ? `<button class="btn small" data-collect="${b.id}" title="queue collection to collector">⇪</button>` : ''}
+        <button class="btn small" data-kick="${b.id}" title="force online — kick this character's previous (stale) session so it can log in — use when stuck at 'already online'">🔓</button>
         <span class="exits">${b.lastExit ? `exit ${b.lastExit.code}` : ''}${b.restarts ? `${b.lastExit ? ' · ' : ''}↻${b.restarts}` : ''}</span>
       </div>
     </div>`;
@@ -516,20 +594,23 @@ function botListRow(b) {
       <td class="bl-name"><span class="dot"></span> <b>${b.name}</b> <span class="state st-${b.state}">${b.state}</span> <span class="idtag">#${b.id}</span>${exits ? ` <span class="muted small">${exits}</span>` : ''}</td>
       <td>${activityBadge(b, s)}</td>
       <td><span class="badge">${s.classId ?? '?'}</span></td>
+      <td class="bl-plan" title="${b.plan ? `plan: ${esc(b.plan.name)}` : 'no plan applied'} ">${b.plan ? '📋 ' + esc(b.plan.name) : '<span class="muted">—</span>'}</td>
       <td class="bl-mono">${s.base ?? '?'}/${s.job ?? '?'}</td>
-      <td class="bl-mono">${s.map ?? '—'}</td>
+      <td class="bl-mono">${s.map ?? '—'}${s.channel != null ? ` · CH ${s.channel}` : ''}</td>
       <td class="bl-hp">
         <div class="vbar hpb" title="HP ${s.dead ? '0' : Math.round(s.hp ?? 0)}/${s.maxHp ?? '?'}"><i style="width:${hpPct}%"></i></div>
         <div class="vbar spb" title="SP ${Math.round(s.sp ?? 0)}/${s.maxSp ?? '?'}"><i style="width:${spPct}%"></i></div>
       </td>
-      <td class="bl-mono" title="bag slots used · pots carried">${s.bag?.used ?? '?'} · pots ${s.pots ?? '?'}</td>
+      <td class="bl-mono" title="bag slots used · pots carried · weight-limit scrolls consumed">${s.bag?.used ?? '?'} · pots ${s.pots ?? '?'} · 🧾 ${s.weightScrolls ?? 0}/10</td>
       <td>${s.pets?.owned ? `<span class="ms pet">pet ${s.pets.active ? '✓' : s.pets.owned}</span>` : '<span class="muted">—</span>'}</td>
       <td class="bl-mono">z ${fmt(s.zeny)}</td>
       <td class="bl-mono">⚔ ${fmt(s.killsTotal)}</td>
       <td class="bl-step">${s.step ?? '—'}${s.dead ? ' <span class="dead">☠ dead</span>' : ''}</td>
       <td class="bl-acts">
+        <button class="btn small" data-stat="${b.id}" title="stats & skills">📊</button>
         <button class="btn small" data-cfg="${b.id}" title="config">⚙</button>
         ${b.mode !== 'collector' ? `<button class="btn small" data-collect="${b.id}" title="collect">⇪</button>` : ''}
+        <button class="btn small" data-kick="${b.id}" title="force online — kick the previous (stale) session so it can log in — use when stuck at 'already online'">🔓</button>
         <button class="btn ok small" data-act="play" data-id="${b.id}" title="play">▶</button>
         <button class="btn warn small" data-act="pause" data-id="${b.id}" title="pause">⏸</button>
         <button class="btn bad small" data-act="stop" data-id="${b.id}" title="stop">⏹</button>
@@ -539,7 +620,7 @@ function botListRow(b) {
 
 function botListTable(bots) {
   return `<div class="botlistwrap"><table class="botlist">
-    <thead><tr><th></th><th>bot</th><th>activity</th><th>class</th><th>base/job</th><th>map</th><th>hp / sp</th><th>bag · pots</th><th>pet</th><th>zeny</th><th>kills</th><th>step</th><th></th></tr></thead>
+    <thead><tr><th></th><th>bot</th><th>activity</th><th>class</th><th>plan</th><th>base/job</th><th>map · ch</th><th>hp / sp</th><th>bag · pots</th><th>pet</th><th>zeny</th><th>kills</th><th>step</th><th></th></tr></thead>
     <tbody>${bots.map(botListRow).join('')}</tbody></table></div>`;
 }
 
@@ -550,8 +631,14 @@ function renderBotsList() {
   const sec = $('collector-sec');
   if (sec) sec.classList.toggle('hidden', colBots.length === 0);
   renderCollectorSum(colBots);
+  // live re-renders replace the tables wholesale — keep the horizontal scroll where the user left it
+  const keep = [...document.querySelectorAll('.botlistwrap')].map((el) => [el.parentElement?.id ?? '', el.scrollLeft, el.scrollTop]);
   if (colBots.length) $('collector-bot').innerHTML = botListTable(colBots);
   $('bots').innerHTML = botListTable(fleet);
+  for (const el of document.querySelectorAll('.botlistwrap')) {
+    const s = keep.find((w) => w[0] === (el.parentElement?.id ?? ''));
+    if (s) { el.scrollLeft = s[1]; el.scrollTop = s[2]; }
+  }
 }
 
 // ---------- bag / storage viewer ----------
@@ -590,6 +677,26 @@ function allKeepIds() {
   if (!s.size) for (const id of (state.settings?.tracked ?? [])) s.add(id);
   return s;
 }
+// every card item id (wiki type 'Card') — mirrors the server-side keep-all-cards merge
+function cardIdSet() {
+  const s = new Set();
+  for (const it of [...(state.wiki.items ?? []), ...(state.wiki.roItems ?? [])]) {
+    if (it.type === 'Card') s.add(+it.id);
+    else if (!it.type && /\bcard$/i.test(String(it.name ?? '').trim())) s.add(+it.id); // fallback for older wiki slices without type
+  }
+  return s;
+}
+// whitelist views = union of every bot's whitelist + every card that currently exists in a character
+// (bag / collector bag / collector storage) — so new cards never need manual whitelist edits to show up
+function whitelistIds() {
+  const keep = new Set([...allKeepIds()].map(Number));
+  const ids = new Set(keep);
+  const cardIds = cardIdSet();
+  const store = state.fleet?.collectorStorage?.items ?? {};
+  for (const b of state.bots) for (const it of (b.status?.inventory ?? [])) { const id = +it.itemId; if (cardIds.has(id)) ids.add(id); }
+  for (const sid of Object.keys(store)) { const id = +sid; if (cardIds.has(id)) ids.add(id); }
+  return { keep, ids };
+}
 function renderCollector() {
   const col = state.collect?.collector ?? state.settings?.collector;
   if (col) {
@@ -611,14 +718,15 @@ function renderCollector() {
   const nameOf = (id) => byId.get(id)?.name ?? '#' + id;
   $('col-queue').innerHTML = (active || q.length || held.length)
     ? `${active ? `<div>⇪ trading now: <b>${nameOf(active)}</b>${actB?.status?.map ? ` <span class="muted small">· ${actB.status.map}</span>` : ''}</div>` : ''}
+       ${state.collect?.collectorLive === false ? `<div class="muted small" style="color:var(--gold)">⏸ collector bot is offline — grants are held${q.length ? ` · ${q.length} waiting` : ''}: traders keep farming and hand over as soon as it is running again</div>` : ''}
        <div class="muted small" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">${q.length} waiting in line · live${q.length ? ` <button class="btn small" id="col-qclear" title="remove every waiting bot from this round — they keep farming; release them to re-queue">⏹ clear waiting</button>` : ''}${held.length ? ` <button class="btn small" id="col-qrel" title="let held bots auto-queue again">↺ release held (${held.length})</button>` : ''}</div>
        ${q.map((id, i) => `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span>${i + 1}. ${nameOf(id)}</span><button class="btn small" data-qdel="${id}" title="skip this bot for this round — it keeps farming and stays held until you release it or its bag refills into a new round">✕ remove</button></div>`).join('')}
        ${held.length ? `<div class="muted small" style="margin-top:4px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">held: ${held.map((id) => `<button class="btn small" data-qrel="${id}" title="re-queue now">${nameOf(id)} ↺</button>`).join(' ')}</div>` : ''}`
     : 'queue empty';
-  const tracked = [...allKeepIds()];
+  const tracked = [...whitelistIds().ids];
   $('tr-list').innerHTML = tracked.length
     ? tracked.map((id) => `<span class="tr-chip">${itemNameOf(id)}</span>`).join(' ')
-      + '<div class="muted small" style="margin-top:6px">read-only · union of every bot\'s own whitelist — edit per bot in its ⚙ config</div>'
+      + '<div class="muted small" style="margin-top:6px">read-only · union of every bot\'s whitelist + all cards seen in characters — edit per bot in its ⚙ config</div>'
     : '<span class="muted small">nothing whitelisted yet — open a bot\'s ⚙ config and add items</span>';
   const rows = tracked.map((id) => ({ id, name: itemNameOf(id), inv: 0, store: 0, carriers: new Set(), storedBy: new Set() }));
   for (const b of state.bots) {
@@ -645,7 +753,7 @@ function renderCfgMobs() {
   const mobs = (state.wiki.monsters ?? []).filter((m) => !mapId || (m.maps ?? []).includes(mapId));
   const list = mobs.length ? mobs : (state.wiki.monsters ?? []);
   $('cfg-mobs').innerHTML = list.length
-    ? list.map((m) => `<label><input type="checkbox" data-mob="${m.name}" ${state.cfgMobSel.has(m.name) ? 'checked' : ''} /> ${m.name}${m.level ? ` <span class="muted small">lv${m.level}</span>` : ''}</label>`).join('')
+    ? list.map((m) => `<label><input type="checkbox" data-mob="${m.id}" ${state.cfgMobSel.has(String(m.id)) ? 'checked' : ''} /> ${m.name}${m.level ? ` <span class="muted small">lv${m.level}</span>` : ''}</label>`).join('')
     : '<span class="muted small">no monster data for this map</span>';
   const note = $('cfg-mobnote');
   if (note) note.textContent = mobs.length ? `${mobs.length} spawn on ${mapId}` : `no spawn data for ${mapId || '?'} — showing all monsters`;
@@ -677,22 +785,20 @@ function renderCfgKeep() {
     ? state.cfgKeep.map((id) => `<span class="tr-chip">${itemNameOf(id)} <button class="btn small" data-cfgkdel="${id}" title="remove">✕</button></span>`).join(' ')
     : '<span class="muted small">no whitelist items — this bot sells/stores everything (its own potions are always kept)</span>';
 }
-function openCfg(id) {
-  state.cfgBot = id;
-  const bot = state.bots.find((b) => b.id === id);
-  $('cfg-title').textContent = `Bot config — ${bot?.name ?? '#' + id}`;
-  $('cfg-now').textContent = JSON.stringify(bot?.cfg ?? {}, null, 1);
-  // prefill form from the bot's live config (otherwise Apply would overwrite it with defaults)
-  const cfg = bot?.cfg ?? {};
+function fillCfgForm(cfg, bot) {
   state.cfgKeep = [...(cfg.keep ?? [])];
   renderCfgKeep();
-  state.cfgMobSel = new Set(cfg.auto?.monsters ?? []);
-  state.cfgBotMap = bot?.status?.map ?? null;
-  state.cfgFarmMap = cfg.farm?.map ?? bot?.status?.map ?? null;
+  state.cfgMobSel = new Set((cfg.auto?.monsters ?? []).map((v) => {
+    if (typeof v === 'number') return String(v);
+    const s = String(v);
+    if (/^\d+$/.test(s)) return s;
+    // legacy plans stored NAMES — convert to monster ids so the auto engine (templateIds) can match
+    const mm = (state.wiki.monsters ?? []).find((x) => x.name === v);
+    return mm ? String(mm.id) : s;
+  }));
+  state.cfgFarmMap = cfg.farm?.map ?? (bot?.status?.map ?? null);
   // seed with the runner's farm-mode default rotation so adding a skill extends it instead of replacing it
   state.cfgWeave = cfg.weave?.length ? [...cfg.weave] : (bot?.mode === 'collector' ? [] : ['bash', 'bowling-bash']);
-  $('cfg-curmap').textContent = `current map: ${bot?.status?.map ?? '—'}`;
-  $('cfg-restart').checked = false;
   renderCfgMobs();
   renderCfgWeave();
   const rad = cfg.auto?.huntRadiusTiles;
@@ -704,14 +810,85 @@ function openCfg(id) {
   $('cfg-cards').checked = cfg.cards === true;
   $('cfg-errand').checked = cfg.errand?.enabled === true;
   $('cfg-errandpct').value = cfg.errand?.atWeightPct ?? 70;
-  $('cfg-mode').value = '';
+  $('cfg-mode').value = ['leveling', 'farming'].includes(cfg.mode) ? cfg.mode : '';
   $('cfg-farm').checked = !!cfg.farm;
   if (cfg.farm?.map) $('cfg-farmmap').value = cfg.farm.map;
+  else if (state.cfgFarmMap) $('cfg-farmmap').value = state.cfgFarmMap;
   if (cfg.farm?.restockQty) $('cfg-restock').value = cfg.farm.restockQty;
   if (cfg.farm?.potItem) $('cfg-potitem').value = cfg.farm.potItem;
+}
+function openCfg(id) {
+  state.cfgBot = id;
+  state.cfgPlan = null;
+  const bot = state.bots.find((b) => b.id === id);
+  $('cfg-title').textContent = `Bot config — ${bot?.name ?? '#' + id}`;
+  $('cfg-now').textContent = JSON.stringify(bot?.cfg ?? {}, null, 1);
+  state.cfgBotMap = bot?.status?.map ?? null;
+  // prefill form from the bot's live config (otherwise Apply would overwrite it with defaults)
+  fillCfgForm(bot?.cfg ?? {}, bot);
+  $('cfg-curmap').textContent = `current map: ${bot?.status?.map ?? '—'}`;
+  $('cfg-restart').checked = false;
+  $('cfg-selcount').textContent = state.sel.size;
+  setCfgMode('bot');
+  const plSel = $('cfg-plan-load');
+  plSel.innerHTML = '<option value="">— load a plan —</option>' + (state.plans ?? []).map((pl) => `<option value="${pl.id}">${esc(pl.name)}</option>`).join('');
+  $('cfg-plan-name').value = '';
+  $('cfg-plan-msg').textContent = '';
   $('cfg-modal').classList.remove('hidden');
 }
-function closeCfg() { state.cfgBot = null; $('cfg-modal').classList.add('hidden'); }
+function closeCfg() { state.cfgBot = null; state.cfgPlan = null; $('cfg-modal').classList.add('hidden'); }
+// plan editor (no bot attached): create/edit a plan's settings from scratch
+function openCfgPlan(planId) {
+  const pl = (state.plans ?? []).find((x) => x.id === planId);
+  if (!pl) return;
+  state.cfgBot = null;
+  state.cfgPlan = pl.id;
+  $('cfg-title').textContent = `Plan — ${pl.name}`;
+  $('cfg-now').textContent = 'plan editor — not attached to a bot. Name it, configure anything, then save (and optionally apply to ticked bots).';
+  $('cfg-plan-title').value = pl.name;
+  state.cfgBotMap = null;
+  fillCfgForm(pl.cfg ?? {}, null);
+  $('cfg-curmap').textContent = 'plan editor — no bot attached';
+  $('cfg-restart').checked = false;
+  $('cfg-selcount').textContent = state.sel.size;
+  setCfgMode('plan');
+  $('cfg-modal').classList.remove('hidden');
+}
+function setCfgMode(mode) {
+  const planMode = mode === 'plan';
+  $('cfg-apply').classList.toggle('hidden', planMode);
+  $('cfg-apply-sel').classList.toggle('hidden', planMode);
+  $('cfg-apply-all').classList.toggle('hidden', planMode);
+  $('cfg-planrow')?.classList.toggle('hidden', planMode);
+  $('cfg-planrow-lab')?.classList.toggle('hidden', planMode);
+  $('cfg-plan-name-row')?.classList.toggle('hidden', !planMode);
+  $('cfg-plan-savebtn')?.classList.toggle('hidden', !planMode);
+  $('cfg-plan-saveapply')?.classList.toggle('hidden', !planMode);
+}
+async function savePlanFromForm({ apply = false } = {}) {
+  const pl = (state.plans ?? []).find((x) => x.id === state.cfgPlan);
+  if (!pl) return;
+  const newName = ($('cfg-plan-title')?.value ?? '').trim();
+  if (!newName) { $('cfg-now').textContent = 'every plan needs a name — fill in "plan name" at the top first'; return; }
+  if (newName !== pl.name) {
+    const rr = await api('/api/plans/rename', 'POST', { id: pl.id, name: newName });
+    if (rr.error) { $('cfg-now').textContent = `rename failed: ${rr.error}`; return; }
+    $('cfg-title').textContent = `Plan — ${newName}`;
+  }
+  const cfg = collectCfgFromForm();
+  const mode = $('cfg-mode').value; if (mode) cfg.mode = mode;
+  await api('/api/plans/create', 'POST', { name: newName, cfg });
+  $('cfg-now').textContent = `plan "${newName}" saved ✓ — apply it from 📋 Plans`;
+  await refreshState();
+  if (apply) {
+    const ids = [...state.sel];
+    if (!ids.length) { $('cfg-now').textContent += '\nno bots ticked on the dashboard — nothing applied'; return; }
+    const restart = $('cfg-restart').checked === true;
+    const r = await api('/api/plans/apply', 'POST', { id: pl.id, ids, restart });
+    $('cfg-now').textContent += `\napplied to ${r.applied ?? 0} bot(s)${restart && r.restarted ? ` · restarting ${r.restarted.count}` : ''}`;
+    await refreshState();
+  }
+}
 function collectCfgFromForm() {
   const cfg = {};
   const radius = $('cfg-radius').value;
@@ -719,7 +896,8 @@ function collectCfgFromForm() {
   cfg.auto = cfg.auto ?? {};
   if (radius) cfg.auto.huntRadiusTiles = radius === 'all' ? 'all' : parseInt(radius, 10);
   if (Number.isFinite(hp)) cfg.auto.hpPercent = hp;
-  cfg.auto.monsters = [...state.cfgMobSel]; // empty array = hunt all monsters
+  // the auto engine matches monster TEMPLATE IDS (numbers) — never names; [] = hunt everything
+  cfg.auto.monsters = [...state.cfgMobSel].map((s) => Number(s)).filter(Number.isFinite);
   if (state.cfgWeave.length) cfg.weave = [...state.cfgWeave];
   cfg.autoChannel = $('cfg-chan').checked;
   cfg.collect = { enabled: $('cfg-collect').checked, atWeightPct: parseInt($('cfg-collectpct').value, 10) || 70 };
@@ -735,11 +913,11 @@ function collectCfgFromForm() {
   };
   return cfg;
 }
-async function applyCfg(all) {
+async function applyCfg(target) {
   const cfg = collectCfgFromForm();
   const mode = $('cfg-mode').value;
   const restart = $('cfg-restart').checked === true;
-  if (all) {
+  if (target === 'all') {
     if (mode) cfg.mode = mode; // route applies it to every bot (restart needed to take effect)
     const r = await api('/api/bots/config-all', 'POST', cfg);
     $('cfg-now').textContent = `applied to ${r.applied ?? 0} bots${r.mode ? ` — mode set to ${r.mode}` : ''}`;
@@ -747,6 +925,17 @@ async function applyCfg(all) {
       $('cfg-now').textContent += `\nrestarting the whole fleet (~4 min)…`;
       const rr = await api('/api/bots/restart-all', 'POST', { rampMs: 3000 });
       $('cfg-now').textContent += rr.ok ? ' restart-all started ✓' : ` restart failed: ${rr.error ?? '?'}`;
+    }
+  } else if (target === 'sel') {
+    const ids = [...state.sel];
+    if (!ids.length) { $('cfg-now').textContent = 'no bots selected — tick bots on the dashboard first (checkbox on each card, or the select-all box), then Apply to selected'; return; }
+    if (mode) cfg.mode = mode;
+    const r = await api('/api/bots/config-many', 'POST', { ids, ...cfg });
+    $('cfg-now').textContent = `applied to ${r.applied ?? 0} of ${ids.length} selected bot(s)${r.mode ? ` — mode set to ${r.mode}` : ''}`;
+    if (mode || restart) {
+      $('cfg-now').textContent += `\nrestarting ${ids.length} selected bot(s)…`;
+      const rr = await api('/api/bots/restart-many', 'POST', { ids });
+      $('cfg-now').textContent += rr.ok ? ` restart started ✓ (${rr.count})` : ` restart failed: ${rr.error ?? '?'}`;
     }
   } else if (state.cfgBot != null) {
     const r = await api(`/api/bots/${state.cfgBot}/config`, 'POST', cfg);
@@ -778,7 +967,7 @@ document.addEventListener('change', async (ev) => {
 });
 
 document.addEventListener('click', async (ev) => {
-  const t = ev.target.closest('button, .card');
+  const t = ev.target.closest('button, .card, tr.row-bot');
   if (!t) return;
   const act = t.dataset?.act;
   if (act) {
@@ -788,7 +977,18 @@ document.addEventListener('click', async (ev) => {
     return;
   }
   if (t.dataset?.cfg) { openCfg(parseInt(t.dataset.cfg, 10)); return; }
+  if (t.dataset?.stat) { openBotModal(parseInt(t.dataset.stat, 10)); return; }
   if (t.dataset?.collect) { await api(`/api/bots/${t.dataset.collect}/collect`, 'POST'); refreshState(); return; }
+  if (t.dataset?.kick) {
+    const id = +t.dataset.kick;
+    const b = state.bots.find((x) => x.id === id);
+    const r = await api(`/api/bots/${id}/kick`, 'POST').catch((e) => ({ ok: false, error: String((e && e.message) || e) }));
+    alert(r.ok
+      ? `kicked ${b?.name ?? '#' + id}'s previous session ✓\n\nThe character seat is free — restart or play the bot to log in now.`
+      : `kick failed for ${b?.name ?? '#' + id}: ${r.error ?? ('HTTP ' + (r.status ?? '?'))}`);
+    refreshState();
+    return;
+  }
   if (t.dataset?.cfgkdel) { state.cfgKeep = state.cfgKeep.filter((x) => x !== parseInt(t.dataset.cfgkdel, 10)); renderCfgKeep(); return; }
   if (t.dataset?.wup) { const i = parseInt(t.dataset.wup, 10); if (i > 0) { const a = state.cfgWeave; [a[i - 1], a[i]] = [a[i], a[i - 1]]; renderCfgWeave(); } return; }
   if (t.dataset?.wdown) { const i = parseInt(t.dataset.wdown, 10); const a = state.cfgWeave; if (i < a.length - 1) { [a[i + 1], a[i]] = [a[i], a[i + 1]]; renderCfgWeave(); } return; }
@@ -824,6 +1024,14 @@ $('play-sel').onclick = () => bulk('play', [...state.sel]);
 $('pause-sel').onclick = () => bulk('pause', [...state.sel]);
 $('stop-sel').onclick = () => bulk('stop', [...state.sel]);
 $('stop-all').onclick = async () => { if (confirm('STOP ALL bots?')) { await api('/api/bots/stop-all', 'POST'); setTimeout(refreshState, 800); } };
+$('dc-all').onclick = async () => {
+  if (confirm('EMERGENCY: instantly disconnect ALL bots from the game?\n\nHard-kills their sessions with NO graceful leave. Bots stay OFF until you start them again.')) {
+    const r = await api('/api/bots/disconnect-all', 'POST');
+    const note = document.getElementById('dash-note');
+    if (note) note.textContent = `🔥 disconnected ${r.killed ?? 0} runner(s) — bots are OFF`;
+    setTimeout(refreshState, 800);
+  }
+};
 
 $('reg-go').onclick = async () => {
   const count = parseInt($('reg-count').value, 10) || 1;
@@ -941,10 +1149,93 @@ $('cfg-keep-add').onclick = () => {
 
 // config modal
 $('cfg-close').onclick = closeCfg;
-$('cfg-apply').onclick = () => applyCfg(false);
-$('cfg-apply-all').onclick = () => applyCfg(true);
+$('cfg-apply').onclick = () => applyCfg('one');
+$('cfg-apply-sel').onclick = () => applyCfg('sel');
+$('cfg-apply-all').onclick = () => applyCfg('all');
+// saved plans
+$('plans-btn').onclick = openPlansModal;
+$('plans-close').onclick = () => $('plans-modal').classList.add('hidden');
+$('pl-create').onclick = async () => {
+  const name = $('pl-name').value.trim();
+  if (!name) { $('pl-msg').textContent = 'enter a plan name'; return; }
+  const srcVal = $('pl-from').value;
+  if (srcVal === 'blank') {
+    if ((state.plans ?? []).some((p) => p.name === name)) { $('pl-msg').textContent = `a plan named "${name}" already exists — open it with ✎ edit, or pick another name`; return; }
+    const r = await api('/api/plans/create', 'POST', { name, cfg: {} });
+    $('pl-name').value = '';
+    await refreshState();
+    $('plans-modal').classList.add('hidden');
+    openCfgPlan(r.plan.id); // jump straight into the editor — configure the blank plan from scratch
+    return;
+  }
+  const srcBot = state.bots.find((b) => b.id === +srcVal);
+  if (!srcBot) { $('pl-msg').textContent = 'no source bot'; return; }
+  const r = await api('/api/plans/create', 'POST', { name, cfg: planCfgFromBot(srcBot) });
+  $('pl-msg').textContent = r.overwritten ? `plan "${name}" updated ✓ — tweak it with ✎ edit` : `plan "${name}" created ✓ — tweak it with ✎ edit`;
+  $('pl-name').value = '';
+  await refreshState(); renderPlans();
+};
+$('pl-list').addEventListener('click', async (e) => {
+  const t = e.target.closest('button');
+  if (!t) return;
+  const planOf = (id) => (state.plans ?? []).find((x) => x.id === +id);
+  if (t.dataset?.pledit) {
+    const pl = planOf(t.dataset.pledit);
+    if (!pl) return;
+    $('plans-modal').classList.add('hidden');
+    openCfgPlan(pl.id);
+    return;
+  }
+  if (t.dataset?.plapply) {
+    const ids = [...state.sel];
+    if (!ids.length) { $('pl-msg').textContent = 'tick bots on the dashboard first'; return; }
+    const pl = planOf(t.dataset.plapply);
+    const restart = $('pl-restart')?.checked === true;
+    $('pl-msg').textContent = `applying "${pl?.name}" to ${ids.length} bot(s)…`;
+    const r = await api('/api/plans/apply', 'POST', { id: +t.dataset.plapply, ids, restart });
+    $('pl-msg').textContent = `applied "${pl?.name}" to ${r.applied ?? 0} bot(s)${restart && r.restarted ? ` · restarting ${r.restarted.count}` : ''}`;
+    await refreshState(); renderPlans();
+    return;
+  }
+  if (t.dataset?.plupdate) {
+    const pl = planOf(t.dataset.plupdate);
+    const srcBot = state.bots.find((b) => b.id === +$('pl-from').value);
+    if (!pl || !srcBot) { $('pl-msg').textContent = 'pick a source bot first'; return; }
+    await api('/api/plans/create', 'POST', { name: pl.name, cfg: planCfgFromBot(srcBot) });
+    $('pl-msg').textContent = `plan "${pl.name}" re-captured from ${srcBot.name} ✓`;
+    await refreshState(); renderPlans();
+    return;
+  }
+  if (t.dataset?.pldel) {
+    const pl = planOf(t.dataset.pldel);
+    if (!pl || !confirm(`Delete plan "${pl.name}"?\nBots ALREADY RUNNING its settings keep them — this only removes the saved plan.`)) return;
+    await api('/api/plans/delete', 'POST', { id: pl.id });
+    $('pl-msg').textContent = `plan "${pl.name}" deleted`;
+    await refreshState(); renderPlans();
+  }
+});
+$('cfg-plan-save').onclick = async () => {
+  const name = $('cfg-plan-name').value.trim();
+  if (!name) { $('cfg-plan-msg').textContent = 'enter a plan name first'; return; }
+  const cfg = collectCfgFromForm();
+  const mode = $('cfg-mode').value; if (mode) cfg.mode = mode;
+  const r = await api('/api/plans/create', 'POST', { name, cfg });
+  $('cfg-plan-msg').textContent = r.overwritten ? `plan "${name}" updated ✓` : `plan "${name}" saved ✓`;
+  refreshState();
+};
+$('cfg-plan-load').onchange = (e) => {
+  const pl = (state.plans ?? []).find((x) => x.id === parseInt(e.target.value, 10));
+  if (!pl) return;
+  const bot = state.bots.find((b) => b.id === state.cfgBot);
+  fillCfgForm(pl.cfg ?? {}, bot);
+  $('cfg-plan-name').value = pl.name;
+  $('cfg-plan-msg').textContent = 'loaded — tweak, then Apply (or 💾 save to overwrite the plan)';
+};
+$('cfg-plan-savebtn').onclick = () => savePlanFromForm({});
+$('cfg-plan-saveapply').onclick = () => savePlanFromForm({ apply: true });
 $('wh-close').onclick = () => $('wh-modal').classList.add('hidden');
 $('kill-close').onclick = () => { $('kill-modal').classList.add('hidden'); clearInterval(state.killWatch); state.killWatch = null; state.killArm = false; };
+$('botm-close').onclick = () => { $('bot-modal').classList.add('hidden'); clearInterval(state.botWatch); state.botWatch = null; };
 // whitelist modal: item rows expand into a per-character breakdown (delegated — body is re-rendered per open)
 $('wh-body').addEventListener('click', (e) => {
   if (e.target.closest('#wh-refresh')) { refreshCollectorStorage(e.target.closest('#wh-refresh')); return; }

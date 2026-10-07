@@ -132,6 +132,53 @@ export class BotManager {
     return { ok: true, requestedAt: cur.refreshStorage };
   }
 
+  // 🔓 force-online — kick the character's previous (stale) session server-side, exactly like the game's
+  // character-select "kick" button (POST /characters/:id/kick). Use when a bot is stuck at
+  // "already online"; the stale seat frees instantly and the next login/restart succeeds.
+  async kickSession(botId) {
+    const bot = store.findBot(botId);
+    if (!bot) return { ok: false, error: 'bot not found' };
+    const c = store.findCharacter(bot.characterId);
+    const a = c ? store.findAccount(c.accountId) : null;
+    if (!c || !a) return { ok: false, error: 'character/account missing' };
+    const dir = this.dirOf(botId);
+    // the CC store id is internal — the GAME-side character id lives on the store character record
+    // (set for CC-created characters) or in the runner's run-state.json (imported accounts)
+    let gameCharId = c.characterId ?? null;
+    if (!gameCharId) {
+      try { const rs = JSON.parse(fs.readFileSync(path.join(dir, 'run-state.json'), 'utf8')); if (rs?.characterId) gameCharId = rs.characterId; } catch {}
+    }
+    if (!gameCharId) return { ok: false, error: 'game characterId unknown — start the bot once so it can sync, then kick' };
+    let token = null;
+    try { token = JSON.parse(fs.readFileSync(path.join(dir, 'session.json'), 'utf8')).token; } catch {}
+    const call = async (tok) => {
+      const res = await fetch(`https://www.aetheria-online.in.th/characters/${gameCharId}/kick`, {
+        method: 'POST', headers: { Authorization: `Bearer ${tok}` },
+      });
+      let j = null; try { j = await res.json(); } catch {}
+      return { status: res.status, ok: res.ok, err: (j && (j.error ?? j.err)) || null };
+    };
+    try {
+      let r = token ? await call(token) : { status: 401, ok: false, err: 'no session token' };
+      if (r.status === 401 && a.userId && a.password) {
+        // stale/absent token → fresh login with the stored account, persist it, retry once
+        const lr = await fetch('https://www.aetheria-online.in.th/auth/login', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: a.userId, password: a.password }),
+        });
+        const lj = await lr.json().catch(() => ({}));
+        if (lr.ok && lj.token) {
+          token = lj.token;
+          try { fs.writeFileSync(path.join(dir, 'session.json'), JSON.stringify({ token, createdAt: new Date().toISOString() })); } catch {}
+          r = await call(token);
+        } else {
+          return { ok: false, status: lr.status, error: (lj && (lj.error ?? lj.err)) || 'login failed' };
+        }
+      }
+      return { ok: r.ok, status: r.status, error: r.err ?? undefined };
+    } catch (e) { return { ok: false, error: String((e && e.message) || e) }; }
+  }
+
   // ---- kill log (persistent; wiped only via the dashboard) ----
   _saveKills() {
     try { fs.writeFileSync(KILLLOG_FILE, JSON.stringify(this.killLog)); this._killSavedAt = Date.now(); this._killDirty = false; } catch {}
@@ -308,6 +355,7 @@ export class BotManager {
         }
       }
       bot.state = rt.state; bot.updatedAt = Date.now(); store.save();
+      rt.proc = null; // Windows signal kills keep exitCode null — a dead handle must not look alive to poll()/start()
       this.onUpdate();
     });
     bot.state = 'starting'; bot.updatedAt = Date.now(); store.save();
@@ -374,6 +422,40 @@ export class BotManager {
     const bots = store.data.bots.slice();
     for (let i = 0; i < bots.length; i++) this.start(bots[i].id, { delayMs: i * rampMs }).catch(() => {});
     return { ok: true, count: bots.length, rampMs };
+  }
+
+  // Restart a SUBSET of bots (mode/map changes for selected bots only — avoids a full-fleet bounce).
+  async restartMany(botIds) {
+    const ids = [...new Set(botIds.map((x) => parseInt(x, 10)).filter((x) => Number.isFinite(x) && !!store.findBot(x)))];
+    for (const id of ids) this.stop(id);
+    const t0 = Date.now();
+    const anyAlive = () => ids.some((id) => { const rt = this.runtime.get(id); return rt && rt.proc && rt.proc.exitCode === null && rt.proc.signalCode === null; });
+    while (anyAlive() && Date.now() - t0 < 50000) await sleep(800);
+    for (const id of ids) {
+      const rt = this.runtime.get(id); if (!rt) continue;
+      if (rt.proc && rt.proc.exitCode === null && rt.proc.signalCode === null) { try { rt.proc.kill(); } catch {} }
+      rt.proc = null; rt.stopping = false;
+    }
+    await sleep(1000);
+    for (let i = 0; i < ids.length; i++) this.start(ids[i], { delayMs: i * 1500 }).catch(() => {});
+    return { ok: true, count: ids.length, ids };
+  }
+
+  // 🔥 EMERGENCY — sever every bot's game connection INSTANTLY (hard kill, no graceful leave) and keep
+  // them down (no auto-restart). Bring bots back with the normal Play / start-all buttons afterwards.
+  disconnectAll() {
+    let killed = 0;
+    for (const [id, rt] of this.runtime) {
+      rt.stopping = true; // the exit handler must NOT auto-restart from this
+      try { this.control(id, 'stop'); } catch {} // cancels queued (delayed) starts; hint for anything mid-loop
+      if (rt.proc && rt.proc.exitCode === null && rt.proc.signalCode === null) { try { if (rt.proc.kill()) killed++; } catch {} }
+      rt.state = 'stopped';
+      rt.grantPending = false;
+    }
+    for (const bot of store.data.bots) { bot.state = 'stopped'; bot.updatedAt = Date.now(); }
+    try { store.save(); } catch {}
+    this.onUpdate();
+    return { ok: true, killed, total: store.data.bots.length };
   }
 
   async startMany(characterIds, { rampMs = 5000 } = {}) {
@@ -471,7 +553,11 @@ export class BotManager {
         this._saveQueue();
       }
     }
-    if (this.activeTrade == null && this.tradeQueue.length && col?.charName) {
+    // grants only while the collector bot is actually up — with it stopped/paused/crashed, a granted donor
+    // would trek to the spot and loiter until its 25-min cap doing nothing (e.g. the user stopped the
+    // collector to log in and retrieve items manually). The queue holds instead: donors keep farming and it
+    // drains as soon as the collector is running again.
+    if (this.activeTrade == null && this.tradeQueue.length && col?.charName && this.collectorLive()) {
       const botId = this.tradeQueue.shift();
       const rt = this.runtime.get(botId);
       if (rt) {
@@ -485,10 +571,16 @@ export class BotManager {
 
   collectView() {
     const settings = store.getSettings?.() ?? {};
-    return { queue: [...this.tradeQueue], active: this.activeTrade, held: this.heldList(), collector: settings.collector ?? null, tracked: settings.tracked ?? [], autoCollect: settings.autoCollect ?? null };
+    return { queue: [...this.tradeQueue], active: this.activeTrade, held: this.heldList(), collector: settings.collector ?? null, collectorLive: this.collectorLive(), tracked: settings.tracked ?? [], autoCollect: settings.autoCollect ?? null };
+  }
+  // is the collector bot up (running/starting)? — grants are held while it is not, so donors never trek out for nothing
+  collectorLive() {
+    const colBot = store.data.bots.find((b) => b.mode === 'collector');
+    const rt = colBot ? this.runtime.get(colBot.id) : null;
+    return !!rt && (rt.state === 'running' || rt.state === 'starting');
   }
 
-  // bots that have whitelist items (bag or storage) or zeny waiting beyond the 10k reserve
+  // bots that have whitelist items in the bag or zeny waiting beyond the 50k reserve
   eligibleCollectBots(ac = {}) {
     const out = [];
     for (const [botId, rt] of this.runtime) {
@@ -504,7 +596,7 @@ export class BotManager {
       // donors have no storage by policy — eligibility looks at the bag only
       const stacks = (st.inventory ?? []).filter((it) => keep.has(it.itemId)).length;
       const zeny = st.zeny ?? 0;
-      if (stacks >= (ac.minStacks ?? 1) || zeny > 10000 + (ac.minZeny ?? 15000)) out.push(botId);
+      if (stacks >= (ac.minStacks ?? 1) || zeny > 50000 + (ac.minZeny ?? 15000)) out.push(botId);
     }
     return out;
   }
@@ -574,6 +666,7 @@ export class BotManager {
         restarts: rt?.restarts ?? 0,
         activity: rt?.lastEvt ?? null,
         cfg: bot.cfg ?? null,
+        plan: bot.plan ?? null,
       };
     });
   }

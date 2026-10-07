@@ -431,6 +431,19 @@ select:focus { border-color: rgba(139, 92, 246, .6); }
 .kl-big { color: var(--gold); font-size: 15px; }
 .kl-arm { border: 1px solid rgba(239, 68, 68, .5); background: rgba(239, 68, 68, .12); border-radius: 10px; padding: 4px 8px 4px 12px; display: inline-flex; align-items: center; gap: 8px; font-size: 12px; }
 .kl-chart { border: 1px solid var(--line); border-radius: 10px; background: rgba(8, 11, 20, .45); padding: 8px 8px 2px; margin-bottom: 10px; }
+/* bot detail modal + weight-scroll badge */
+.scroll-ok { color: #34d399; }
+.scroll-pend { color: var(--gold); }
+.bm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.bm-grid .bagt { margin-top: 2px; }
+@media (max-width: 720px) { .bm-grid { grid-template-columns: 1fr; } }
+/* saved plans */
+.ms.plan-chip { color: #7dd3fc; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bl-plan { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pl-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 2px 0 10px; }
+.pl-bar input[type=text] { background: rgba(8, 11, 20, .8); color: var(--txt); border: 1px solid var(--line-2); border-radius: 9px; padding: 5px 9px; font: 12px var(--sans); outline: none; }
+#pl-msg { color: var(--gold); }
+#pl-list .bagt td { vertical-align: middle; }
 
 /* ---- collector treasury panel — clearly separated + collapsible ---- */
 #collector-sec { position: relative; margin: 12px 0 22px; padding: 13px 14px 14px; border: 1px solid rgba(251, 191, 36, .30); border-radius: var(--r); background: linear-gradient(180deg, rgba(251, 191, 36, .07), rgba(251, 191, 36, .02) 55%, rgba(251, 191, 36, 0)); box-shadow: 0 0 30px -14px rgba(251, 191, 36, .45); }

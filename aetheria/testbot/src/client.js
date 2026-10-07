@@ -6,7 +6,9 @@
 //            0x0d msgpack(type)+msgpack(data), 0x0e full state, 0x0f patch
 //  - send: [0x0d][msgpack(type)][msgpack(data)]
 import WebSocket from 'ws';
+import fs from 'node:fs';
 import { encode, decodeMulti } from '@msgpack/msgpack';
+import { Reflection } from '@colyseus/schema';
 
 export const BASE_DEFAULT = 'https://www.aetheria-online.in.th';
 
@@ -97,6 +99,9 @@ export class AetheriaClient {
 
   async connectSocket(wsUrl) {
     this.hasJoined = false;
+    this.worldDecoder = null;
+    this.world = null;
+    this.worldAt = 0;
     const ws = new WebSocket(wsUrl);
     this.ws = ws;
     await new Promise((resolve, reject) => {
@@ -116,6 +121,9 @@ export class AetheriaClient {
   }
 
   _onFrame(buf) {
+    if (process.env.TB_CAPTURE_FRAMES) {
+      try { fs.appendFileSync(process.env.TB_CAPTURE_FRAMES, JSON.stringify({ at: Date.now(), b: buf.toString('base64') }) + '\n'); } catch {}
+    }
     try { this._onFrameInner(buf); }
     catch (e) { this.emit('error', { kind: 'frame', err: String((e && e.stack) || e), head: buf.subarray(0, 24).toString('hex') }); }
   }
@@ -128,6 +136,19 @@ export class AetheriaClient {
       try {
         this.joinInfo = { reconnectionToken: readStr(), serializerId: readStr() };
         this.reflection = buf.subarray(off);
+        // init real room-state decoder (schema reflection → live players/monsters with hp/dead)
+        try {
+          let rb = this.reflection;
+          if (rb.length > 3) {
+            const m = rb[0];
+            if (m === 0xcc) rb = rb.subarray(2);
+            else if (m === 0xcd) rb = rb.subarray(3);
+            else if (m === 0xce) rb = rb.subarray(5);
+          }
+          this.worldDecoder = Reflection.decode(rb);
+          this.world = this.worldDecoder.state;
+          this.worldAt = 0;
+        } catch (e) { this.worldDecoder = null; this.world = null; this.emit('error', { kind: 'reflection', err: String((e && e.message) || e) }); }
         try { this.ws.send(Buffer.from([0x0a])); } catch {}
         this.hasJoined = true;
         this.emit('join', this.joinInfo);
@@ -147,9 +168,25 @@ export class AetheriaClient {
       } catch (e) {
         this.emit('error', { kind: 'msgpack', head: buf.subarray(0, 40).toString('hex'), err: String(e) });
       }
+    } else if (code === 0x0e || code === 0x0f) {
+      if (this.worldDecoder) {
+        try { const changes = this.worldDecoder.decode(buf.subarray(1)); this.worldAt = Date.now(); this.emit('world', changes); }
+        catch (e) { this.emit('error', { kind: 'world-decode', head: buf.subarray(0, 16).toString('hex'), err: String((e && e.message) || e) }); }
+      }
+      this.emit('state', '0x' + code.toString(16), buf);
     } else {
       this.emit('state', '0x' + code.toString(16), buf);
     }
+  }
+
+  // Real-time view of our own player straight from the room state (null until joined/decoded).
+  get live() {
+    const w = this.world;
+    if (!w || !this.reservation) return null;
+    let p = null;
+    try { p = w.players && w.players.get ? w.players.get(this.reservation.sessionId) : null; } catch {}
+    if (!p) return null;
+    return { hp: p.hp, maxHp: p.maxHp, sp: p.sp, maxSp: p.maxSp, dead: !!p.dead, x: p.x, y: p.y, mapId: w.mapId, channel: w.channel, at: this.worldAt || 0 };
   }
 
   send(type, data) {

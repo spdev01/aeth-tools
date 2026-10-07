@@ -39,9 +39,11 @@
       <button id="stop-sel" class="btn bad">⏹ Stop selected</button>
       <span class="sep"></span>
       <button id="stop-all" class="btn bad">⛔ STOP ALL</button>
+      <button id="dc-all" class="btn bad" title="EMERGENCY — instantly severs every bot's game connection (hard kill, no graceful leave); bots stay OFF until you start them again">🔥 DISCONNECT ALL</button>
       <span class="sep"></span>
       <button id="view-grid" class="btn on">▦ Grid</button>
       <button id="view-list" class="btn">☰ List</button>
+      <button id="plans-btn" class="btn" title="saved config plans — save once, apply to ticked bots">📋 Plans</button>
       <span class="muted" id="dash-note"></span>
     </div>
     <section id="collector-sec" class="hidden">
@@ -120,7 +122,7 @@
           <button id="col-detect" class="btn small">⌖ detect from live position</button>
           <span id="col-msg" class="muted small"></span>
         </div>
-        <p class="muted small">Bots travel to capital, sell junk at the vendor, then trade the <b>whitelist</b> (from bag + storage) and zeny (keeping 10k) to the collector — capacity-aware with store-and-repeat, one bot at a time via the queue below. If you move the collector character, hit <b>⌖ detect</b> to adopt its live channel + position (otherwise it walks back to the saved spot within a minute). In the queue: <b>✕</b> skips a bot for this round (it keeps farming — held until you release it, or it refills into a new round), <b>⏹</b> empties everyone waiting, <b>↺</b> releases held bots.</p>
+        <p class="muted small">Bots travel to capital, sell junk at the vendor, then trade the <b>whitelist</b> (from bag + storage) and zeny (keeping 50k) to the collector — capacity-aware with store-and-repeat, one bot at a time via the queue below. If you move the collector character, hit <b>⌖ detect</b> to adopt its live channel + position (otherwise it walks back to the saved spot within a minute). In the queue: <b>✕</b> skips a bot for this round (it keeps farming — held until you release it, or it refills into a new round), <b>⏹</b> empties everyone waiting, <b>↺</b> releases held bots.</p>
         <div class="row">
           <button id="col-clean" class="btn small">🧹 clean non-whitelist items out of collector storage</button>
           <span class="muted small">withdraws &amp; sells everything not in the whitelist — run while the queue is idle</span>
@@ -172,6 +174,10 @@
       <button id="cfg-close" class="btn small">✕</button>
     </div>
     <div class="modal-body">
+      <div class="row hidden" id="cfg-plan-name-row">
+        <label>plan name <input type="text" id="cfg-plan-title" placeholder="plan name" style="width:220px" /></label>
+        <span class="muted small">every plan needs a name — saving stores it under this name (renaming keeps the plan's bot assignments)</span>
+      </div>
       <div class="cfg-lab">mode — switch the bot's behavior (changes restart the bot automatically)</div>
       <div class="row">
         <label>mode
@@ -210,7 +216,7 @@
         <label>HP drink % <input type="number" id="cfg-hp" value="75" min="10" max="95" /></label>
         <label class="chk"><input type="checkbox" id="cfg-chan" /> auto-switch to least-populated channel</label>
       </div>
-      <div class="cfg-lab">weave skills — the bot casts these itself, in this order (cycles top → bottom like a skill bar)</div>
+      <div class="cfg-lab">auto-mode skill sequence — sent to the game's own AUTO engine (same as ticking skills in the in-game auto panel). Buffs are kept up automatically; attacks are used in this order. Max 9.</div>
       <div class="row">
         <select id="cfg-skill-add" style="min-width:280px"></select>
         <button id="cfg-skill-addbtn" class="btn small">+ add skill</button>
@@ -240,11 +246,21 @@
         <span class="muted small">one-at-a-time queue — the bot keeps farming while it waits · collect turns sell junk and trade whitelist + zeny to the collector in batches — bots never touch their own storage</span>
       </div>
       <pre id="cfg-now" class="cfg-now"></pre>
+      <div class="cfg-lab" id="cfg-planrow-lab">plan — save this form as a reusable plan (same name overwrites) or load one into the form</div>
+      <div class="row" id="cfg-planrow">
+        <label>load plan <select id="cfg-plan-load"><option value="">— load a plan —</option></select></label>
+        <label>plan name <input type="text" id="cfg-plan-name" placeholder="plan name" style="width:130px" /></label>
+        <button id="cfg-plan-save" class="btn small">💾 save as plan</button>
+        <span class="muted small" id="cfg-plan-msg"></span>
+      </div>
     </div>
     <div class="modal-foot">
       <label class="chk"><input type="checkbox" id="cfg-restart" /> ↻ restart bot(s) after apply <span class="muted small">(farm map changes only take effect after a restart)</span></label>
       <button id="cfg-apply" class="btn ok">Apply to this bot</button>
+      <button id="cfg-apply-sel" class="btn" title="pick bots first — tick them on the dashboard (checkbox on each card, or the select-all box)">Apply to <b id="cfg-selcount">0</b> selected</button>
       <button id="cfg-apply-all" class="btn">Apply … to ALL bots</button>
+      <button id="cfg-plan-savebtn" class="btn ok hidden">💾 save changes to plan</button>
+      <button id="cfg-plan-saveapply" class="btn hidden">💾 save + apply to selected</button>
     </div>
   </div>
 </div>
@@ -270,6 +286,36 @@
       <div id="kl-top"></div>
       <div id="kl-chart"></div>
       <div id="kl-results"></div>
+    </div>
+  </div>
+</div>
+
+<div id="bot-modal" class="modal hidden">
+  <div class="modal-card" style="max-width:720px">
+    <div class="modal-head">
+      <b id="botm-title">Bot</b>
+      <button id="botm-close" class="btn small">✕</button>
+    </div>
+    <div class="modal-body"><div id="botm-body"></div></div>
+  </div>
+</div>
+
+<div id="plans-modal" class="modal hidden">
+  <div class="modal-card" style="max-width:860px">
+    <div class="modal-head">
+      <b>Saved plans</b>
+      <button id="plans-close" class="btn small">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="pl-bar">
+        <label class="muted small">new plan name <input type="text" id="pl-name" placeholder="e.g. clover knights" style="width:150px" /></label>
+        <label class="muted small">source <select id="pl-from"></select></label>
+        <button id="pl-create" class="btn ok small">+ create plan</button>
+        <span class="muted small" id="pl-msg"></span>
+      </div>
+      <div id="pl-list"></div>
+      <label class="chk small" style="margin-top:8px"><input type="checkbox" id="pl-restart" /> ↻ restart selected bots after apply <span class="muted small">(needed for farm-map / mode changes)</span></label>
+      <p class="muted small">Apply targets the <b id="pl-selcount">0</b> bots ticked on the dashboard (checkbox on each card, or select-all) · <b>+ create plan</b> with source <b>“start from scratch”</b> opens the full editor on a blank plan · <b>✎ edit</b> opens the same editor on any saved plan — every setting is configurable there (mode, map, monsters, skill sequence, whitelist, errand/collect…) · selling always follows each bot's own plan whitelist — the collector never sells anything.</p>
     </div>
   </div>
 </div>

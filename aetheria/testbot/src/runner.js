@@ -11,6 +11,8 @@ const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = process.env.AETHERIA_DATA ? path.resolve(process.env.AETHERIA_DATA) : path.join(root, 'out');
 const MAPS = path.join(root, 'maps');
 fs.mkdirSync(OUT, { recursive: true }); fs.mkdirSync(MAPS, { recursive: true });
+// ops: expose this runner's pid so it can be hard-killed deliberately (ghost-session / recovery tests, debugging)
+try { fs.writeFileSync(path.join(OUT, 'runner.pid'), String(process.pid)); } catch {}
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const argv = process.argv.slice(2);
@@ -39,7 +41,13 @@ function applyDirectives(bot) {
   if (ctl.rev != null && ctl.rev !== _dirRev) {
     _dirRev = ctl.rev;
     bot.autoOverride = ctl.auto ?? null;
-    bot.weaveOverride = (Array.isArray(ctl.weave) && ctl.weave.length) ? ctl.weave : null;
+    const seq = (Array.isArray(ctl.weave) && ctl.weave.length) ? ctl.weave.filter(Boolean).slice(0, 9) : null;
+    bot.weaveOverride = seq;
+    // live-apply config pushes: setAuto() reads _weaveSeq/autoOverride, so refresh here and let the farm loop
+    // re-arm once (covers skill-sequence AND auto-config changes like the monster list)
+    if (seq && JSON.stringify(seq) !== JSON.stringify(bot._weaveSeq)) { bot._weaveSeq = seq; bot._seqDirty = true; }
+    const autoStr = JSON.stringify(ctl.auto ?? null);
+    if (autoStr !== JSON.stringify(bot._lastAutoCtl ?? null)) { bot._lastAutoCtl = ctl.auto ?? null; bot._seqDirty = true; }
     bot.autoChannel = ctl.autoChannel !== false;
     bot.collectCfg = ctl.collect ?? null;
     if (Array.isArray(ctl.keep)) bot.keepItemIds = ctl.keep;
@@ -56,6 +64,7 @@ function applyDirectives(bot) {
 async function controlWait(bot) {
   for (;;) {
     applyDirectives(bot);
+    try { bot.checkSuspectedDeath?.(); } catch {}
     const cmd = readControl()?.cmd ?? 'run';
     if (cmd === 'stop') {
       try { if (bot?.char?.auto?.enabled) bot.c.autoEnabled(false); } catch {}
@@ -150,8 +159,8 @@ class Bot {
         if (cb.sp == null) cb.sp = cb.maxSp;
         s.character = data; s.charSeq++; return;
       }
-      if (type === 'exp_gain') { this.onKill(data); this.log('kill', { m: data.monster, base: data.base, job: data.job }); return; }
-      if (type === 'item_gain') { this.log('drop', { name: data.name, qty: data.qty }); return; }
+      if (type === 'exp_gain') { this._lastLifeAt = Date.now(); this.onKill(data); this.log('kill', { m: data.monster, base: data.base, job: data.job }); return; }
+      if (type === 'item_gain') { this._lastLifeAt = Date.now(); this.log('drop', { name: data.name, qty: data.qty }); return; }
       if (type === 'levelup') {
         // level-ups fully restore HP/SP in this game — resets our estimate (otherwise it drifts low from unseen auto-heals)
         if (data && data.sessionId === this.selfId()) { this.combat.hp = this.combat.maxHp; this.combat.sp = this.combat.maxSp; }
@@ -169,6 +178,7 @@ class Bot {
       if (type === 'item_fx') { this.onItemFx(data); return; }
       if (type === 'skill_fx') {
         if (data?.casterId === this.selfId()) {
+          this._lastLifeAt = Date.now(); // our own skill fx — we're alive
           this._ownFx = (this._ownFx || 0) + 1;
           this.log('skill_fx_self', { s: data.skillId, t: (data.targets ?? [])[0] ?? null, n: (data.targets ?? []).length });
         }
@@ -176,6 +186,7 @@ class Bot {
       }
       if (type === 'cast') {
         if (data?.casterId === this.selfId()) {
+          this._lastLifeAt = Date.now(); // our own cast went through — we're alive
           this._ownCast = (this._ownCast || 0) + 1;
           if (this._ownCast <= 5) this.log('own_cast', { skillId: data.skillId, targetId: data.targetId });
         }
@@ -198,8 +209,8 @@ class Bot {
         }
         return;
       }
-      if (type === 'npc_dialog') { s.dialog = data; s.dialogSeq++; this.log('npc_dialog', data); return; }
-      if (type === 'shop') { s.shop = data; this.log('shop', data); return; }
+      if (type === 'npc_dialog') { this._lastLifeAt = Date.now(); s.dialog = data; s.dialogSeq++; this.log('npc_dialog', data); return; }
+      if (type === 'shop') { this._lastLifeAt = Date.now(); s.shop = data; this.log('shop', data); return; }
       if (type === 'market') { s.market = data; this.log('market', data); return; }
       if (type === 'market_results') {
         s.market = data; s.marketSeq = (s.marketSeq || 0) + 1;
@@ -215,15 +226,54 @@ class Bot {
         this.log('refine', { mode: data.mode, items: (data.items ?? []).map((x) => `${x.item.name}->+${x.to} (${x.material.name} ${x.material.have}, ${x.zeny}z)`) });
         return;
       }
-      if (type === 'travel') { s.travel = data; return; }
-      if (type === 'death') { s.death = data; this.combat.hp = 0; this.log('DEATH', data); return; }
-      if (type === 'respawned') { s.death = null; this.combat.hp = this.combat.maxHp; this.combat.sp = this.combat.maxSp; this.log('respawned', data); return; }
+      if (type === 'travel') { this._lastLifeAt = Date.now(); s.travel = data; return; }
+      if (type === 'death') {
+        const live0 = this.c.live;
+        if (live0 && !live0.dead) {
+          // WORLD-VERIFIED (2026-10-08): the death broadcast carries no identity and can be for ANY player in
+          // the room. If the real room state says we are alive, this is not ours — re-verify once after 1.5s
+          // (a state patch for our own death may lag the message by milliseconds) and then ignore it.
+          this._deathMsgAt = Date.now();
+          setTimeout(() => {
+            try {
+              if (this.s.death) return; // a real death was handled in the meantime
+              const lv = this.c.live;
+              if (lv && !lv.dead) { this.log('death_ignored', { how: 'world-alive', hp: lv.hp, maxHp: lv.maxHp, msAfterMsg: Date.now() - this._deathMsgAt }); return; }
+              s.death = data; this.combat.hp = 0; this.log('DEATH', { ...data, how: 'world-dead-after-delay' });
+              this.deathRecover({ real: true }).catch((e) => this.log('death_park_fail', String((e && e.message) || e)));
+            } catch (e) { this.log('death_check_err', String((e && e.message) || e)); }
+          }, 1500);
+          return;
+        }
+        s.death = data; this._deathMsgAt = Date.now(); this.combat.hp = 0;
+        this.log('DEATH', { ...data, how: live0 ? 'world-dead' : 'no-world' });
+        this.deathRecover({ real: !!live0 }).catch((e) => this.log('death_park_fail', String((e && e.message) || e)));
+        return;
+      }
+      if (type === 'respawned') {
+        this._lastRespawnedAt = Date.now(); // deathRecoverReal waits on this (in-session revive proof)
+        s.death = null; this.combat.hp = this.combat.maxHp; this.combat.sp = this.combat.maxSp;
+        if (this._sus) {
+          if (this._sus.real) { this._sus = null; this.log('respawned', data); return; }
+          const ageMs = Date.now() - this._sus.at;
+          this._sus = null;
+          if (ageMs < 30000) { this.log('death_ignored', { how: 'early-respawned-pair' }); }
+          else {
+            // a release arriving after the corpse window = OUR parked death was real → recover now (reconnect + restock)
+            this.log('death_confirmed', { how: 'respawned', afterSec: Math.round(ageMs / 1000) });
+            this.deathRecoverReal({ already: true }).catch((e) => this.log('death_recover_fail', String((e && e.message) || e)));
+          }
+        }
+        this.log('respawned', data); return;
+      }
       if (type === 'chat') { s.chats.push(data); if (s.chats.length > 300) s.chats.shift(); return; }
       if (type === 'collection') { s.collection = data; return; }
       if (type === 'channels') { s.channels = data; if (!this._chLogged) { this._chLogged = true; this.log('channels_probe', data); } return; }
+      if (type === 'warp_menu') { s.warpMenu = data; s.warpMenuSeq = (s.warpMenuSeq || 0) + 1; return; }
       if (type === 'invite') { s.invite = data; this.log('invite', data); return; }
       if (type === 'trade') { s.trade = data; s.tradeSeq = (s.tradeSeq || 0) + 1; this.log('trade_msg', data); return; }
       if (type === 'storage') {
+        this._lastLifeAt = Date.now(); // a dead character cannot open storage
         // same payload-shape variants as inventory — replace only on a real item list (normalizing nested), else merge
         const src = s.storage ?? {};
         if (data && Array.isArray(data.items)) {
@@ -261,27 +311,108 @@ class Bot {
     }
   }
 
-  async deathRecover() {
-    this.log('death_recover', this.s.death);
-    this.c.send('respawn', { to: 'save' });
-    const revived = await this.waitFor(() => !this.s.death, 'respawned', 20000).catch(() => false);
-    if (!revived) {
-      // respawn command didn't take. The server force-releases corpses after autoReleaseSeconds, but a tight
-      // reconnect loop restarts that window (observed: infinite death loop for ~30 min on bot 43). Wait the
-      // release out in the CURRENT session instead of reconnecting — a fresh session then starts clean.
-      const releaseS = Math.min(330, (this.s.death?.autoReleaseSeconds ?? 300) + 20);
-      this.log('death_await_autorelease', { seconds: releaseS });
-      await this.waitFor(() => !this.s.death, 'auto-release', releaseS * 1000).catch(() => {});
-      this.log('death_await_done', { alive: !this.s.death });
+  // DEATH MODEL (updated 2026-10-07, verified live): `death`{savePointName,capitalName,autoReleaseSeconds:300}
+  // carries no identity; the official client only shows the death UI when the room-state `dead` flag is true.
+  // Live capture confirmed the release sequence: respawned{} → travel{ticket,roomId,...} → rejoin (hp restored).
+  // Parked-suspicion flow: life signals within the window clear it; a 'respawned' arriving AFTER the corpse
+  // window confirms a real death (recovery runs immediately); total silence for 6 min = fallback recovery.
+  async deathRecover(opts = {}) {
+    this.log('death_recover', { data: this.s.death, real: !!opts.real });
+    if (!this._sus) this._sus = { at: this._deathMsgAt ?? Date.now(), real: !!opts.real };
+    this.s.death = null; this.combat.hp = this.combat.maxHp; this.combat.sp = this.combat.maxSp;
+    if (opts.real) {
+      // verified against the real room state (hp 0 / dead flag) — no guessing: release + fresh session now
+      this.log('death_verified_world', {});
+      this.deathRecoverReal().catch((e) => this.log('death_recover_fail', String((e && e.message) || e)));
+      return;
     }
-    await sleep(2000);
-    // fresh session = server-side ground truth. (same-session resume leaves auto_set refused —
-    // verified live 12:10-12:13: char alive but setAuto rejected, zero combat for minutes)
-    try { await this.reconnect(); this.log('death_recovered', { map: this.c.mapId, via: 'reconnect' }); }
-    catch (e) { this.log('death_recover_reconnect_fail', String((e && e.message) || e)); }
-    // we're in town anyway — sell whatever junk we have, then restock HP potions
+    this.log('death_unverified', { note: 'death parked — life signals clear it; respawned-after-window or 6 min silence = real' });
+  }
+
+  // resolved from controlWait (runs every farm-loop iteration) — decides what a parked suspicion means
+  checkSuspectedDeath() {
+    try {
+      const lv = this.c.live;
+      if (lv && lv.dead && !this.s.death) {
+        this.log('DEATH_WORLD', { hp: lv.hp, via: 'farmloop' });
+        this.s.death = { autoReleaseSeconds: 300, how: 'world' }; this._deathMsgAt = Date.now(); this.combat.hp = 0;
+        this.deathRecover({ real: true }).catch((e) => this.log('death_park_fail', String((e && e.message) || e)));
+      }
+    } catch {}
+    const sus = this._sus; if (!sus) return;
+    if ((this._lastLifeAt ?? 0) > sus.at) { this._sus = null; this.log('death_ignored', { how: 'life-signals' }); return; }
+    if (Date.now() - sus.at > 6 * 60 * 1000) {
+      this._sus = null;
+      this.log('death_recovery_start', { afterMin: 6 });
+      this.deathRecoverReal().catch((e) => this.log('death_recover_fail', String((e && e.message) || e)));
+    }
+  }
+
+  async deathRecoverReal(opts = {}) {
+    const mark = this._lastRespawnedAt ?? 0;
+    const aliveNow = () => (this._lastRespawnedAt ?? 0) > mark || (this.c.live && !this.c.live.dead);
+    this.c.send('respawn', { to: 'save' });
+    let revived = !!opts.already || await this.waitFor(aliveNow, 'respawned', 20000).catch(() => false);
+    if (!revived) {
+      // the dead body sits for autoReleaseSeconds (300) before release. Wait it out in the CURRENT session.
+      const releaseS = Math.min(330, 320);
+      this.log('death_await_autorelease', { seconds: releaseS });
+      revived = await this.waitFor(aliveNow, 'auto-release', releaseS * 1000).catch(() => false);
+      this.log('death_await_done', { ok: revived });
+    }
+    // consume the release travel (respawned → travel to the save point → rejoin) — all IN-SESSION
+    let tr = null;
+    await this.waitFor(() => { tr = this.s.travel; return !!tr; }, 'release travel', 6000).catch(() => {});
+    if (tr) {
+      this.s.travel = null;
+      try { await this.c.rejoinRoom(tr); await sleep(1200); this.log('death_rejoin', { map: this.c.mapId }); }
+      catch (e) { this.log('death_rejoin_fail', String((e && e.message) || e)); }
+    }
+    await sleep(800);
+    // 2026-10-07 v2 — NO blind relogin: right after the respawn the character is alive on the CURRENT session;
+    // an immediate reconnect fights its own just-revived seat (kick-409 storms, 60–90s outages) and the
+    // sell/buy restock fails mid-storm → half-HP, zero-potion returns → endless death↔relogin loop (the
+    // verdant_farm incident). Stay in-session; the farm loop's rescue ladder (channel hop first) handles
+    // the rare "auto refused" case.
+    let via = 'in-session';
+    if (!revived) {
+      try { await this.reconnect(); via = 'reconnect'; }
+      catch (e) { this.log('death_recover_reconnect_fail', String((e && e.message) || e)); via = 'reconnect-fail'; }
+    }
+    this.log('death_recovered', { map: this.c.mapId, via });
     try { await this.sellJunk(); } catch (e) { this.log('death_recover_sell_fail', String((e && e.message) || e)); }
     try { await this.buyPotions(45); } catch (e) { this.log('pot_buy_fail', String((e && e.message) || e)); }
+    // re-arm auto so the engine's hpItems list picks up the restocked potions (stale empty list = no healing)
+    if (!this.s.death && this._lastFarmAuto) {
+      try { await this.setAuto(this._lastFarmAuto); } catch (e) { this.log('death_rearm_fail', String((e && e.message) || e)); }
+    }
+  }
+
+  // Auto-rescue (2026-10-07): post-update, some sessions refuse auto_set until the room/session is refreshed.
+  // Cheap path FIRST: hop to another channel of the SAME map (rejoin = fresh room, no relogin → NO capital
+  // re-home, no 3-map walk-back). Only if the hop still refuses: full relogin (works, but the char re-homes
+  // to the save point → ensureMap walks it back through 3 maps — the waste users saw on NimbleNewt/badger).
+  async autoRescue() {
+    try {
+      const cur = this.s.channels?.current ?? null;
+      const target = cur == null ? 2 : cur >= 12 ? 1 : cur + 1;
+      this.log('auto_rescue_start', { from: cur, to: target });
+      const hopped = await this.switchToChannel(target, { tries: 1 }).catch(() => false);
+      await sleep(1000);
+      await this.setAuto({});
+      if (this.char?.auto?.enabled === true) { this.log('auto_rescue_done', { via: 'channel', channel: target, hopped }); return; }
+      this.log('auto_rescue_channel_miss', { hopped });
+    } catch (e) { this.log('auto_rescue_channel_err', String((e && e.message) || e)); }
+    this.log('auto_rescue_relogin', { map: this.c.mapId });
+    await this.reconnect();
+    this.log('auto_rescue_done', { via: 'relogin', map: this.c.mapId });
+    if (this._farmMap && this.c.mapId !== this._farmMap) {
+      try {
+        await this.ensureMap(this._farmMap); this._mapRetryAt = 0;
+        await this.setAuto({});
+        this.log('auto_rescue_returned', { map: this.c.mapId, enabled: this.char?.auto?.enabled ?? null });
+      } catch (e) { this._mapRetryAt = Date.now() + 2 * 60 * 1000; this.log('auto_rescue_map_fail', String((e && e.message) || e)); }
+    }
   }
 
   potCount() {
@@ -359,6 +490,56 @@ class Bot {
     return after;
   }
 
+  // ---- weight-limit scrolls (Shopkeeper Bor = n2, capital 880,1520) ----
+  // 5,000z per scroll · max 10 consumptions per character · ≥2s between uses. Progress persists per bot dir.
+  scrollCount() {
+    try { return JSON.parse(fs.readFileSync(path.join(OUT, 'scrolls.json'), 'utf8')).n ?? 0; } catch { return 0; }
+  }
+  setScrollCount(n) { try { fs.writeFileSync(path.join(OUT, 'scrolls.json'), JSON.stringify({ n })); } catch {} }
+  isScrollName(name) { return /weight\s*limit|น้ำหนัก/i.test(name ?? ''); }
+  async buyWeightScrolls() {
+    const have = this.scrollCount();
+    if (have >= 10) return have;
+    await this.ensureMap('capital').catch(() => {});
+    await this.walkToNpc(NPCS.n2);
+    await this.talk('n2');
+    this.s.shop = null;
+    await this.chooseByKeyword('ซื้อของหน่อย', { timeout: 6000 });
+    try { await this.waitFor(() => this.s.shop, 'shop', 8000); } catch {}
+    const shop = this.s.shop;
+    const item = (shop?.items ?? []).find((x) => this.isScrollName(x.name));
+    if (!item) { this.log('scroll_no_shop', { items: (shop?.items ?? []).map((x) => `${x.name}:${x.price}`).slice(0, 14) }); this.c.npcClose(); await sleep(400); return have; }
+    const price = item.price || 5000;
+    const zeny = this.char?.zeny ?? 0;
+    const want = Math.min(10 - have, Math.floor(Math.max(0, zeny - 5000) / price));
+    if (want <= 0) { this.log('scroll_no_budget', { have, zeny, price }); this.c.npcClose(); await sleep(400); return have; }
+    this.c.send('shop_buy', { itemId: item.itemId, qty: want });
+    this.log('scroll_buy', { item: item.name, price, qty: want, zeny });
+    await sleep(2500);
+    this.c.npcClose(); await sleep(400);
+    this.c.invSort(); await sleep(900);
+    let used = have;
+    const wl0 = this.s.inventory?.weightLimit ?? null;
+    for (let i = have; i < 10; i++) {
+      const it = (this.s.inventory?.items ?? []).find((x) => this.isScrollName(x.name));
+      if (!it) break;
+      const wl = this.s.inventory?.weightLimit ?? 0;
+      const q0 = it.qty ?? 1;
+      this.c.invUse(it.slot);
+      const okUse = await this.waitFor(() => {
+        const inv = this.s.inventory; if (!inv) return false;
+        const same = (inv.items ?? []).find((x) => x.slot === it.slot);
+        return (inv.weightLimit ?? 0) !== wl || !same || (same.qty ?? 1) < q0;
+      }, 'scroll use', 4000).catch(() => false);
+      if (!okUse) { this.log('scroll_use_fail', { n: used, weightLimit: this.s.inventory?.weightLimit ?? null }); break; }
+      used = i + 1;
+      this.setScrollCount(used);
+      await sleep(2400); // ≥2s required between consumptions
+    }
+    this.log('scroll_done', { count: used, weightLimitBefore: wl0, weightLimitAfter: this.s.inventory?.weightLimit ?? null });
+    return used;
+  }
+
   // ---- combat/vitals estimate ----
   onHit(h) {
     if (!h || h.miss) return;
@@ -383,8 +564,9 @@ class Bot {
     }
   }
 
-  // Our own combat skill usage — the server's auto-skill engine proved unreliable, so we
-  // weave casts ourselves at mobs that were just hit near us (hits carry target pos, no attackerId).
+  // RETIRED 2026-10-07 — no longer called. The configured sequence now rides the AUTO config and the game's
+  // own engine casts it server-side (works even on sessions that silently ignore client casts). Kept for
+  // reference only. (Historical note: it cast at mobs that were just hit near us — hits carry target pos.)
   weaveTick(skills) {
     const use = this.weaveOverride ?? skills;
     if (!use?.length || this.s.death || !this.isConnected()) return;
@@ -415,6 +597,7 @@ class Bot {
   onKill(g) { if (g && g.monster) this.kills++; }
   onItemFx(d) {
     if (!d || d.sessionId !== this.selfId()) return;
+    this._lastLifeAt = Date.now(); // our potion/heal fx — we're alive
     const cb = this.combat;
     if (d.hp > 0 && cb.maxHp != null) cb.hp = Math.min(cb.maxHp, (cb.hp ?? cb.maxHp) + d.hp);
     if (d.sp > 0 && cb.maxSp != null) cb.sp = Math.min(cb.maxSp, (cb.sp ?? cb.maxSp) + d.sp);
@@ -422,6 +605,7 @@ class Bot {
 
   snap() {
     const c = this.c, s = this.s, ch = s.character, cb = this.combat;
+    let live = null; try { live = c.live; } catch {}
     const lm = c.lastMove;
     const an = ch?.auto?.anchor;
     const inv = s.inventory;
@@ -435,21 +619,32 @@ class Bot {
       lastMoveTile: lm ? [+(lm.x / 32).toFixed(1), +(lm.y / 32).toFixed(1)] : null,
       lastMoveAgeSec: lm ? Math.round((Date.now() - lm.t) / 1000) : null,
       anchorTile: an ? [+(an.x / 32).toFixed(1), +(an.y / 32).toFixed(1)] : null,
-      hp: cb.hp != null ? Math.round(cb.hp) : null, maxHp: cb.maxHp,
-      sp: cb.sp != null ? Math.round(cb.sp) : null, maxSp: cb.maxSp,
+      hp: live ? live.hp : (cb.hp != null ? Math.round(cb.hp) : null), maxHp: live ? live.maxHp : cb.maxHp,
+      sp: live ? live.sp : (cb.sp != null ? Math.round(cb.sp) : null), maxSp: live ? live.maxSp : cb.maxSp,
       bashLv: ch?.skills?.bash ?? null, hpItems: (ch?.auto?.config?.hpItems ?? []).length, weaves: this.weaves, pots: this.potCount(),
       mobHits: this._mobHits || 0,
       pets: ch?.pets ? { owned: (ch.pets.owned ?? []).length, active: ch.pets.active ? (ch.pets.active.name ?? ch.pets.active.id ?? 'yes') : null } : null,
       stats: ch?.stats ? { STR: ch.stats.STR, AGI: ch.stats.AGI, VIT: ch.stats.VIT, INT: ch.stats.INT, DEX: ch.stats.DEX, LUK: ch.stats.LUK } : null,
+      statusPoints: ch?.statusPoints ?? null, skillPoints: ch?.skillPoints ?? null, skills: ch?.skills ?? null,
+      weightScrolls: this.scrollCount(),
       bag: { used, free, weight: inv?.weight ?? null, weightLimit: inv?.weightLimit ?? null },
       zeny: ch?.zeny ?? null, base: ch?.baseLevel ?? null, job: ch?.jobLevel ?? null, classId: ch?.classId ?? null,
-      auto: ch?.auto?.enabled ?? null, dead: !!s.death,
+      auto: ch?.auto?.enabled ?? null, dead: live ? live.dead : !!s.death, sus: !!this._sus,
+      world: live ? { hp: live.hp, maxHp: live.maxHp, dead: live.dead, x: live.x != null ? Math.round(live.x) : null, y: live.y != null ? Math.round(live.y) : null, ch: live.channel, ageSec: live.at ? Math.round((Date.now() - live.at) / 1000) : null } : null,
       killsTotal: this.kills, hitsInTotal: this.hitsIn,
     };
   }
   startHeartbeat(intervalMs = 20000) {
     const tick = () => {
       try {
+        try {
+          const lv = this.c.live;
+          if (lv && lv.dead && !this.s.death) {
+            this.log('DEATH_WORLD', { hp: lv.hp, via: 'heartbeat' });
+            this.s.death = { autoReleaseSeconds: 300, how: 'world' }; this._deathMsgAt = Date.now(); this.combat.hp = 0;
+            this.deathRecover({ real: true }).catch((e) => this.log('death_park_fail', String((e && e.message) || e)));
+          }
+        } catch {}
         this.log('HEARTBEAT', this.snap());
         const api = (inv) => (inv?.items ?? []).slice(0, 120).map((it) => ({ slot: it.slot, itemId: it.itemId, name: it.name, qty: it.qty, refine: it.refine ?? null }));
         const st = this.s.storage;
@@ -494,7 +689,12 @@ class Bot {
         try { this.c.close(); } catch {}
         const msg = String((e && e.message) || e);
         if (/token/i.test(msg)) await this.relogin(); // stale token → refresh and retry
-        await sleep(/ออนไลน์อยู่แล้ว|already online|429|too many/i.test(msg) ? 45000 : 5000);
+        if (/ออนไลน์อยู่แล้ว|already online/i.test(msg)) {
+          await this.kickPreviousSession(); // force-online: kick the stale session out, then retry fast
+          await sleep(2500);
+        } else {
+          await sleep(/429|too many/i.test(msg) ? 45000 : 5000);
+        }
       }
     }
     throw new Error('reconnect failed after 12 attempts');
@@ -519,6 +719,25 @@ class Bot {
     } catch (e) { this.log('relogin_fail', { err: String((e && e.message) || e) }); return false; }
   }
 
+  // Force-online: kick this character's previous (stale) session offline — the exact call the game's
+  // character-select "kick" button makes (POST /characters/:id/kick). A hard-killed runner leaves the
+  // character marked "ตัวละครในบัญชีนี้ออนไลน์อยู่แล้ว" (already online) and joins fail until it expires;
+  // kicking frees the seat immediately. Retries once with a fresh token when the cached one has expired.
+  async kickPreviousSession() {
+    const url = `https://www.aetheria-online.in.th/characters/${this.charId}/kick`;
+    const call = async () => {
+      const res = await fetch(url, { method: 'POST', headers: { Authorization: `Bearer ${this.c.token}` } });
+      let j = null; try { j = await res.json(); } catch {}
+      return { status: res.status, ok: res.ok, err: (j && (j.error ?? j.err)) || null };
+    };
+    try {
+      let r = await call();
+      if (r.status === 401) { await this.relogin(); r = await call(); } // expired token → refresh once and retry
+      this.log(r.ok ? 'kick_session_ok' : 'kick_session_fail', { status: r.status, err: r.err });
+      return r.ok;
+    } catch (e) { this.log('kick_session_fail', { err: String((e && e.message) || e) }); return false; }
+  }
+
   // items to sell at the vendor: everything sellable that is NOT whitelisted, not a card and not one of the
   // bot's own potions — same policy as sellJunkExcept
   sellableLines() {
@@ -529,6 +748,7 @@ class Bot {
       .filter((it) => (it.sellPrice ?? 0) > 0
         && !keep.has(it.itemId)
         && !CARD_RE.test(it.name ?? '')
+        && !this.isScrollName(it.name)
         && it.autoPotion !== 'HP' && it.autoPotion !== 'SP'
         && !/(potion|ยา)/i.test(it.name ?? ''))
       .map((it) => ({ slot: it.slot, qty: it.qty }));
@@ -561,11 +781,56 @@ class Bot {
     throw new Error(`timeout waiting: ${desc}`);
   }
 
+  // Monster templateIds that spawn on `mapId` — the live room roster first (every spawn of the current
+  // room), the wiki spawn index (monster.spawns[].mapId) as fallback for maps we're not standing on.
+  _mapSpawnIds(mapId = this.c.mapId) {
+    if (mapId === this.c.mapId) {
+      const ids = [...new Set([...(this.c.world?.roster ?? [])].map((r) => Number(r?.templateId)).filter(Number.isFinite))];
+      if (ids.length) return ids;
+    }
+    try {
+      if (!this._wikiMonsters) {
+        const p = new URL('../../recon/wiki-data.json', import.meta.url);
+        this._wikiMonsters = JSON.parse(fs.readFileSync(p, 'utf8')).monsters ?? [];
+      }
+      return [...new Set(this._wikiMonsters.filter((m) => (m.spawns ?? []).some((s) => s.mapId === mapId)).map((m) => m.id))];
+    } catch { return []; }
+  }
+
   // -------- actions --------
   async setAuto(patch) {
     const base = this.char?.auto?.config ?? {};
     const cfg = { ...base, ...(patch ?? {}) };
     if (this.autoOverride) for (const [k, v] of Object.entries(this.autoOverride)) if (v !== null && v !== undefined) cfg[k] = v;
+    // 2026-10-07: feed the configured sequence to the game's AUTO engine (this is exactly the auto panel's
+    // checked-skills list, in tick order = priority, max 9)
+    if (this._weaveSeq?.length) cfg.skills = [...this._weaveSeq].slice(0, 9);
+    // monsters: the engine matches TEMPLATE IDS against THIS ROOM's monsters. A list authored for another
+    // map matches nothing → the engine IDLES (bots stand, drain potions, die — the verdant_farm incident,
+    // 2026-10-07). Resolve at SEND TIME against the target map so plan switches / map moves self-heal:
+    //   • no monsters selected → all spawns of this map   • some selected → keep only the ones that spawn here
+    //   • selection matches nothing here (stale plan list) → all spawns too (never idle again)
+    {
+      const roster = this.c.world?.roster ?? [];
+      const byName = new Map([...roster].map((r) => [String(r?.name ?? '').toLowerCase(), r?.templateId]));
+      const sel = (Array.isArray(cfg.monsters) ? cfg.monsters : [])
+        .map((m) => (typeof m === 'number' ? m : (/^\d+$/.test(String(m)) ? Number(String(m)) : (byName.get(String(m).toLowerCase()) ?? null))))
+        .filter((m) => Number.isFinite(m));
+      const mapId = this._farmMap ?? this.c.mapId;
+      const spawns = this._mapSpawnIds(mapId);
+      if (spawns.length) {
+        const inMap = sel.filter((id) => spawns.includes(id));
+        cfg.monsters = inMap.length ? inMap : spawns.slice(0, 60);
+        const mode = sel.length === 0 ? 'all-map-spawns' : inMap.length ? 'filtered' : 'stale->all-map-spawns';
+        const key = mode + JSON.stringify(cfg.monsters);
+        if (key !== this._monKey) {
+          this._monKey = key;
+          this.log('monster_resolve', { map: mapId, selected: sel.length, onMap: inMap.length, spawns: spawns.length, sent: cfg.monsters.length, mode });
+        }
+      } else {
+        cfg.monsters = sel; // no spawn data for this map (e.g. capital) — pass through as-is
+      }
+    }
     // the game stores auto skills as an array of skill-id STRINGS (auto panel code); normalize objects too
     if (Array.isArray(cfg.skills)) cfg.skills = cfg.skills.map((s) => (typeof s === 'string' ? s : (s?.id ?? s?.skillId))).filter(Boolean);
     // auto-potion lists = arrays of itemIds; derive from inventory items flagged autoPotion:'HP'|'SP'
@@ -575,15 +840,42 @@ class Bot {
       ...inv.filter((i) => /potion|ยา/i.test(i.name || '') && !/(sp|blue|ฟ้า)/i.test(i.name || '')).map((i) => i.itemId),
     ])].slice(0, 4);
     const spIds = [...new Set(inv.filter((i) => i.autoPotion === 'SP').map((i) => i.itemId))].slice(0, 4);
-    if (hpIds.length) cfg.hpItems = hpIds;
-    if (spIds.length) cfg.spItems = spIds;
+    // 2026-10-07 (post-update): enable can be refused when the stored config references items the character
+    // no longer owns (dead potion/SP refs accumulate after recoveries). Always prune to what is actually carried.
+    cfg.hpItems = hpIds;
+    cfg.spItems = spIds;
     this.c.autoConfig(cfg);
     await sleep(600);
     this.c.autoEnabled(true);
     await this.waitFor(() => this.char?.auto?.enabled === true, 'auto enabled', 6000).catch(() => {});
+    let how = this.char?.auto?.enabled === true ? 'prune+split' : null;
+    if (!how) {
+      // self-diagnosing ladder: B = single combined {config+enabled} message, C = enabled-only retry
+      try { this.c.send('auto_set', { ...cfg, enabled: true }); } catch {}
+      await sleep(1500);
+      if (this.char?.auto?.enabled === true) how = 'combined';
+    }
+    if (!how) {
+      this.c.autoEnabled(true);
+      await sleep(1500);
+      if (this.char?.auto?.enabled === true) how = 'enabled-only';
+    }
     const rb = this.char?.auto?.config;
-    this.log('setAuto', { skills: rb?.skills ?? cfg.skills, radius: rb?.huntRadiusTiles, monsters: (rb?.monsters ?? []).length, hpItems: (rb?.hpItems ?? []).length, hpPercent: rb?.hpPercent, bashLv: this.char?.skills?.bash ?? null, enabled: this.char?.auto?.enabled, map: this.c.mapId });
-    if (this.char?.auto?.enabled !== true) this.log('auto_enable_failed', { map: this.c.mapId });
+    const invPots = inv.filter((i) => /potion|ยา/i.test(i.name || '')).reduce((s2, i) => s2 + (i.qty || 1), 0);
+    this.log('setAuto', { skills: rb?.skills ?? cfg.skills, radius: rb?.huntRadiusTiles, monsters: (Array.isArray(cfg.monsters) ? cfg.monsters.length : 0), monsterIds: Array.isArray(cfg.monsters) ? cfg.monsters.slice(0, 9) : [], hpItems: (rb?.hpItems ?? []).length, hpPercent: rb?.hpPercent, bashLv: this.char?.skills?.bash ?? null, enabled: this.char?.auto?.enabled, how, potions: invPots, map: this.c.mapId });
+    if (this.char?.auto?.enabled !== true) {
+      this._autoFails = (this._autoFails || 0) + 1;
+      this.log('auto_enable_failed', { map: this.c.mapId, hpItems: cfg.hpItems?.length ?? 0, spItems: cfg.spItems?.length ?? 0, invPots, fails: this._autoFails });
+      // 2026-10-07: some post-update sessions refuse enable until a FRESH login (manual bounce always cleared it).
+      // If we're on the farm map and 3 attempts in a row failed, self-heal with a reconnect (90s cooldown).
+      if (this._autoFails >= 3 && this._farmMap && this.c.mapId === this._farmMap && Date.now() > (this._autoRescueAt ?? 0)) {
+        this._autoRescueAt = Date.now() + 90 * 1000;
+        this._autoFails = 0;
+        this.autoRescue().catch((e) => this.log('auto_rescue_fail', String((e && e.message) || e)));
+      }
+    } else {
+      this._autoFails = 0;
+    }
     return cfg;
   }
 
@@ -775,6 +1067,7 @@ class Bot {
       .filter((it) => (it.sellPrice ?? 0) > 0
         && !keepIds.has(it.itemId)
         && !CARD_RE.test(it.name ?? '')
+        && !this.isScrollName(it.name ?? '')
         && it.autoPotion !== 'HP' && it.autoPotion !== 'SP'
         && !/(potion|ยา)/i.test(it.name ?? ''))
       .map((it) => ({ slot: it.slot, qty: it.qty }));
@@ -996,7 +1289,8 @@ class Bot {
   async collectToCollector(g) {
     const t0 = Date.now();
     const keep = this.keepIds();
-    const RESERVE = 10000; // never hand over the last 10k — the bot needs walking-around zeny
+    // 50k reserve (was 10k): every bot must afford 10× weight-limit scrolls (5,000z each) at Shopkeeper Bor
+    const RESERVE = 50000;
     const RUN_LIMIT_MS = 25 * 60 * 1000;
     this.log('collect_start', { collector: g.collector, channel: g.channel, whitelist: [...keep] });
     try { this.c.autoEnabled(false); } catch {}
@@ -1012,6 +1306,8 @@ class Bot {
       const sellable = (this.s.inventory?.items ?? []).filter((it) => (it.sellPrice ?? 0) > 0 && !keep.has(it.itemId) && !CARD_RE.test(it.name ?? '') && it.autoPotion !== 'HP' && it.autoPotion !== 'SP' && !/(potion|ยา)/i.test(it.name ?? ''));
       if (sellable.length) { await this.sellJunkExcept(keep); this.c.moveToPx(spot.x, spot.y); await sleep(1800); }
     } catch (e) { this.log('collect_sell_fail', String((e && e.message) || e)); }
+    // town trip → top up weight-limit scrolls (Bor stands on this exact spot) — also done on errands
+    if (this.scrollCount() < 10) { try { await this.buyWeightScrolls(); this.c.moveToPx(spot.x, spot.y); await sleep(1200); } catch (e) { this.log('scroll_fail', String((e && e.message) || e)); } }
     let rounds = 0, offered = 0, zenyMoved = 0, stacksMoved = 0, noProgAt = 0;
     const bagKeep = () => (this.s.inventory?.items ?? []).filter((it) => keep.has(it.itemId));
     while (Date.now() - t0 < RUN_LIMIT_MS && rounds < 80) {
@@ -1125,13 +1421,81 @@ class Bot {
     return true;
   }
 
+  // Alice teleport (VERIFIED live 2026-10-07): talk n6 → option 'วาร์ป' → `warp_menu` reply carries the
+  // visited destinations + zeny costs (the world-map UI) → `npc_warp {mapId}` → travel message → rejoin.
+  // ~0.2s + zeny (venom 1250z) vs the 3-map walk (~45s). Falls back to walking on any failure.
+  async aliceWarp(target, { alts = [] } = {}) {
+    const t0 = Date.now();
+    if (this.c.mapId !== 'capital') return { ok: false, reason: 'not-in-capital' };
+    try { this.c.npcClose(); } catch {}
+    for (let i = 0; i < 10; i++) {
+      const lv = this.c.live;
+      if (lv && Math.hypot((lv.x ?? 0) - NPCS.n6[0], (lv.y ?? 0) - NPCS.n6[1]) < 70) break;
+      this.c.moveToPx(NPCS.n6[0], NPCS.n6[1]);
+      await sleep(600);
+    }
+    const d = await this.talk('n6').catch(() => null);
+    if (!d) return { ok: false, reason: 'no-dialog' };
+    const opt = this.findOption(d, 'วาร์ป') ?? { index: 1, text: 'วาร์ป' };
+    this.s.warpMenu = null;
+    this.c.npcOption(opt.index);
+    await this.waitFor(() => !!this.s.warpMenu, 'warp menu', 8000).catch(() => {});
+    const menu = this.s.warpMenu;
+    if (!menu) { this.c.npcClose(); await sleep(300); return { ok: false, reason: 'no-warp-menu' }; }
+    const dests = menu.destinations ?? [];
+    // warp to the target if it has been visited; otherwise to the deepest VISITED waypoint on the rest of
+    // the route (alts, nearest-to-target first) and walk the remaining hops from there
+    const dest = [target, ...alts].filter((m) => m && m !== 'capital').find((m) => dests.includes(m));
+    if (!dest) { this.c.npcClose(); await sleep(300); return { ok: false, reason: 'unvisited' }; }
+    const cost = menu.costs?.[dest] ?? 0;
+    if ((this.char?.zeny ?? 0) < cost) { this.c.npcClose(); await sleep(300); return { ok: false, reason: 'no-zeny', cost }; }
+    this.s.travel = null;
+    this.c.send('npc_warp', { mapId: dest });
+    try { await this.waitFor(() => this.s.travel || this.c.mapId === dest, 'warp travel', 12000); } catch {}
+    if (this.c.mapId === dest) return { ok: true, to: dest, cost, ms: Date.now() - t0 };
+    const tr = this.s.travel;
+    if (!tr) { this.c.npcClose(); await sleep(300); return { ok: false, reason: 'no-travel' }; }
+    this.log('travel_msg', { mapId: tr.mapId, roomId: tr.roomId, channel: tr.channel, endpoint: tr.endpoint, displayName: tr.displayName, warp: true });
+    await this.c.rejoinRoom(tr);
+    await sleep(1200);
+    return { ok: this.c.mapId === dest, to: dest, cost, ms: Date.now() - t0 };
+  }
+
   async ensureMap(target) {
     if (!this.isConnected()) await this.reconnect();
     if (this.s.death) await this.deathRecover();
     await this.syncMapFromRest().catch(() => {});
     if (this.c.mapId === target) return;
-    const route = await routePath(this.c.mapId, target);
-    this.log('route', { from: this.c.mapId, to: target, route });
+    const from = this.c.mapId;
+    const t0 = Date.now();
+    const route = await routePath(from, target);
+    // WARP-FIRST POLICY (2026-10-07): walking is the LAST resort. Alice warps from the capital to any map the
+    // char has visited — so whenever the walking route crosses the capital (it's the hub), walk only up to
+    // the capital and warp the rest. If the target (or any deeper waypoint) was never visited → walk on.
+    const capIdx = route.indexOf('capital');
+    if (target !== 'capital' && (from === 'capital' || capIdx >= 0)) {
+      if (this.char?.auto?.enabled) { this.c.autoEnabled(false); await sleep(600); }
+      if (capIdx >= 0) {
+        const legs = route.slice(0, capIdx + 1);
+        this.log('travel_approach_capital', { from, to: target, legs });
+        for (const hop of legs) await this.travelHop(hop);
+      }
+      const afterCap = route.slice(capIdx + 1); // waypoints after the capital, in walking order (incl. target)
+      const alts = afterCap.filter((m) => m !== target).reverse(); // deepest (closest to target) first
+      const w = await this.aliceWarp(target, { alts }).catch((e) => ({ ok: false, reason: String((e && e.message) || e).slice(0, 90) }));
+      if (w.ok) {
+        this.log('travel_via', { via: 'warp', from, to: target, landed: w.to ?? target, cost: w.cost ?? null, ms: Date.now() - t0 });
+        if (w.to && w.to !== target) {
+          try { const rest = await routePath(w.to, target); for (const hop of rest) await this.travelHop(hop); }
+          catch (e) { this.log('warp_waypoint_route_fail', { landed: w.to, to: target, err: String((e && e.message) || e).slice(0, 90) }); }
+        }
+        return;
+      }
+      this.log('travel_via', { via: 'walk', from, to: target, warpFail: w.reason ?? null });
+      for (const hop of afterCap) await this.travelHop(hop);
+      return;
+    }
+    this.log('route', { from, to: target, route, warp: false });
     for (const hop of route) await this.travelHop(hop);
   }
 
@@ -1164,17 +1528,36 @@ class Bot {
     throw new Error(`travel ${this.c.mapId}->${nextMap} timeout`);
   }
 
-  async farm({ until, auto = {}, timeoutMin = 600, label = '', map = null, statPlan = null, weave = null, errand = null }) {
+  async farm({ until, auto = {}, timeoutMin = 600, label = '', map = null, statPlan = null, skillPlan = null, weave = null, errand = null }) {
+    // 2026-10-07: the skill sequence (CC weave picker / plan) now rides the AUTO config — the game's own
+    // engine runs it server-side (buff upkeep, attacks in tick order, up to 9 skills). Manual client-side
+    // weaving is retired: flagged sessions silently ignore client casts, while the engine's casts always work.
+    if (weave?.length) {
+      this._weaveSeq = (this.weaveOverride ?? weave).filter(Boolean).slice(0, 9);
+      if (!this._seqLogged) { this._seqLogged = true; this.log('auto_skill_seq', { seq: this._weaveSeq }); }
+    }
     await this.setAuto(auto);
     // inventory arrives ~right after join; re-apply once it's here so auto-potion itemIds fill in
     if (!this.s.inventory) await this.waitFor(() => !!this.s.inventory, 'inventory', 20000).catch(() => {});
     if (this.s.inventory) await this.setAuto(auto);
-    // potions are the difference between grinding and a death loop — restock before starting
-    if (map && this.potCount() < 8) await this.buyPotions(45).catch(() => {});
+    // potions are the difference between grinding and a death loop — restock before starting.
+    // RE-ARM after the purchase so the engine's hpItems list actually references what we just bought
+    // (2026-10-07: a stale/empty hpItems list = no auto-heal despite a full potion bag → death loop)
+    if (map && this.potCount() < 8) {
+      await this.buyPotions(45).catch(() => {});
+      if (this.s.inventory) await this.setAuto(auto).catch(() => {});
+    }
+    this._lastFarmAuto = auto;
     const t0 = Date.now();
-    let last = 0, lastStat = 0;
+    let last = 0, lastStat = 0, lastSkill = 0;
     while (Date.now() - t0 < timeoutMin * 60 * 1000) {
       await controlWait(this);
+      // a freshly-applied skill sequence (plan/config push) re-arms the auto config right away
+      if (this._seqDirty && !this.s.death && (!map || this.c.mapId === map)) {
+        this._seqDirty = false;
+        try { await this.setAuto(auto); this.log('auto_cfg_sync', { seq: this._weaveSeq }); }
+        catch (e) { this.log('auto_cfg_sync_fail', String((e && e.message) || e)); }
+      }
       if (this.pendingGrant) {
         const g = this.pendingGrant; this.pendingGrant = null;
         this.log('collect_granted', g);
@@ -1219,6 +1602,7 @@ class Bot {
         this._lastChanCheck = Date.now();
         await this.ensureLeastPopulatedChannel().catch(() => {});
       }
+      this._farmMap = map ?? this._farmMap;
       if (!this.isConnected()) {
         this.log('farm_disconnected', {});
         await this.reconnect();
@@ -1252,6 +1636,14 @@ class Bot {
           else if (statPlan.dump) await this.dumpStat(statPlan.dump, { waitMs: 2500 });
         }
       }
+      // keep allocating skill points while grinding (knight kit top-ups, e.g. two-hand-sword-mastery → 10)
+      if (skillPlan && Date.now() - lastSkill > 6000) {
+        lastSkill = Date.now();
+        const c3 = this.char;
+        if ((c3?.skillPoints ?? 0) > 0 && c3?.classId === 'knight') {
+          await this.applySkills(skillPlan, { wait: false, waitMs: 3000 });
+        }
+      }
       if (this.s.death) {
         await this.deathRecover();
         if (map && this.c.mapId !== map) await this.ensureMap(map);
@@ -1269,6 +1661,7 @@ class Bot {
             await this.ensureMap('capital');
             await this.sellJunk(); // no banking — storage is off-limits for bots (policy 2026-10-06)
             await this.buyPotions(45).catch(() => {});
+            await this.buyWeightScrolls().catch(() => {});
           }
           // same gate as the main errand path — a non-draining trip must not immediately repeat
           const wA = this.s.inventory; const pctA = wA ? (wA.weight / wA.weightLimit) * 100 : 0;
@@ -1283,14 +1676,8 @@ class Bot {
           await this.setAuto(auto); // transient stop → just re-enable
         }
       }
-      if (weave?.length) {
-        // faster inner cadence so bash (1.2s cd) can actually land between map-heartbeat ticks
-        this.weaveTick(weave); await sleep(1000);
-        this.weaveTick(weave); await sleep(1000);
-        this.weaveTick(weave); await sleep(1000);
-      } else {
-        await sleep(3000);
-      }
+      // manual weaving retired 2026-10-07 — the sequence now rides the auto config (server-side engine casts it)
+      await sleep(3000);
     }
     throw new Error('farm timeout: ' + label);
   }
@@ -1371,7 +1758,8 @@ bot.charId = ch.characterId;
 log('character', { id: ch.characterId, name: ch.name });
 
 // Connect with retry-forever: a hard-killed previous session leaves the character marked
-// "character already online" server-side until it expires — wait it out, don't crash.
+// "character already online" (ตัวละครในบัญชีนี้ออนไลน์อยู่แล้ว) — force it out with the same kick the game's
+// character-select button uses, then retry fast instead of waiting for the seat to expire.
 async function connectWithRetry(characterId) {
   for (let i = 1; ; i++) {
     try {
@@ -1385,8 +1773,12 @@ async function connectWithRetry(characterId) {
       const msg = String((e && e.message) || e);
       log('connect_retry', { attempt: i, err: msg.slice(0, 200) });
       try { client.close(); } catch {}
-      const long = /ออนไลน์อยู่แล้ว|already online|429|too many/i.test(msg);
-      await sleep(long ? 60000 : 8000);
+      if (/ออนไลน์อยู่แล้ว|already online/i.test(msg)) {
+        await bot.kickPreviousSession(); // force-online (kick the stale session) — retry immediately after
+        await sleep(2500);
+      } else {
+        await sleep(/429|too many/i.test(msg) ? 60000 : 8000);
+      }
     }
   }
 }
@@ -1639,12 +2031,12 @@ const PLAN = [
   { id: '27-travel-gale', run: async () => { await bot.ensureMap('gale_high'); } },
   { id: '28-farm-gale-job27', run: async () => {
       const autoCfg = { huntRadiusTiles: 'all', pickupLoot: true, hpPercent: 75, spPercent: 40, skills: [{ id: 'bash', level: 10 }] };
-      // knight kit = bowling 10 + 2h-sword-mastery 1 (quicken's prereq!) + quicken 10 + ride 1 + master 5 = 27 pts → job 28
-      await bot.farm({ until: (c) => c.jobLevel >= 28, map: 'gale_high', auto: autoCfg, statPlan: { fixed: { DEX: 30, AGI: 30, VIT: 20 }, dump: 'STR' }, label: 'gale knight-job28', timeoutMin: 600, weave: ['bash'] });
+      // knight kit = bowling 10 + 2h-sword-mastery 10 (great-sword mastery maxed) + quicken 10 + ride 1 + master 5 + charge-attack 1 = 37 pts → job 38
+      await bot.farm({ until: (c) => c.jobLevel >= 38, map: 'gale_high', auto: autoCfg, statPlan: { fixed: { DEX: 30, AGI: 30, VIT: 20 }, dump: 'STR' }, label: 'gale knight-job38', timeoutMin: 600, weave: ['bash'] });
     } },
   { id: '29-skills-gale', run: async () => {
       const autoCfg = { huntRadiusTiles: 'all', pickupLoot: true, hpPercent: 75, spPercent: 40, skills: [{ id: 'bash', level: 10 }] };
-      const ok = await bot.applySkills({ 'two-hand-sword-mastery': 1, 'bowling-bash': 10, 'two-hand-quicken': 10, 'peco-peco-ride': 1, 'peco-peco-master': 5 }, { wait: true, auto: autoCfg, waitMs: 90 * 60 * 1000, farmMap: 'gale_high' });
+      const ok = await bot.applySkills({ 'two-hand-sword-mastery': 10, 'bowling-bash': 10, 'two-hand-quicken': 10, 'peco-peco-ride': 1, 'peco-peco-master': 5, 'charge-attack': 1 }, { wait: true, auto: autoCfg, waitMs: 90 * 60 * 1000, farmMap: 'gale_high' });
       log('skills_gale_done', { ok, skills: bot.char?.skills });
       if (!ok) throw new Error('gale skills incomplete — points pending, will retry');
     } },
@@ -1690,6 +2082,7 @@ async function runFarmingMode() {
       await b.ensureMap('capital');
       await b.sellJunkExcept(keepIds);
       await b.buyPotions(f.restockQty ?? 45, f.potItem ?? 'Red Potion').catch(() => {});
+      if (b.scrollCount() < 10) await b.buyWeightScrolls().catch(() => {}); // Bor: 10× weight-limit scrolls
       b.log('farm_errand_done', {});
     };
     try {
@@ -1700,6 +2093,8 @@ async function runFarmingMode() {
       await bot.farm({
         until: () => false, timeoutMin: 24 * 60, map: f.map, label: 'farm-mode', errand,
         auto: { huntRadiusTiles: 'all', pickupLoot: true, hpPercent: f.hpPercent ?? 75, spPercent: 40, skills: [{ id: 'bash', level: 10 }] },
+        statPlan: { fixed: { DEX: 30, AGI: 30, VIT: 20 }, dump: 'STR' }, // the guide: DEX30 → AGI30 → VIT20 → STR forever
+        skillPlan: { 'two-hand-sword-mastery': 10, 'charge-attack': 1 }, // knight kit: Greatsword Mastery 10 + Valiant Charge (its max = 1)
         weave: bot.weaveOverride ?? ['bash', 'bowling-bash'],
       });
     } catch (e) {
@@ -1738,6 +2133,12 @@ async function runCollectorMode() {
     }
     const spot = (cc?.spot && cc.spot.x != null) ? cc.spot : null;
     if (spot && Date.now() - (bot._lastSpotAt || 0) > 60000) { bot._lastSpotAt = Date.now(); bot.c.moveToPx(spot.x, spot.y); }
+    // weight-limit scrolls: consume the 10 permanent +weight upgrades while idle (Bor = n2 is at this very spot)
+    if (!bot.s.trade && !bot.s.invite && bot.scrollCount() < 10 && Date.now() - (bot._lastScrollAt || 0) > 90000) {
+      bot._lastScrollAt = Date.now();
+      try { await bot.buyWeightScrolls(); } catch (e) { bot.log('scroll_fail', String((e && e.message) || e)); }
+      if (spot) { bot.c.moveToPx(spot.x, spot.y); bot._lastSpotAt = Date.now(); }
+    }
     // manual storage refresh (command-center ⟳): one-shot per request, deferred while a trade is in flight
     const rfReq = readControl()?.refreshStorage;
     if (rfReq && rfReq !== bot._rfAt && !bot.s.trade && !bot.s.invite) {
