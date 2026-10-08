@@ -255,6 +255,8 @@ export class BotManager {
     const bot = store.findBot(botId);
     if (!bot || bot.mode === 'collector') return { ok: false, error: 'not a collectible bot' };
     const rt = this.rt(botId);
+    // offline bots can't collect — each one granted a slot would stall the queue until the 10-min grant timeout
+    if (rt.state !== 'running' && rt.state !== 'starting') return { ok: false, error: `bot is ${rt.state} — not queued (online bots only)` };
     rt.collectHold = false; // explicitly queuing releases a skip-hold
     if (!this.tradeQueue.includes(botId) && this.activeTrade !== botId) this.tradeQueue.push(botId);
     this._saveQueue();
@@ -560,12 +562,13 @@ export class BotManager {
     if (this.activeTrade == null && this.tradeQueue.length && col?.charName && this.collectorLive()) {
       const botId = this.tradeQueue.shift();
       const rt = this.runtime.get(botId);
-      if (rt) {
+      // skip offline leftovers without consuming the line (defense-in-depth for the enqueue guard, 2026-10-08)
+      if (rt && (rt.state === 'running' || rt.state === 'starting')) {
         rt.grantPending = true;
         this.grantCollect(botId, { collector: col.charName, channel: col.channel ?? 1, spot: col.spot ?? { x: 880, y: 1520 } });
         this.activeTrade = botId;
-        this._saveQueue();
       }
+      this._saveQueue();
     }
   }
 

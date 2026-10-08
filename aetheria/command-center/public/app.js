@@ -861,6 +861,9 @@ function renderCollector() {
     if (document.activeElement !== $('col-auto')) $('col-auto').checked = !!ac.enabled;
     if (document.activeElement !== $('col-auto-hrs')) $('col-auto-hrs').value = Math.max(1, Math.round((ac.everyMin ?? 360) / 60));
   }
+  const wg = state.settings?.wings ?? { enabled: true, keep: 10 };
+  if (document.activeElement !== $('col-wing')) $('col-wing').checked = wg.enabled !== false;
+  if (document.activeElement !== $('col-wing-keep')) $('col-wing-keep').value = wg.keep ?? 10;
   const q = state.collect?.queue ?? [];
   const held = state.collect?.held ?? [];
   const active = state.collect?.active;
@@ -1105,7 +1108,7 @@ async function applyCfg(target) {
 // ---------- interactions ----------
 document.addEventListener('change', async (ev) => {
   const t = ev.target;
-  if (t.dataset.sel) { t.checked ? state.sel.add(+t.dataset.sel) : state.sel.delete(+t.dataset.sel); saveSel(); renderBots(); }
+  if (t.dataset.sel) { t.checked ? state.sel.add(+t.dataset.sel) : state.sel.delete(+t.dataset.sel); saveSel(); renderBots(); const gm = $('gmsg'); if (gm) gm.textContent = state.sel.size ? `${state.sel.size} ticked` : ''; }
   if (t.dataset.inc) { await api(`/api/characters/${t.dataset.inc}`, 'PATCH', { included: t.checked }); refreshState(); }
   if (t.dataset?.mob) { t.checked ? state.cfgMobSel.add(t.dataset.mob) : state.cfgMobSel.delete(t.dataset.mob); }
   if (t.id === 'cfg-farmmap') {
@@ -1260,6 +1263,16 @@ async function pushAutoCollect() {
 }
 $('col-auto').onchange = pushAutoCollect;
 $('col-auto-hrs').onchange = pushAutoCollect;
+async function pushWings() {
+  const enabled = $('col-wing').checked;
+  const keep = Math.max(0, Math.min(99, parseInt($('col-wing-keep').value, 10) || 0));
+  const r = await api('/api/settings/wings', 'POST', { enabled, keep });
+  $('col-wing-msg').textContent = r.ok
+    ? `wings ${enabled ? 'ON' : 'off'} — bots keep ${r.wings.keep} in the bag and restock at Bor while in town`
+    : ('err: ' + (r.error ?? '?'));
+  refreshState();
+}
+$('col-wing-save').onclick = pushWings;
 // treasury panel: collapse/expand the collector section (remembered across reloads)
 (() => {
   const sec = $('collector-sec');
@@ -1272,7 +1285,14 @@ $('col-auto-hrs').onchange = pushAutoCollect;
   };
 })();
 
-$('col-all').onclick = async () => { for (const b of state.bots) { if (b.mode !== 'collector') await api(`/api/bots/${b.id}/collect`, 'POST'); } refreshState(); };
+// queue only ONLINE bots — a stopped bot can't collect, and each offline bot handed a grant blocks the line
+// for the full 10-min timeout (2026-10-08: “Queue ALL” pushed the 100 stopped bots into the queue)
+$('col-all').onclick = async () => {
+  const online = state.bots.filter((b) => b.mode !== 'collector' && (b.state === 'running' || b.state === 'starting'));
+  if (!online.length) return;
+  for (const b of online) await api(`/api/bots/${b.id}/collect`, 'POST');
+  refreshState();
+};
 
 // queue controls: per-bot ✕ (skip round + hold), ⏹ clear waiting, ↺ release held — delegated (rows re-render on the 4s refresh)
 $('col-queue').addEventListener('click', async (e) => {

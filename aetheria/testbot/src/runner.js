@@ -21,6 +21,7 @@ const UPTO = parseInt(arg('--upto', '999'), 10);
 // the sell policy everywhere protects exactly three things: whitelist items, cards, and the bot's own potions.
 // cards are matched by NAME (inventory snapshots carry no `type` field): "Snowman Card" yes, "Cardigan" no.
 const CARD_RE = /(?:\bcard\b|การ์ด)/i;
+const WING_BUTTERFLY = 90311; // instant farm→capital ticket — Bor sells them for 300z (verified live 2026-10-08)
 const CHAR_NAME = arg('--char', null);
 const FRESH = argv.includes('--fresh');
 const MODE = arg('--mode', process.env.AETHERIA_MODE || 'leveling'); // leveling | farming | collector
@@ -52,6 +53,7 @@ function applyDirectives(bot) {
     bot.collectCfg = ctl.collect ?? null;
     if (Array.isArray(ctl.keep)) bot.keepItemIds = ctl.keep;
     bot.errandCfg = ctl.errand ?? null;
+    bot.wingCfg = ctl.wings ?? null;
     // arm collect grants once per revision — the server clears the grant only after the collectDone
     // heartbeat (~20s), and re-reading it would trigger a duplicate empty collect in that window.
     // A fresh process starts at _dirRev = -1, so a pending grant still fires after a crash/restart.
@@ -538,6 +540,67 @@ class Bot {
     }
     this.log('scroll_done', { count: used, weightLimitBefore: wl0, weightLimitAfter: this.s.inventory?.weightLimit ?? null });
     return used;
+  }
+
+  // ---- butterfly wings: farm → capital fast-lane (verified live 2026-10-08: use = warp to the capital
+  // save point from ANY map — travel msg + room rejoin). Bor restocks them for 300z; the collect/errand
+  // flows top up while in town, and every capital-bound ensureMap() rides one when stocked.
+  wingEnabled() { return (this.wingCfg?.enabled ?? true) !== false; }
+  wingKeep() { return Math.max(0, this.wingCfg?.keep ?? 10); }
+  wingCount() { return (this.s.inventory?.items ?? []).filter((x) => x.itemId === WING_BUTTERFLY).reduce((n, x) => n + (x.qty ?? 1), 0); }
+  async useButterflyWing() {
+    // async flows can race (death recovery vs farm-loop restock) — share ONE in-flight attempt so a single
+    // trip never consumes two wings or leaves a duplicate traveler behind
+    if (this._wingTask) return this._wingTask;
+    this._wingTask = this._useButterflyWingInner().finally(() => { this._wingTask = null; });
+    return this._wingTask;
+  }
+  async _useButterflyWingInner() {
+    if (this.c.mapId === 'capital') return { ok: false, reason: 'already-in-capital' };
+    if (this.s.death) return { ok: false, reason: 'dead' };
+    const it = (this.s.inventory?.items ?? []).find((x) => x.itemId === WING_BUTTERFLY);
+    if (!it) return { ok: false, reason: 'no-wing' };
+    this.s.travel = null;
+    try { this.c.npcClose(); } catch {}
+    this.log('wing_use', { from: this.c.mapId, left: this.wingCount() });
+    this.c.invUse(it.slot);
+    const t0 = Date.now();
+    while (Date.now() - t0 < 12000) {
+      if (this.c.mapId === 'capital') return { ok: true, ms: Date.now() - t0 };
+      const tr = this.s.travel;
+      if (tr && tr.mapId === 'capital') {
+        this.log('travel_msg', { mapId: tr.mapId, roomId: tr.roomId, channel: tr.channel, endpoint: tr.endpoint, displayName: tr.displayName, wing: true });
+        await this.c.rejoinRoom(tr).catch(() => {});
+        await sleep(1500);
+        if (this.c.mapId === 'capital') return { ok: true, ms: Date.now() - t0 };
+      }
+      await sleep(500);
+    }
+    return { ok: false, reason: 'timeout' };
+  }
+  // restock at Bor (n2, capital). Only runs while ALREADY in capital — never adds a trip by itself.
+  async buyButterflyWings(target = null) {
+    const want0 = target ?? this.wingKeep();
+    if (!this.wingEnabled() || want0 <= 0) return this.wingCount();
+    const have = this.wingCount();
+    if (have >= want0) return have;
+    if (this.c.mapId !== 'capital') return have;
+    await this.walkToNpc(NPCS.n2);
+    await this.talk('n2');
+    this.s.shop = null;
+    await this.chooseByKeyword('ซื้อของหน่อย', { timeout: 6000 });
+    try { await this.waitFor(() => this.s.shop, 'shop', 8000); } catch {}
+    const item = (this.s.shop?.items ?? []).find((x) => x.itemId === WING_BUTTERFLY);
+    if (!item) { this.log('wing_no_shop', {}); this.c.npcClose(); await sleep(400); return have; }
+    const zeny = this.char?.zeny ?? 0;
+    const want = Math.min(want0 - have, Math.floor(Math.max(0, zeny - 5000) / (item.price || 300)));
+    if (want <= 0) { this.log('wing_no_budget', { have, zeny }); this.c.npcClose(); await sleep(400); return have; }
+    this.c.send('shop_buy', { itemId: WING_BUTTERFLY, qty: want });
+    this.log('wing_buy', { qty: want, price: item.price, zeny, have });
+    await sleep(2000);
+    this.c.npcClose(); await sleep(400);
+    this.c.invSort(); await sleep(900);
+    return this.wingCount();
   }
 
   // ---- combat/vitals estimate ----
@@ -1136,6 +1199,8 @@ class Bot {
   }
   async switchToChannel(target, { tries = 3 } = {}) {
     for (let i = 1; i <= tries; i++) {
+      // the server silently ignores channel_switch while a post-switch cooldown is active → wait it out
+      await this.waitChannelCooldown();
       const snap = await this.channelsSnapshot();
       if (!snap) return false;
       if (snap.current === target) { this.log('channel_ok', { channel: target }); return true; }
@@ -1159,13 +1224,43 @@ class Bot {
     this.log('channel_switch_result', { ok, now: snap?.current ?? null });
     return ok;
   }
+  // the channels msg carries cooldownUntil — switching during cooldown is a silent no-op
+  async waitChannelCooldown(maxMs = 15000) {
+    try {
+      const cd = this.c.msgs.get('channels')?.data?.cooldownUntil ?? 0;
+      const left = cd - Date.now();
+      if (left > 0 && left <= maxMs) { this.log('channel_cd_wait', { ms: Math.round(left) }); await sleep(left + 700); }
+    } catch {}
+  }
+  // collect-side channel targeting: a bot that walks into capital ALREADY on the collector's channel
+  // lands in a portal-assigned room where `trade request <name>` is silently dropped (the collector is
+  // not resolvable there → 15s timeouts, endless retries = trade spam, 2026-10-08). A channel switch
+  // re-instances the player into the channel's room — the same room the collector keeps alive. So when
+  // we're already ON the target channel, hop out (least-populated other) and back to force the rejoin.
+  async rejoinCollectorRoom(target) {
+    if (target == null) return false;
+    const snap = await this.channelsSnapshot();
+    if (snap && snap.current === target) {
+      const cands = (snap.channels ?? []).filter((c) => c.channel !== target && c.players < (snap.hardCap ?? 1e9));
+      cands.sort((a, b) => a.players - b.players);
+      const other = cands[0];
+      if (!other) { this.log('collect_hop_no_target', {}); return this.switchToChannel(target).catch(() => false); }
+      this.log('collect_channel_hop', { target, via: other.channel });
+      await this.switchToChannel(other.channel, { tries: 2 }).catch(() => {});
+      await sleep(800);
+    }
+    return this.switchToChannel(target, { tries: 3 }).catch(() => false);
+  }
   async ensureLeastPopulatedChannel() {
     this._lastChanCheck = Date.now(); // any check resets the periodic 10-min timer (spawn/return/periodic share it)
     const snap = await this.channelsSnapshot();
     if (!snap || !Array.isArray(snap.channels)) { this.log('channel_no_data', {}); return false; }
     if (snap.cooldownUntil && snap.cooldownUntil > Date.now()) { this.log('channel_cooldown', { until: snap.cooldownUntil }); return false; }
     const here = snap.channels.find((c) => c.channel === snap.current) ?? null;
-    const cands = snap.channels.filter((c) => c.channel !== snap.current && c.players < (snap.hardCap ?? 1e9));
+    // steer farm channels OFF the collector's channel: the butterfly wing preserves the current channel, so
+    // arriving off-channel + ONE switch = direct rejoin into the collector's room (no out-and-back hop)
+    const skip = this.collectCfg?.channel ?? this._collectorChannel ?? null;
+    const cands = snap.channels.filter((c) => c.channel !== snap.current && c.players < (snap.hardCap ?? 1e9) && c.channel !== skip);
     cands.sort((a, b) => a.players - b.players);
     const best = cands[0];
     if (!best || (here && best.players >= here.players)) { this.log('channel_keep', { current: snap.current, players: here?.players ?? null, best: best ? [best.channel, best.players] : null }); return false; }
@@ -1191,7 +1286,8 @@ class Bot {
   }
 
   // ---- collector trade (slot granted by the command-center queue) ----
-  keepIds() { return new Set(this.keepItemIds ?? this.collectCfg?.keepItemIds ?? []); }
+  // butterfly wings are ALWAYS protected: never sold at vendors, never handed to the collector (fast-lane ticket)
+  keepIds() { return new Set([...(this.keepItemIds ?? this.collectCfg?.keepItemIds ?? []), WING_BUTTERFLY]); }
   isKeepItem(it) { return !!it && this.keepIds().has(it.itemId); }
 
   // open the storage window at n6 (walk + dialog). Returns true when s.storage is live.
@@ -1326,6 +1422,7 @@ class Bot {
 
   async collectToCollector(g) {
     const t0 = Date.now();
+    if (g.channel != null) this._collectorChannel = g.channel; // remembered: farm channels steer clear of it
     const keep = this.keepIds();
     // 50k reserve (was 10k): every bot must afford 10× weight-limit scrolls (5,000z each) at Shopkeeper Bor
     const RESERVE = 50000;
@@ -1333,7 +1430,7 @@ class Bot {
     this.log('collect_start', { collector: g.collector, channel: g.channel, whitelist: [...keep] });
     try { this.c.autoEnabled(false); } catch {}
     await this.ensureMap('capital');
-    if (g.channel != null) await this.switchToChannel(g.channel).catch(() => {});
+    if (g.channel != null) await this.rejoinCollectorRoom(g.channel).catch(() => {});
     const spot = (g.spot && g.spot.x != null) ? g.spot : { x: 880, y: 1520 };
     this.c.moveToPx(spot.x, spot.y);
     await sleep(2200);
@@ -1346,8 +1443,10 @@ class Bot {
     } catch (e) { this.log('collect_sell_fail', String((e && e.message) || e)); }
     // town trip → top up weight-limit scrolls (Bor stands on this exact spot) — also done on errands
     if (this.scrollCount() < 10) { try { await this.buyWeightScrolls(); this.c.moveToPx(spot.x, spot.y); await sleep(1200); } catch (e) { this.log('scroll_fail', String((e && e.message) || e)); } }
+    await this.buyButterflyWings().catch(() => {}); // keep the farm→capital fast-lane stocked while we're in town
     let rounds = 0, offered = 0, zenyMoved = 0, stacksMoved = 0, noProgAt = 0;
-    const bagKeep = () => (this.s.inventory?.items ?? []).filter((it) => keep.has(it.itemId));
+    let openStreak = 0, hopUsed = false;
+    const bagKeep = () => (this.s.inventory?.items ?? []).filter((it) => keep.has(it.itemId) && it.itemId !== WING_BUTTERFLY);
     while (Date.now() - t0 < RUN_LIMIT_MS && rounds < 80) {
       // the server can drop sockets (4001/1006 bursts) — recover instead of spinning on a dead connection
       if (!this.isConnected()) {
@@ -1355,7 +1454,7 @@ class Bot {
         try { await this.reconnect(); this.log('collect_reconnected', { map: this.c.mapId }); }
         catch (e) { this.log('collect_reconnect_fail', String((e && e.message) || e)); await sleep(5000); continue; }
         if (this.c.mapId !== 'capital') await this.ensureMap('capital').catch(() => {});
-        if (g.channel != null) await this.switchToChannel(g.channel).catch(() => {});
+        if (g.channel != null) await this.rejoinCollectorRoom(g.channel).catch(() => {});
         this.c.moveToPx(spot.x, spot.y);
         await sleep(1800);
         continue;
@@ -1372,7 +1471,26 @@ class Bot {
       this.log('trade_request_send', { round: rounds, collector: g.collector, stacks: items.length, zeny: giveZeny });
       this.c.tradeRequest(g.collector);
       const opened = await this.waitFor(() => (this.s.tradeSeq || 0) > seq, 'trade open', 15000).catch(() => false);
-      if (!opened) { this.log('trade_open_timeout', { round: rounds, invite: this.s.invite ?? null }); await sleep(3000); continue; }
+      if (!opened) {
+        openStreak++;
+        this.log('trade_open_timeout', { round: rounds, invite: this.s.invite ?? null, streak: openStreak });
+        if (openStreak >= 6) {
+          if (!hopUsed) {
+            // window never opens = the collector isn't resolvable from this room (see rejoinCollectorRoom).
+            // one repair attempt: force the channel rejoin, then reset the streak.
+            hopUsed = true;
+            this.log('collect_room_repair', { round: rounds, note: 'no trade window for 6 rounds — forcing channel rejoin' });
+            await this.rejoinCollectorRoom(g.channel).catch(() => {});
+            this.c.moveToPx(spot.x, spot.y); await sleep(2000); openStreak = 0;
+          } else {
+            // still nothing after a repair: give up cleanly instead of spamming the collector for 80 rounds
+            this.log('collect_room_unreachable', { round: rounds });
+            throw new Error('trade window never opens — collector not resolvable (wrong room?)');
+          }
+        }
+        await sleep(3000); continue;
+      }
+      openStreak = 0;
       const offer = items.slice(0, 10).map((it) => ({ slot: it.slot, qty: it.qty }));
       this.c.tradeOffer(offer, giveZeny);
       offered += offer.length;
@@ -1504,6 +1622,14 @@ class Bot {
     if (this.s.death) await this.deathRecover();
     await this.syncMapFromRest().catch(() => {});
     if (this.c.mapId === target) return;
+    // CAPITAL FAST-LANE (verified live 2026-10-08): a butterfly wing returns the char to the capital save
+    // point from any map — every capital-bound trip (collect / errand / restock) rides one when stocked.
+    if (target === 'capital' && this.wingEnabled()) {
+      const wFrom = this.c.mapId;
+      const w = await this.useButterflyWing().catch(() => ({ ok: false }));
+      if (w.ok) { this.log('travel_via', { via: 'wing', from: wFrom, to: target, ms: w.ms ?? null }); return; }
+      if (w.reason !== 'no-wing') this.log('travel_via', { via: 'walk', from: wFrom, to: target, wingFail: w.reason ?? null });
+    }
     const from = this.c.mapId;
     const t0 = Date.now();
     const route = await routePath(from, target);
@@ -1583,6 +1709,7 @@ class Bot {
     // (2026-10-07: a stale/empty hpItems list = no auto-heal despite a full potion bag → death loop)
     if (map && this.potCount() < 8) {
       await this.buyPotions(45).catch(() => {});
+      await this.buyButterflyWings().catch(() => {});
       if (this.s.inventory) await this.setAuto(auto).catch(() => {});
     }
     this._lastFarmAuto = auto;
@@ -1620,6 +1747,7 @@ class Bot {
             await this.ensureMap('capital');
             await this.sellJunkExcept(keep); // whitelist stays in the bag — it travels to the collector, never to storage
             await this.buyPotions(45).catch(() => {});
+            await this.buyButterflyWings().catch(() => {});
             this.log('errand_done', {});
           } catch (e) { this.log('errand_fail', String((e && e.message) || e)); }
           // if the errand couldn't get weight back under control, give it 6 min before retrying (breaks errand storms)

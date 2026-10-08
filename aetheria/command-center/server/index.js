@@ -239,6 +239,16 @@ const server = http.createServer(async (req, res) => {
       broadcast({ type: 'state_dirty' });
       return json(res, 200, { ok: true, tracked: s.tracked });
     }
+    if (p === '/api/settings/wings' && req.method === 'POST') {
+      const body = await readBody(req);
+      const s = store.getSettings();
+      s.wings = { enabled: body.enabled !== false, keep: Math.max(0, Math.min(99, parseInt(body.keep ?? 10, 10) || 0)) };
+      store.save();
+      // propagate to every bot: the runner restocks wings in town and rides one into capital
+      for (const bot of store.data.bots) { if (bot.mode === 'collector') continue; manager.applySettings(bot.id, { wings: s.wings }); }
+      broadcast({ type: 'state_dirty' });
+      return json(res, 200, { ok: true, wings: s.wings });
+    }
     if (p === '/api/plans' && req.method === 'GET') return json(res, 200, { plans: store.getSettings().plans ?? [] });
     if (p === '/api/plans/create' && req.method === 'POST') {
       const body = await readBody(req);
@@ -320,6 +330,51 @@ const server = http.createServer(async (req, res) => {
       if (!c) return json(res, 404, { error: 'character not found' });
       await accounts.refreshCharacter(c);
       return json(res, 200, c);
+    }
+    // rebind a store character row to an EXISTING character on its game account (by name). Use when an imported
+    // account already has a character (or a wrong one was created): the row adopts the real character's
+    // gameId/class/level, the bot's run-state is updated so the runner picks it, and the old char is left on
+    // the game account (delete it in-game if unwanted). POST {name, included?} — 2026-10-07 (imp-202/Sooood).
+    if (/^\/api\/characters\/\d+\/bind$/.test(p) && req.method === 'POST') {
+      const id = parseInt(p.split('/')[3], 10);
+      const c = store.findCharacter(id);
+      if (!c) return json(res, 404, { error: 'character not found' });
+      const body = await readBody(req);
+      const want = String(body.name ?? '').trim();
+      if (!want) return json(res, 400, { error: 'name required' });
+      const account = store.findAccount(c.accountId);
+      if (!account) return json(res, 404, { error: 'account missing' });
+      try {
+        const token = await accounts.login(account.userId, account.password);
+        const list = await accounts.listServerCharacters(token);
+        const me = (list ?? []).find((x) => String(x.name).toLowerCase() === want.toLowerCase());
+        if (!me) return json(res, 404, { error: 'character not on server: ' + want, chars: (list ?? []).map((x) => x.name) });
+        const before = { name: c.name, characterId: c.characterId };
+        c.name = me.name;
+        c.characterId = me.characterId;
+        c.classId = me.classId ?? c.classId;
+        c.baseLevel = me.baseLevel ?? c.baseLevel;
+        c.jobLevel = me.jobLevel ?? c.jobLevel;
+        c.mapName = me.mapName ?? c.mapName;
+        c.included = body.included != null ? (body.included ? 1 : 0) : 1;
+        c.updatedAt = Date.now();
+        store.save();
+        const bot = store.data.bots.find((b) => b.characterId === c.id);
+        if (bot) {
+          try {
+            const dir = manager.dirOf(bot.id);
+            const rsFile = path.join(dir, 'run-state.json');
+            let rs = {}; try { rs = JSON.parse(fs.readFileSync(rsFile, 'utf8')); } catch {}
+            rs.characterId = me.characterId; rs.charName = me.name;
+            fs.mkdirSync(dir, { recursive: true });
+            fs.writeFileSync(rsFile, JSON.stringify(rs, null, 1));
+          } catch {}
+        }
+        broadcast({ type: 'state_dirty' });
+        return json(res, 200, { ok: true, before, after: { name: c.name, characterId: c.characterId, classId: c.classId, baseLevel: c.baseLevel, jobLevel: c.jobLevel }, bot: bot ? bot.id : null });
+      } catch (e) {
+        return json(res, 500, { error: String((e && e.message) || e) });
+      }
     }
 
     if (p === '/api/bots/start' && req.method === 'POST') {
