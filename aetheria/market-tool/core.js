@@ -330,6 +330,7 @@
   .amk-rng input{width:46px;padding:1px 3px;border:1px solid #00000055;border-radius:5px;background:#0e1420;color:#ffd166;font:inherit;font-size:10px;text-align:center;min-width:0}
   .amk-rng input::placeholder{color:#8a93a6}
   .amk-sechead{color:#ffd166;font-weight:700;margin:4px 0 2px;font-size:11px}
+  .amk-clear{width:100%;text-align:center}
   .amk-actions{display:flex;gap:6px;padding:8px;border-bottom:1px solid #ffffff1f;align-items:center;flex-wrap:wrap}
   .amk-btn{background:#1c2740;border:1px solid #c9a45c;color:#ffd166;border-radius:8px;padding:6px 10px;font:inherit;font-weight:700;cursor:pointer}
   .amk-btn:disabled{opacity:.45;cursor:default}
@@ -399,6 +400,7 @@
             <div class="amk-chips" id="amk-affixes"></div>
             <label class="amk-muted"><input type="radio" name="amk-mode" value="and" checked> ต้องมีทั้งหมด</label>
             <label class="amk-muted"><input type="radio" name="amk-mode" value="or"> มีอย่างใดอย่างหนึ่ง</label>
+            <button class="amk-btn amk-clear" id="amk-clear" type="button" title="ล้างตัวกรองทั้งหมดกลับค่าเริ่มต้น">↺ ล้างตัวกรองทั้งหมด (รีเซ็ต)</button>
             <div class="amk-note">โน้ต: เลือกชิปแล้วกำหนดช่วงค่า ≥ / ≤ ได้ทันทีในชิป (เว้นว่าง = ทุกค่า) · ชิปทั้ง 2 ส่วนจับคู่กับ “ความสามารถทั้งหมดของไอเทม” — เลือกจากส่วนไหนก็เจอเหมือนกัน</div>
           </div>
           <div class="amk-main">
@@ -422,7 +424,6 @@
       this.fillSelect(p.querySelector('[data-k=rarity]'), RARITIES, 'ทุกระดับ');
       this.fillSelect(p.querySelector('[data-k=sort]'), [['price_asc', 'ราคาต่ำ → สูง'], ['price_desc', 'ราคาสูง → ต่ำ'], ['newest', 'ลงขายล่าสุด'], ['ending', 'ใกล้หมดเวลา']], null);
       this.fillJobSelect(p.querySelector('[data-k=job]'));
-      p.querySelector('[data-k=category]').value = 'armor';
       this.syncKinds();
       p.querySelector('[data-k=category]').addEventListener('change', () => this.syncKinds());
       const ac = p.querySelector('#amk-affixes');
@@ -441,6 +442,7 @@
       p.querySelector('#amk-scan').addEventListener('click', () => this.scan());
       p.querySelector('#amk-stop').addEventListener('click', () => { if (this.token) this.token.cancelled = true; });
       p.querySelector('#amk-collect').addEventListener('click', () => this.collect());
+      p.querySelector('#amk-clear').addEventListener('click', () => this.clearAll());
       this.els = {
         status: p.querySelector('.amk-status'), prog: p.querySelector('#amk-prog'), list: p.querySelector('#amk-list'),
         toast: p.querySelector('#amk-toast'), scan: p.querySelector('#amk-scan'), stop: p.querySelector('#amk-stop'),
@@ -490,6 +492,27 @@
         this.els.warn.textContent = v ? '⚠ ตัวกรองเปลี่ยนแล้ว — กด “สแกนตลาด” เพื่ออัปเดตผล' : '';
         this.els.warn.className = 'amk-warn' + (v ? ' on' : '');
       }
+    },
+    clearAll() {
+      // one-button reset: server-side form + ability chips + ranges + match mode → defaults
+      const p = this.panel;
+      ['q', 'minPrice', 'maxPrice', 'minRefine'].forEach((k) => { const inp = p.querySelector('[data-k=' + k + ']'); if (inp) inp.value = ''; });
+      p.querySelector('[data-k=category]').value = '';
+      this.syncKinds();
+      p.querySelector('[data-k=job]').value = '';
+      p.querySelector('[data-k=rarity]').value = '';
+      p.querySelector('[data-k=sort]').value = 'price_asc';
+      this.filterAffixes.clear(); this.filterAttrs.clear(); this.statRanges.clear();
+      p.querySelectorAll('.amk-chip').forEach((c) => {
+        c.classList.remove('on');
+        c.querySelectorAll('.amk-rng input').forEach((inp) => { inp.value = ''; });
+      });
+      this.mode = 'and';
+      const andRadio = p.querySelector('input[name=amk-mode][value=and]');
+      if (andRadio) andRadio.checked = true;
+      this.setDirty(true); // server filters went back to defaults → rescan for unfiltered results
+      this.render();
+      this.toast('ล้างตัวกรองทั้งหมดแล้ว — กด “สแกนตลาด” เพื่อค้นหาใหม่', false);
     },
     // ---- class/job filter (mirrors the game's market dropdown; roster fetched from /classes)
     fetchClasses() {
