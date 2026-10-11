@@ -72,6 +72,10 @@
       .pill { display: inline-block; background: rgba(13,16,22,.93); border: 1px solid #2b3342;
               border-radius: 999px; padding: 4px 12px; color: #cfe3ff; cursor: move; box-shadow: 0 4px 14px rgba(0,0,0,.4); touch-action: none; }
       .pill b { color: #9fe3b8; font-weight: 600; }
+      .tip { position: fixed; z-index: 10; background: rgba(13,16,22,.97); border: 1px solid #2b3342;
+             border-radius: 8px; padding: 5px 8px; color: #d7dee8; font-size: 11px; line-height: 1.5;
+             white-space: nowrap; pointer-events: none; box-shadow: 0 6px 18px rgba(0,0,0,.5); }
+      .tip b { color: #cfe3ff; }
     </style>
     <div class="pill" data-act="expand" hidden>💰 <b class="pill-rate">—</b>/h</div>
     <div class="panel">
@@ -93,6 +97,7 @@
         <button class="rg" data-hours="24">24h</button>
       </div>
       <div class="chart" id="chart"></div>
+      <div class="tip" hidden></div>
       <div class="ft"><span id="upd">starting…</span><span class="sctls" id="sctls" hidden><button class="ico2" id="btnPause" title="Pause / resume capture">⏸</button><button class="ico2" id="btnClear" title="Clear captured history">🗑</button></span><a id="cclink" href="http://127.0.0.1:4310" target="_blank" rel="noreferrer">dashboard ↗</a></div>
     </div>`;
 
@@ -112,6 +117,8 @@
   const elPause = srGet('btnPause');
   const elClear = srGet('btnClear');
   const elCclink = srGet('cclink');
+  const elTip = sr.querySelector('.tip');
+  let lastHs = [];
 
   // ---------- state ----------
   let bots = [];
@@ -254,6 +261,34 @@
   }
   elHd.addEventListener('pointerdown', (e) => startDrag(e, true));
   pill.addEventListener('pointerdown', (e) => startDrag(e, false));
+
+  // ---------- chart hover tooltip ----------
+  const tipShow = (e) => {
+    if (!lastHs.length) { elTip.hidden = true; return; }
+    const r = elChart.getBoundingClientRect();
+    if (!r.width) { elTip.hidden = true; return; }
+    const W = 254, PL = 34, PR = 4;
+    const scale = r.width / W;
+    const x = (e.clientX - r.left) / scale;
+    const iw = W - PL - PR;
+    const n = lastHs.length;
+    const idx = Math.max(0, Math.min(n - 1, Math.floor((x - PL) / (iw / n))));
+    const h = lastHs[idx];
+    const lbl = String(h.h || '').slice(11);
+    const tops = (Array.isArray(h.top) ? h.top : []).slice(0, 2).map((t) => esc(t.n) + ' ×' + t.q).join(' · ');
+    elTip.innerHTML =
+      '<b>' + lbl + ':00</b> — est <b>' + fmtC(h.v) + '</b> · ' + (h.k || 0) + ' kills · ' + (h.q || 0) + ' drops' + (tops ? '<br>' + tops : '');
+    elTip.hidden = false;
+    const tw = elTip.offsetWidth || 160, th = elTip.offsetHeight || 40;
+    let L = e.clientX + 12;
+    if (L + tw > innerWidth - 8) L = e.clientX - tw - 12;
+    let T = e.clientY + 14;
+    if (T + th > innerHeight - 8) T = e.clientY - th - 10;
+    elTip.style.left = Math.max(6, L) + 'px';
+    elTip.style.top = Math.max(6, T) + 'px';
+  };
+  elChart.addEventListener('pointermove', tipShow);
+  elChart.addEventListener('pointerleave', () => { elTip.hidden = true; });
   // block the game from stealing pointer/scroll events aimed at the panel
   for (const ev of ['pointerdown', 'pointermove', 'pointerup', 'click', 'wheel', 'contextmenu']) {
     host.addEventListener(ev, (e) => e.stopPropagation(), false);
@@ -265,7 +300,7 @@
     const iw = W - PL - PR;
     const ih = H - PT - PB;
     const n = hs.length || 1;
-    const max = Math.max(1, ...hs.map((x) => Math.max(x.v || 0, x.e || 0)));
+    const max = Math.max(1, ...hs.map((x) => x.v || 0));
     const step = niceStep(max / 2.4);
     const top = Math.max(step, Math.ceil(max / step) * step);
     const bw = iw / n;
@@ -279,16 +314,13 @@
     const every = Math.max(1, Math.ceil(n / 6));
     for (let i = 0; i < n; i++) {
       const x = PL + i * bw;
-      const x0 = x + bw * 0.1;
-      const w = bw * 0.36;
+      const x0 = x + bw * 0.25;
+      const w = bw * 0.5;
       const h = hs[i];
       const vh = ((h.v || 0) / top) * ih;
-      const eh = ((h.e || 0) / top) * ih;
       const lbl = String(h.h || '').slice(11);
-      const tip = `${lbl}:00 — est ${fmtC(h.v)} · earned ${fmtC(h.e)} · ${h.k || 0} kills · ${h.q || 0} drops`;
-      s += `<g><title>${esc(tip)}</title>`;
+      s += `<g>`;
       s += `<rect x="${x0.toFixed(1)}" y="${(PT + ih - vh).toFixed(1)}" width="${w.toFixed(1)}" height="${Math.max(vh, 0).toFixed(1)}" rx="1.5" fill="#3fae6f"/>`;
-      s += `<rect x="${(x0 + w + 1.5).toFixed(1)}" y="${(PT + ih - eh).toFixed(1)}" width="${w.toFixed(1)}" height="${Math.max(eh, 0).toFixed(1)}" rx="1.5" fill="#4c8bf5"/>`;
       if (i % every === 0 || i === n - 1) {
         s += `<text x="${(x + bw / 2).toFixed(1)}" y="${H - 4}" text-anchor="middle" fill="#66707f">${lbl}</text>`;
       }
@@ -406,6 +438,7 @@
     elKL.textContent = act ? fmtC(act.v) : '—';
     elKK.textContent = act ? String(act.k || 0) : '—';
     elChart.innerHTML = hs.length ? chartSvg(hs) : '<div style="padding:10px;color:#67748a">no data yet</div>';
+    lastHs = hs;
     elPillRate.textContent = d.rate3 != null ? fmtC(d.rate3) : '—';
     note('updated ' + new Date().toLocaleTimeString() + ' · ' + label);
   }
