@@ -31,12 +31,27 @@ import { decodeMulti } from '@msgpack/msgpack';
 
   const GAME = /aetheria-online\.in\.th/i;
 
+  // Did we get injected into an ALREADY-LOADED page? (Firefox/Chrome inject content scripts into open
+  // tabs when an add-on loads/reloads — the game socket + login REST calls already happened, so nothing
+  // will ever be tapped. Flag it so the UI can tell the user to reload the page once.)
+  const late = (() => {
+    try { return document.readyState !== 'loading' && performance.now() > 1500; } catch { return false; }
+  })();
+
   // ---------- capture control (the content script toggles this via postMessage) ----------
   // Paused = no decode at all: frames still reach the game untouched, we just skip our copy.
+  // probe = a (re)loaded content script asks this instance to re-emit its state — after an add-on
+  // reload THIS older instance stays alive and still holds the identity + the tapped socket.
   let paused = false;
+  let lastIdentPayload = null;
   window.addEventListener('message', (e) => {
     const d = e.data;
-    if (d && d.src === 'ax-ctl' && typeof d.paused === 'boolean') paused = d.paused;
+    if (!d || d.src !== 'ax-ctl') return;
+    if (typeof d.paused === 'boolean') paused = d.paused;
+    if (d.probe === true) {
+      emit({ ev: 'ready', v: '1.0.0', late, probe: true });
+      if (lastIdentPayload) emit({ ev: 'ident', ...lastIdentPayload });
+    }
   });
 
   // ---------- frame decode ----------
@@ -117,7 +132,8 @@ import { decodeMulti } from '@msgpack/msgpack';
     if (String(seen.charId) === lastIdent && name === lastIdentName) return;
     lastIdent = String(seen.charId);
     lastIdentName = name;
-    emit({ ev: 'ident', characterId: seen.charId, name, sessionId: seen.sessionId });
+    lastIdentPayload = { characterId: seen.charId, name, sessionId: seen.sessionId };
+    emit({ ev: 'ident', ...lastIdentPayload });
   };
 
   const onRest = (url, { reqBody, respText, respJson } = {}) => {
@@ -198,5 +214,5 @@ import { decodeMulti } from '@msgpack/msgpack';
     }
   } catch {}
 
-  emit({ ev: 'ready', v: '1.0.0' });
+  emit({ ev: 'ready', v: '1.0.0', late });
 })();

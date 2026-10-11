@@ -43,6 +43,8 @@
   let flushTimer = null;
   let prices = null;
   let priceBusy = false;
+  let hookReady = false; // the MAIN-world hook announced itself (capture present)
+  let hookLate = false; // …and it was injected AFTER the page load (add-on loaded into an open tab: nothing to tap)
 
   const blank = () => ({ v: 0, q: 0, k: 0, c: 0, x: 0, e: 0, s: 0, zd: 0, top: {} });
   const bucket = (k) => (hours[k] ??= blank());
@@ -105,6 +107,12 @@
 
   const postPaused = () => {
     try { window.postMessage({ src: 'ax-ctl', paused }, '*'); } catch {}
+  };
+  // Ask the hook to re-emit its state. When an add-on reloads, the content scripts re-inject while the OLD
+  // hook instance stays alive in the page — it still holds the identity and the tapped socket, but the
+  // fresh session.js knows nothing. The probe makes add-on reloads seamless (no page reload needed).
+  const postProbe = () => {
+    try { window.postMessage({ src: 'ax-ctl', probe: true }, '*'); } catch {}
   };
 
   // ---------- accounting (mirrors command-center/server/earnings.js) ----------
@@ -221,7 +229,12 @@
 
   const recv = (d) => {
     switch (d.ev) {
-      case 'ready': postPaused(); break;
+      case 'ready':
+        hookReady = true;
+        hookLate = !!d.late;
+        postPaused();
+        if (!d.probe) postProbe(); // initial announce → ask an older surviving instance (if any) for identity
+        break;
       case 'join':
         if (!joinAt || Date.now() - joinAt > 300000) joinAt = Date.now(); // fresh session only (travel rejoins don't reset the replay guard)
         if (!prices) ensurePrices();
@@ -312,10 +325,11 @@
   const api = {
     getDetail: detail,
     getSummary: summary,
-    identity: () => ({ characterId: charId, name: charName, zeny: lastZeny, paused }),
+    identity: () => ({ characterId: charId, name: charName, zeny: lastZeny, paused, hookReady, hookLate }),
     setPaused,
     isPaused: () => paused,
     clear,
+    diag: () => ({ charId, charName, paused, hookReady, hookLate, joinAt, pendingCount: pending.length }),
   };
   window.__axSession = api;
 
@@ -350,5 +364,8 @@
     } catch {}
     await loadFor(null); // pre-identity buckets land under axs:pending until the ident event arrives
     postPaused();
+    postProbe(); // recover identity from a hook instance that survived an add-on reload
+    setTimeout(() => { if (charId == null) postProbe(); }, 2500);
+    setTimeout(() => { if (charId == null) postProbe(); }, 7000);
   })();
 })();

@@ -377,7 +377,15 @@
       return;
     }
     const idn = S.identity();
-    renderData(S.getDetail(hours), 'live · ' + (idn.name || (idn.characterId ? 'this session' : 'waiting for login')));
+    let lbl = 'live · ' + (idn.name || 'this session');
+    if (!idn.name && idn.characterId == null) {
+      lbl = idn.hookReady === false
+        ? 'waiting for login — capture hook missing; press F5'
+        : idn.hookLate
+          ? 'waiting for login — add-on loaded after the game; press F5 once'
+          : 'waiting for login — already in the game? press F5';
+    }
+    renderData(S.getDetail(hours), lbl);
     elSctls.hidden = false;
     elPause.textContent = S.isPaused() ? '▶' : '⏸';
     elPause.classList.toggle('warn', S.isPaused());
