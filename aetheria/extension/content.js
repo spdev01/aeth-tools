@@ -76,6 +76,15 @@
              border-radius: 8px; padding: 5px 8px; color: #d7dee8; font-size: 11px; line-height: 1.5;
              white-space: nowrap; pointer-events: none; box-shadow: 0 6px 18px rgba(0,0,0,.5); }
       .tip b { color: #cfe3ff; }
+      .lv { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; padding: 3px 6px;
+            background: #141a24; border-radius: 6px; color: #9fb0c5; overflow: hidden; }
+      .lv .dot { width: 7px; height: 7px; border-radius: 50%; background: #3fae6f; box-shadow: 0 0 6px rgba(63,174,111,.9);
+                 animation: axpulse 2.2s ease-in-out infinite; flex: none; }
+      .lv .dot.warn { background: #e0a63f; box-shadow: 0 0 6px rgba(224,166,63,.9); }
+      .lv .nm { color: #e8eef6; font-weight: 600; max-width: 92px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .lv .sep { color: #3a4457; }
+      .lv b { color: #9fe3b8; font-weight: 600; }
+      @keyframes axpulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
     </style>
     <div class="pill" data-act="expand" hidden>💰 <b class="pill-rate">—</b>/h</div>
     <div class="panel">
@@ -84,6 +93,7 @@
         <button class="ico" data-act="ref" title="Refresh now">↻</button>
         <button class="ico" data-act="min" title="Collapse">–</button>
       </div>
+      <div class="lv" id="lv" hidden><span class="dot" id="lvDot"></span><span class="nm" id="lvNm">—</span><span class="sep">·</span><span><b id="lvK">0</b> kills</span><span class="sep">·</span><span>loot <b id="lvV">0</b></span></div>
       <div class="kpis">
         <div class="kpi"><i>3h ≈/h</i><b id="k3">—</b></div>
         <div class="kpi"><i>24h ≈/h</i><b id="k24">—</b></div>
@@ -118,6 +128,11 @@
   const elClear = srGet('btnClear');
   const elCclink = srGet('cclink');
   const elTip = sr.querySelector('.tip');
+  const elLv = srGet('lv');
+  const elLvDot = srGet('lvDot');
+  const elLvNm = srGet('lvNm');
+  const elLvK = srGet('lvK');
+  const elLvV = srGet('lvV');
   let lastHs = [];
 
   // ---------- state ----------
@@ -201,6 +216,9 @@
   });
   let lastAutoRefresh = 0;
   window.addEventListener('ax-session-changed', () => {
+    if (sel === 'session') {
+      try { updateLive(null, null); } catch {}
+    }
     if (!userSet && sel !== 'session') {
       // a live session just appeared (login/join) — switch to it automatically
       const S = window.__axSession;
@@ -399,25 +417,57 @@
       return;
     }
     elSctls.hidden = true;
+    elLv.hidden = true;
     renderData(r.data || {}, (bots.find((b) => b.id === sel) || {}).name || '#' + sel);
+  }
+
+  // live session counters (kills + loot value) — updated cheaply whenever the capture announces progress
+  function updateLive(idn, ss) {
+    if (sel !== 'session') {
+      elLv.hidden = true;
+      return;
+    }
+    let id = idn || null;
+    let st = ss || null;
+    try {
+      const S = window.__axSession;
+      if (S) {
+        if (id == null) id = S.identity();
+        if (st == null) st = (S.getSummary() || {}).sess || null;
+      }
+    } catch {}
+    if (!id || (id.characterId == null && id.zeny == null)) {
+      elLv.hidden = true;
+      return;
+    }
+    elLv.hidden = false;
+    elLvNm.textContent = id.name || (id.characterId != null ? '#' + id.characterId : 'this session');
+    elLvK.textContent = String((st && st.k) || 0);
+    elLvV.textContent = st && st.v ? fmtC(st.v) : '0';
+    elLvDot.classList.toggle('warn', !!id.paused);
   }
 
   async function refreshSession() {
     const S = window.__axSession;
     if (!S) {
+      elLv.hidden = true;
       note('waiting for a game session — log in to the game');
       return;
     }
     const idn = S.identity();
-    let lbl = 'live · ' + (idn.name || 'this session');
-    if (!idn.name && idn.characterId == null) {
+    const connected = idn.characterId != null || idn.zeny != null;
+    const nm = idn.name || (idn.characterId != null ? '#' + idn.characterId : null);
+    let lbl = 'live · ' + (nm || 'this session');
+    if (!connected) {
       lbl = idn.hookReady === false
         ? 'waiting for login — capture hook missing; press F5'
         : idn.hookLate
           ? 'waiting for login — add-on loaded after the game; press F5 once'
           : 'waiting for login — already in the game? press F5';
     }
-    renderData(S.getDetail(hours), lbl);
+    const d = S.getDetail(hours);
+    renderData(d, lbl);
+    updateLive(idn, d.sess);
     elSctls.hidden = false;
     elPause.textContent = S.isPaused() ? '▶' : '⏸';
     elPause.classList.toggle('warn', S.isPaused());

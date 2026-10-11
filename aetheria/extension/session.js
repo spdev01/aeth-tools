@@ -46,6 +46,10 @@
   let hookReady = false; // the MAIN-world hook announced itself (capture present)
   let hookLate = false; // …and it was injected AFTER the page load (add-on loaded into an open tab: nothing to tap)
 
+  // live "this session" counters (panel line): reset on fresh join / character switch / page load
+  let sess = { k: 0, v: 0, q: 0, since: Date.now() };
+  const sessReset = () => { sess = { k: 0, v: 0, q: 0, since: Date.now() }; };
+
   const blank = () => ({ v: 0, q: 0, k: 0, c: 0, x: 0, e: 0, s: 0, zd: 0, top: {} });
   const bucket = (k) => (hours[k] ??= blank());
   const prune = () => {
@@ -75,7 +79,7 @@
   let changedTimer = null;
   const announce = () => {
     const now = Date.now();
-    if (now - changedAt > 10000) {
+    if (now - changedAt > 5000) {
       changedAt = now;
       try { window.dispatchEvent(new Event('ax-session-changed')); } catch {}
     } else if (!changedTimer) {
@@ -83,7 +87,7 @@
         changedTimer = null;
         changedAt = Date.now();
         try { window.dispatchEvent(new Event('ax-session-changed')); } catch {}
-      }, 10000);
+      }, 5000);
     }
   };
 
@@ -118,31 +122,34 @@
   // ---------- accounting (mirrors command-center/server/earnings.js) ----------
   const valueInto = (k, name, qty) => {
     const p = prices ? prices.get(name) || 0 : 0;
-    if (!(p > 0)) return;
+    if (!(p > 0)) return 0;
     const h = bucket(k);
-    if (CARD_RE.test(name)) { h.c += qty; return; }
-    if (SCROLL_RE.test(name) || POTION_RE.test(name) || WING_RE.test(name)) { h.x += p * qty; return; }
-    h.v += p * qty;
-    if (h.top[name] == null && Object.keys(h.top).length >= 14) return;
+    if (CARD_RE.test(name)) { h.c += qty; return 0; }
+    if (SCROLL_RE.test(name) || POTION_RE.test(name) || WING_RE.test(name)) { h.x += p * qty; return 0; }
+    const add = p * qty;
+    h.v += add;
+    if (h.top[name] == null && Object.keys(h.top).length >= 14) return add;
     h.top[name] = (h.top[name] ?? 0) + qty;
+    return add;
   };
 
   const foldPending = () => {
     if (!prices || !prices.size || !pending.length) return;
     const list = pending;
     pending = [];
-    for (const it of list) valueInto(it.h, it.n, it.q);
+    for (const it of list) sess.v += valueInto(it.h, it.n, it.q);
     touch();
   };
 
   const drop = (name, qty, ts) => {
     const k = hourKeyOf(ts);
     bucket(k).q += qty;
+    sess.q += qty;
     if (!prices || !prices.size) {
       if (pending.length < PEND_MAX) pending.push({ n: name, q: qty, h: k });
       return;
     }
-    valueInto(k, name, qty);
+    sess.v += valueInto(k, name, qty);
   };
 
   const zenyPush = (ts, z) => {
@@ -205,7 +212,7 @@
   const onIdent = async (d) => {
     if (d.characterId == null) return;
     if (String(d.characterId) === String(charId)) {
-      if (d.name && d.name !== charName) { charName = d.name; touch(); }
+      if (d.name && d.name !== charName) { charName = d.name; touch(); announce(); }
       return;
     }
     if (dirty) await flush();
@@ -214,6 +221,7 @@
     const carryPend = pending;
     charId = d.characterId;
     charName = d.name || null;
+    sessReset();
     await loadFor(charId);
     if (d.name) charName = d.name;
     if (carry && Object.keys(carry).length) {
@@ -236,7 +244,10 @@
         if (!d.probe) postProbe(); // initial announce → ask an older surviving instance (if any) for identity
         break;
       case 'join':
-        if (!joinAt || Date.now() - joinAt > 300000) joinAt = Date.now(); // fresh session only (travel rejoins don't reset the replay guard)
+        if (!joinAt || Date.now() - joinAt > 300000) {
+          joinAt = Date.now(); // fresh session only (travel rejoins don't reset the replay guard)
+          sessReset();
+        }
         if (!prices) ensurePrices();
         announce();
         break;
@@ -251,6 +262,7 @@
       case 'kill':
         if (paused) break;
         bucket(hourKeyOf(Date.now())).k += 1;
+        sess.k += 1;
         touch();
         announce();
         break;
@@ -280,6 +292,7 @@
       rate3, rate24, n24,
       characterId: charId, name: charName, paused,
       cur: cur ? { v: cur.v, e: cur.e, k: cur.k, q: cur.q } : null,
+      sess: { k: sess.k, v: sess.v, q: sess.q, since: sess.since },
     };
   };
 
@@ -299,7 +312,7 @@
       return { h: k, v: o && o.v ? o.v : 0, e: o && o.e ? o.e : 0, s: o && o.s ? o.s : 0, k: o ? o.k : 0, q: o ? o.q : 0, c: o ? o.c : 0, x: o ? o.x : 0, top };
     });
     const s = summary();
-    return { ok: true, botId: charId, name: charName, hours: arr, rate3: s.rate3, rate24: s.rate24, cur: s.cur, savedAt: Date.now() };
+    return { ok: true, botId: charId, name: charName, hours: arr, rate3: s.rate3, rate24: s.rate24, cur: s.cur, sess: s.sess, savedAt: Date.now() };
   };
 
   const setPaused = (v) => {
@@ -313,6 +326,7 @@
     hours = {};
     pending = [];
     lastZeny = null;
+    sessReset();
     dirty = true;
     if (flushTimer) {
       clearTimeout(flushTimer);
