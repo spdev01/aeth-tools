@@ -14,7 +14,7 @@
 <div id="page">
   <div class="wrap">
     <div class="top"><span class="logo">⌘</span><h1>Aetheria Tools</h1></div>
-    <div class="crumbs">ศูนย์ดาวน์โหลด · <a href="market-watch.html">คู่มือ Market+</a> · <a href="command-center.html">คู่มือ Command Center</a></div>
+    <div class="crumbs">ศูนย์ดาวน์โหลด · <a href="market-watch.html">คู่มือ Market+</a> · <a href="earnings.html">คู่มือ Earnings</a> · <a href="command-center.html">คู่มือ Command Center</a></div>
 
     <div class="card">
       <h2>ตลาด+ (Market+) — ส่วนขยายตลาดกลาง</h2>
@@ -33,6 +33,20 @@
     </div>
 
     <div class="card">
+      <h2>Earnings Overlay — แผงรายได้ในเกม</h2>
+      <div class="muted">กราฟรายได้แบบเรียลไทม์ระหว่างเล่น — โหมดเล่นเองใช้ได้ทุกคนโดยไม่ต้องมีอะไรเพิ่ม และโหมดกองเรือเมื่อเปิด Command Center — รองรับ Chrome / Edge และ Zen / Firefox</div>
+      <div class="row">เวอร์ชันล่าสุด: <span class="ver" id="ver-earn">…</span></div>
+      <div class="row">
+        <a class="btn" href="aetheria-earnings-chrome.zip">⬇ Chrome / Edge (zip)</a>
+        <a class="btn alt" href="aetheria-earnings-firefox.zip">Zen / Firefox (zip)</a>
+      </div>
+      <div class="muted" style="margin-top:10px">
+        Zen / Firefox แบบติดตั้งถาวร: ใช้ไฟล์ <code>.xpi</code> ที่เซ็นแล้ว (ถ้ามีในหน้านี้) — หากยังไม่มี ให้ใช้วิธีชั่วคราวตามคู่มือ
+      </div>
+      <div class="row"><a class="btn small alt" href="earnings.html">📖 คู่มือติดตั้ง + วิธีใช้งาน</a></div>
+    </div>
+
+    <div class="card">
       <h2>Command Center — ศูนย์บัญชาการบอท</h2>
       <div class="muted">จัดการบัญชี ตัวละคร และบอทหลายตัวสำหรับทดสอบเกม (รันบนเครื่องคุณเอง ผ่าน http://127.0.0.1:4310)</div>
       <div class="row">เวอร์ชันล่าสุด: <span class="ver" id="ver-cc">…</span></div>
@@ -48,6 +62,7 @@
         <li><b>Userscript:</b> อัปเดตอัตโนมัติ (ไม่ต้องทำอะไร)</li>
         <li><b>Chrome (ชุดติดตั้งแนะนำ):</b> ดับเบิลคลิก <code>UPDATE-CHROME.cmd</code> → กดรีโหลดที่ chrome://extensions</li>
         <li><b>Zen (.xpi ที่ติดตั้งถาวร):</b> อัปเดตอัตโนมัติเมื่อผู้ดูแลออกเวอร์ชันใหม่</li>
+        <li><b>Earnings Overlay:</b> Chrome — แตกไฟล์ใหม่ทับโฟลเดอร์เดิม แล้วกด ↻ ที่ chrome://extensions · Zen ชั่วคราว — ดาวน์โหลดใหม่แล้วโหลดซ้ำตามคู่มือ</li>
         <li><b>Command Center:</b> ดับเบิลคลิก <code>UPDATE-CC.cmd</code> ในโฟลเดอร์โปรแกรม</li>
       </ul>
     </div>
@@ -59,6 +74,9 @@
     fetch('latest-version.txt').then(function (r) { return r.text(); }).then(function (v) {
       document.getElementById('ver-market').textContent = v.trim();
     }).catch(function () { document.getElementById('ver-market').textContent = '(ไม่พบข้อมูลเวอร์ชัน)'; });
+    fetch('earnings-version.txt').then(function (r) { return r.text(); }).then(function (v) {
+      document.getElementById('ver-earn').textContent = v.trim();
+    }).catch(function () { document.getElementById('ver-earn').textContent = '(ไม่พบข้อมูลเวอร์ชัน)'; });
     fetch('command-center/version.txt').then(function (r) { return r.text(); }).then(function (v) {
       document.getElementById('ver-cc').textContent = v.trim();
     }).catch(function () { document.getElementById('ver-cc').textContent = '(ไม่พบข้อมูลเวอร์ชัน)'; });

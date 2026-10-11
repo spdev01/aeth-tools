@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Earnings Overlay — คู่มือติดตั้งและใช้งาน</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/site.css" />
+<script src="assets/gate.js"></script>
+</head>
+<body>
+<div id="page">
+  <div class="wrap">
+    <div class="top"><span class="logo">💰</span><h1>Earnings Overlay</h1></div>
+    <div class="crumbs"><a href="index.html">← กลับหน้าดาวน์โหลด</a> · <a href="market-watch.html">คู่มือ ตลาด+</a> · <a href="command-center.html">คู่มือ Command Center</a></div>
+
+    <div class="card">
+      <h2>คืออะไร</h2>
+      <p>แผงกราฟ<b>รายได้ในเกม</b> — โชว์รายได้แบบเรียลไทม์ระหว่างเล่น: <b>กราฟเขียว</b> = มูลค่าลูทโดยประมาณ (ดรอป × ราคาขาย NPC) · <b>กราฟฟ้า</b> = เซนีที่ขายได้จริง</p>
+      <p class="note">มี 2 โหมด: <b>🌟 this session</b> — ติดตามตัวละครที่คุณกำลังเล่น ใช้ได้ทุกคนโดยไม่ต้องมีโปรแกรมอะไรเพิ่ม · <b>โหมดกองเรือ</b> — เลือกดูรายได้บอทแต่ละตัว (ต้องเปิด Command Center บนเครื่องคุณเอง)</p>
+      <p class="note">ใช้ได้เฉพาะเว็บ <code>https://www.aetheria-online.in.th</code> · รองรับ Chrome / Edge และ Zen / Firefox</p>
+      <div class="row">เวอร์ชันล่าสุด: <span class="ver" id="ver-earn">…</span></div>
+      <div class="row">
+        <a class="btn" href="aetheria-earnings-chrome.zip">⬇ Chrome / Edge (zip)</a>
+        <a class="btn alt" href="aetheria-earnings-firefox.zip">Zen / Firefox (zip)</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>ความเป็นส่วนตัว</h2>
+      <p>ข้อมูลถูกเก็บ<b>ในเบราว์เซอร์ของคุณเท่านั้น</b> — เป็นตัวเลขสรุปรายชั่วโมงสั้น ๆ (เก็บย้อนหลัง 72 ชั่วโมง) ไม่มีการส่งข้อมูลขึ้นเซิร์ฟเวอร์ ไม่อ่านบัญชี/รหัสผ่าน และไม่บันทึกข้อความดิบใด ๆ</p>
+    </div>
+
+    <div class="card">
+      <h2>ติดตั้ง — Chrome / Edge</h2>
+      <ol>
+        <li>ดาวน์โหลด <code>aetheria-earnings-chrome.zip</code> แล้ว<b>แตกไฟล์</b>เป็นโฟลเดอร์ (เก็บไว้ที่ถาวร อย่าลบ)</li>
+        <li>เปิด <code>chrome://extensions</code> (Edge: <code>edge://extensions</code>) → เปิดสวิตช์ <b>Developer mode</b> (มุมขวาบน)</li>
+        <li>กด <b>Load unpacked</b> → เลือกโฟลเดอร์ที่แตกออกมา (โฟลเดอร์ที่มีไฟล์ <code>manifest.json</code>)</li>
+        <li>เปิดหรือรีเฟรชหน้าเกม → แผง <b>💰 Earnings</b> จะขึ้นมุมขวาบน</li>
+      </ol>
+      <p class="note">⚠ การ์ดเตือน “ส่วนขยายโหมดผู้พัฒนา” ที่ขึ้นตอนเปิด Chrome — ปิดได้เลย ไม่กระทบการทำงาน</p>
+    </div>
+
+    <div class="card">
+      <h2>ติดตั้ง — Zen / Firefox</h2>
+      <h4>แบบถาวร (.xpi — ถ้ามีในหน้าดาวน์โหลด)</h4>
+      <ol>
+        <li>ดาวน์โหลดไฟล์ <code>.xpi</code> ที่เซ็นแล้ว แล้ว<b>ลากเข้าหน้าต่าง Zen</b></li>
+        <li>ยืนยันการติดตั้ง — เสร็จ อยู่ถาวร</li>
+      </ol>
+      <h4>แบบชั่วคราว (โหมด dev — ใช้ได้เลย ไม่ต้องเซ็นไฟล์)</h4>
+      <ol>
+        <li>แตกไฟล์ <code>aetheria-earnings-firefox.zip</code> เป็นโฟลเดอร์</li>
+        <li>เปิด <code>about:debugging#/runtime/this-firefox</code> → กด <b>Load Temporary Add-on…</b></li>
+        <li>เลือกไฟล์ <code>manifest.json</code> ในโฟลเดอร์ที่แตก (เลือก “ไฟล์” ไม่ใช่โฟลเดอร์)</li>
+        <li>เปิดหรือรีเฟรชหน้าเกม → แผงจะขึ้น</li>
+      </ol>
+      <p class="note">หมายเหตุ: แบบชั่วคราวจะหายเมื่อปิด Zen (รอบหน้าโหลดซ้ำตามขั้นตอน)</p>
+    </div>
+
+    <div class="card">
+      <h2>วิธีใช้งาน</h2>
+      <ol>
+        <li>เข้าเกม → แผงจะเริ่มที่โหมด <b>🌟 this session</b> อัตโนมัติ (ตัวละครที่เล่นอยู่)</li>
+        <li>เลือกช่วงเวลา <b>6h / 12h / 24h</b> · <b>hover แท่งกราฟ</b> เพื่อดูจำนวนคิล / ดรอป / ไอเทมหลักของชั่วโมงนั้น</li>
+        <li><b>ย้ายแผง:</b> ลากที่หัวแผง (⠿) — ระบบจำตำแหน่งไว้ให้ · ย่อเป็นแคปซูล <b>💰</b> ด้วยปุ่ม <b>–</b> (ลากแคปซูลได้เช่นกัน)</li>
+        <li><b>⏸ / ▶</b> หยุด-กลับมาจับข้อมูล · <b>🗑</b> ล้างประวัติของตัวละครนี้ (กดสองครั้งเพื่อยืนยัน)</li>
+        <li><b>โหมดกองเรือ:</b> เปิด Command Center ไว้ที่ <code>http://127.0.0.1:4310</code> → ช่องรายการด้านบนจะโชว์บอททุกตัวให้เลือกดูรายได้</li>
+      </ol>
+      <p class="note">ตัวเลขจะเริ่มนับเมื่อมีคิล/ดรอป/ขายจริง — ตอนอยู่ในคิวเข้าเกม แผงจะขึ้น “waiting for login” จนกว่าจะเข้าตัวเกม</p>
+    </div>
+
+    <div class="card">
+      <h2>การอัปเดตเวอร์ชัน</h2>
+      <ul>
+        <li><b>Chrome / Edge:</b> ดาวน์โหลด zip ใหม่ → แตกไฟล์<b>ทับโฟลเดอร์เดิม</b> → กดปุ่มรีโหลด (↻) ที่ <code>chrome://extensions</code> → รีเฟรชเกม</li>
+        <li><b>Zen แบบชั่วคราว:</b> ดาวน์โหลด zip ใหม่ แตกไฟล์ แล้วโหลดซ้ำตามขั้นตอน</li>
+        <li><b>Zen แบบ .xpi ถาวร:</b> ลากไฟล์ .xpi ใหม่ทับได้เลย</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>แก้ปัญหาเบื้องต้น</h2>
+      <ul>
+        <li><b>แผงไม่ขึ้น</b> → ต้องอยู่เว็บ <code>https://www.aetheria-online.in.th</code> เท่านั้น แล้วรีเฟรชหน้า · เช็คว่าส่วนขยายถูกเปิดใช้งานอยู่</li>
+        <li><b>ตัวเลขไม่ขยับ</b> → เช็คว่าไม่ได้กด ⏸ ค้างไว้ · ตัวเลขจะขยับเมื่อมีคิล/ดรอป/ขายจริง</li>
+        <li><b>ไม่เห็นรายชื่อบอท</b> → โหมดกองเรือต้องเปิด Command Center ก่อน (โหมดเล่นเองไม่ต้องมีอะไรเพิ่ม)</li>
+        <li><b>แผงบังมินิแมพ</b> → ลากที่หัวแผงย้ายได้เลย ระบบจำตำแหน่งไว้ให้</li>
+        <li><b>Zen ขึ้น “not verified / corrupt”</b> → นั่นคือการติดตั้งแบบถาวรด้วยไฟล์ที่ยังไม่เซ็น — ให้ใช้วิธีชั่วคราวตามคู่มือนี้</li>
+      </ul>
+    </div>
+
+    <div class="footer">Aetheria Tools — สำหรับสมาชิกที่ได้รับอนุญาตเท่านั้น</div>
+  </div>
+
+  <script>
+    fetch('earnings-version.txt').then(function (r) { return r.text(); }).then(function (v) {
+      document.getElementById('ver-earn').textContent = v.trim();
+    }).catch(function () { document.getElementById('ver-earn').textContent = '(ไม่พบข้อมูลเวอร์ชัน)'; });
+  </script>
+</div>
+</body>
+</html>

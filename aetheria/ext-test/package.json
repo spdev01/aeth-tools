@@ -1,0 +1,13 @@
+{
+  "name": "aetheria-ext-test",
+  "private": true,
+  "type": "module",
+  "description": "Loads the earnings extension into real Edge, logs in as a real account, and monitors the in-game panel.",
+  "dependencies": {
+    "playwright-core": "^1.49.0"
+  },
+  "devDependencies": {
+    "@msgpack/msgpack": "^3.1.3",
+    "esbuild": "^0.28.2"
+  }
+}

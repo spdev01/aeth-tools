@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "Aetheria Earnings Overlay",
+  "version": "1.1.2",
+  "description": "Lightweight in-game earnings chart overlay for Aetheria. Live session tracking works standalone; fleet mode connects to a local Command Center.",
+  "permissions": ["storage"],
+  "host_permissions": ["http://127.0.0.1:4310/*"],
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "background": { "scripts": ["bg.js"] },
+  "action": {
+    "default_title": "Toggle Aetheria earnings overlay",
+    "default_icon": { "16": "icons/icon16.png", "32": "icons/icon32.png" }
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.aetheria-online.in.th/*", "*://aetheria-online.in.th/*"],
+      "js": ["page-hook.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": ["*://*.aetheria-online.in.th/*", "*://aetheria-online.in.th/*"],
+      "js": ["session.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["*://*.aetheria-online.in.th/*", "*://aetheria-online.in.th/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "earnings@lumivara.online",
+      "strict_min_version": "142.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
+  }
+}

@@ -1,0 +1,46 @@
+AETHERIA EARNINGS OVERLAY — Zen / Firefox install & live-dev guide
+===================================================================
+
+WHAT / คืออะไร
+  In-game earnings panel (💰) for the Aetheria game page.
+    • "🌟 this session" mode works standalone — tracks the character you play, right now.
+    • Fleet mode lists your Command Center bots (needs CC running at http://127.0.0.1:4310).
+  แผงกราฟรายได้ในเกม — โหมดเล่นเองใช้ได้ทันที (ไม่ต้องมี server) และโหมดกองเรือ
+  (ต้องเปิด Command Center ที่ http://127.0.0.1:4310)
+
+FILES / ไฟล์ (built by `node build.mjs` — builds BOTH browsers into dist\)
+  Loadable folder :  aetheria\extension\dist\firefox\
+  Shareable zip   :  aetheria\extension\dist\aetheria-earnings-firefox-v<version>.zip
+
+INSTALL — temporary (dev) / ติดตั้งชั่วคราว (โหมด dev)
+  1. Open Zen / Firefox. In the address bar go to:
+         about:debugging#/runtime/this-firefox
+  2. Click  "Load Temporary Add-on…"
+  3. Select the FILE:  aetheria\extension\dist\firefox\manifest.json
+     (select the file, not the folder / เลือกไฟล์ ไม่ใช่โฟลเดอร์)
+  4. Open or reload the game:  https://www.aetheria-online.in.th/play
+     → the 💰 panel appears (top-right). Source dropdown defaults to "🌟 this session".
+  NOTE: temporary add-ons unload when the browser closes → repeat steps 1–3 next time.
+        (Same flow as Aetheria Market+ / เหมือนวิธีติดตั้ง Market+)
+
+LIVE-FIX LOOP / แก้บั๊กแบบสด ๆ (ทำบ่อย)
+  1. Edit source files here:
+         session.js   content.js   bg.js
+     If the network hook needs a change, edit  ext-test\page-hook.src.js  and rebuild it:
+         cd aetheria\ext-test
+         npx esbuild page-hook.src.js --bundle --minify --format=iife --target=chrome110 --outfile=..\extension\page-hook.js
+  2. Rebuild the packages (both browsers):
+         cd aetheria\extension
+         node build.mjs
+  3. In about:debugging, find your add-on card → click  "Reload"
+  4. Reload the game tab (F5) → new code is live.       (~10 seconds per iteration)
+
+DEBUG / ดีบั๊ก
+  • about:debugging → your add-on card → "Inspect"  = background (bg.js) console
+  • Game tab → F12 → Console = content.js / session.js / page-hook.js logs
+  • Panel missing? Confirm the URL is the game site, reload the page, and that the card shows "Enabled".
+
+PERMANENT INSTALL (for other players) / ติดตั้งถาวร
+  Zen/Firefox will not keep an unsigned add-on. Sign the zip (free, once per release):
+      npx web-ext sign --source-dir dist\firefox --api-key <AMO_KEY> --api-secret <AMO_SECRET> --channel unlisted
+  then share the produced .xpi — users drag it into the browser. (See market-tool\INSTALL-ZEN.txt for details.)

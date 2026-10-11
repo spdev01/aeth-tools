@@ -1,0 +1,27 @@
+AETHERIA EARNINGS OVERLAY — Chrome / Edge install guide
+========================================================
+
+WHAT / คืออะไร
+  In-game earnings panel (💰) for the Aetheria game page.
+    • "🌟 this session" — tracks the character you are playing, right now (no server needed).
+    • Fleet mode — lists Command Center bots (needs the CC running at http://127.0.0.1:4310; the owner's machine only).
+  แผงกราฟรายได้ในเกม — โหมดเล่นเองใช้ได้ทันที (ไม่ต้องมี server) / โหมดกองเรือต้องเปิด Command Center
+
+INSTALL / วิธีติดตั้ง
+  1. Unzip  aetheria-earnings-chrome-v<version>.zip  to a PERMANENT folder.
+     แตกไฟล์ zip เก็บไว้ในโฟลเดอร์ถาวร (อย่าลบโฟลเดอร์นี้)
+  2. Open:   chrome://extensions     (Edge: edge://extensions)
+  3. Turn ON  "Developer mode"  (top-right corner). / เปิดสวิตช์ Developer mode
+  4. Click  "Load unpacked"  and select the unzipped folder (the one containing manifest.json).
+     กด Load unpacked แล้วเลือกโฟลเดอร์ที่แตกไว้ (โฟลเดอร์ที่มีไฟล์ manifest.json)
+  5. Open or reload the game:  https://www.aetheria-online.in.th/play
+     → the 💰 panel appears (top-right). Source dropdown defaults to "🌟 this session".
+
+UPDATE / อัปเดตเวอร์ชันใหม่
+  Unzip the new zip OVER the same folder (replace files), then press ↻ Reload on the extension
+  card in chrome://extensions. / แตกไฟล์ใหม่ทับโฟลเดอร์เดิม แล้วกด Reload ที่หน้ารายการส่วนขยาย
+
+NOTES / หมายเหตุ
+  • This is an unpacked (developer-mode) install — Chrome/Edge may show a mild warning; that is normal.
+  • Keep the folder — the browser loads the extension live from it; deleting it uninstalls the extension.
+  • Panel missing? Make sure the URL is the game site, then reload the page (F5).

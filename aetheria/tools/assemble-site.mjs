@@ -3,6 +3,7 @@
 //
 // Inputs:
 //   aetheria/market-tool/dist/         (built by market-tool/build.mjs)
+//   aetheria/extension/dist/           (built by extension/build.mjs — earnings overlay)
 //   aetheria/command-center/release/   (built by command-center/tools/build-release.mjs)
 //   aetheria/site/                     (gated pages: index, guides)
 //   XPI_DIR env (optional)             (web-ext-artifacts dir with signed .xpi)
@@ -12,6 +13,7 @@
 //   /index.html /market-watch.html /command-center.html   (password-gated pages)
 //   /aetheria-market-plus-chrome.zip  /aetheria-market-plus-bundle.zip
 //   /aetheria-market-plus.user.js     /latest-version.txt  /updates.json  (+ xpi)
+//   /aetheria-earnings-chrome.zip     /aetheria-earnings-firefox.zip  /earnings-version.txt  (+ xpi)
 //   /command-center/aetheria-command-center.zip  /command-center/version.txt
 import fs from 'node:fs';
 import path from 'node:path';
@@ -38,6 +40,29 @@ for (const f of ['aetheria-market-plus-chrome.zip', 'aetheria-market-plus-firefo
 }
 const us = path.join(mDist, 'userscript', 'aetheria-market-plus.user.js');
 if (fs.existsSync(us)) { fs.copyFileSync(us, path.join(SITE, 'aetheria-market-plus.user.js')); console.log('site: aetheria-market-plus.user.js'); }
+
+// --- Earnings Overlay (root, un-gated — stable download names + version beacon)
+const EARN = path.join(AETHERIA, 'extension');
+try {
+  const eVer = JSON.parse(fs.readFileSync(path.join(EARN, 'manifest.json'), 'utf8')).version;
+  for (const b of ['chrome', 'firefox']) {
+    const src = path.join(EARN, 'dist', `aetheria-earnings-${b}-v${eVer}.zip`);
+    if (fs.existsSync(src)) { fs.copyFileSync(src, path.join(SITE, `aetheria-earnings-${b}.zip`)); console.log(`site: aetheria-earnings-${b}.zip (v${eVer})`); }
+  }
+  fs.writeFileSync(path.join(SITE, 'earnings-version.txt'), eVer + '\n');
+  console.log('site: earnings-version.txt');
+} catch (e) { console.warn('earnings block skipped:', String((e && e.message) || e)); }
+// signed earnings xpi (optional — the CI signing step writes extension/web-ext-artifacts)
+const eXpi = path.join(EARN, 'web-ext-artifacts');
+if (fs.existsSync(eXpi)) {
+  let stable = false;
+  for (const f of fs.readdirSync(eXpi).sort()) {
+    if (!f.endsWith('.xpi')) continue;
+    fs.copyFileSync(path.join(eXpi, f), path.join(SITE, f));
+    if (!stable) { fs.copyFileSync(path.join(eXpi, f), path.join(SITE, 'aetheria-earnings-firefox.xpi')); stable = true; console.log('site: ' + f + ' (+ aetheria-earnings-firefox.xpi)'); }
+    else console.log('site:', f);
+  }
+}
 
 // --- recommended starter bundle: chrome/ folder + updater + guide (updater expects sibling "chrome")
 const bundle = path.join(SITE, '_bundle', 'aetheria-market-plus');

@@ -1,6 +1,7 @@
 # Publish both tools to GitHub Pages on every push.
 #   - version = build time (yy.mm.dd.hhmm, Thai time) — auto-increments on every push
 #   - Market+: userscript auto-update, Chrome updater files, Zen updates.json (+ optional AMO signing)
+#   - Earnings Overlay: Chrome zip + Zen/Firefox zip (+ optional AMO signing)
 #   - Command Center: release zip + updater + version beacon
 #   - Pages: password-gated pages + un-gated download/update files
 #
@@ -48,6 +49,9 @@ jobs:
           DEPLOY_BASE: ${{ steps.base.outputs.url }}
         run: cd aetheria/market-tool && node build.mjs
 
+      - name: Build Earnings Overlay
+        run: cd aetheria/extension && node build.mjs
+
       - name: AMO signing secrets present?
         id: amo
         env:
@@ -70,6 +74,17 @@ jobs:
           first=$(ls web-ext-artifacts/*.xpi | head -n 1)
           cp "$first" "web-ext-artifacts/aetheria-market-plus-${MARKETPLUS_VERSION}.xpi"
           node tools/zen-updates.mjs --url-template "${BASE}/aetheria-market-plus-{version}.xpi" --out dist/updates.json
+
+      - name: Sign Earnings xpi (optional)
+        if: steps.amo.outputs.ok == '1'
+        continue-on-error: true
+        env:
+          WEB_EXT_API_KEY: ${{ secrets.AMO_API_KEY }}
+          WEB_EXT_API_SECRET: ${{ secrets.AMO_API_SECRET }}
+        run: |
+          cd aetheria/extension
+          mkdir -p web-ext-artifacts
+          npx --yes web-ext sign --source-dir dist/firefox --channel unlisted --artifacts-dir web-ext-artifacts
 
       - name: Build Command Center
         env:
