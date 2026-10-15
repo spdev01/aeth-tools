@@ -1,0 +1,5 @@
+{
+  "enabled": true,
+  "ids": [110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120],
+  "note": "Human-like behavior layer (2026-10-12). Restart a bot to apply. ids=[] with enabled=true means ALL bots. enabled=false disables everywhere. Delete this file to fully disable (safe fallback)."
+}

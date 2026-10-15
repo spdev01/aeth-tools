@@ -1,0 +1,9 @@
+[Unit]
+Description=Aetheria fleet auto-start pass (starts every bot with persisted run intent)
+After=aetheria-cc.service
+Wants=aetheria-cc.service
+
+[Service]
+Type=oneshot
+User=__USER__
+ExecStart=__INSTALL__/migrate/fleet-up.sh

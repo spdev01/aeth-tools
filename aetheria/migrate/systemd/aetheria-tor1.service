@@ -1,0 +1,15 @@
+[Unit]
+Description=Aetheria Tor daemon 1 (odd bot ids - SOCKS 19000+id, control 9051)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=__USER__
+ExecStart=__TOR__ -f __INSTALL__/command-center/data/tor/torrc
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

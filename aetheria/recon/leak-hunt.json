@@ -1,0 +1,404 @@
+{
+ "manOnly": [
+  {
+   "id": "1",
+   "name": "Crab",
+   "file": "1.webp"
+  },
+  {
+   "id": "3",
+   "name": "Baby Bee",
+   "file": "3.webp"
+  },
+  {
+   "id": "4",
+   "name": "Young Crab",
+   "file": "4.webp"
+  },
+  {
+   "id": "5",
+   "name": "Wild Goat",
+   "file": "5.webp"
+  },
+  {
+   "id": "6",
+   "name": "Rotten Zombie",
+   "file": "6.webp"
+  },
+  {
+   "id": "7",
+   "name": "Giant Crab",
+   "file": "7.webp"
+  },
+  {
+   "id": "8",
+   "name": "Savage Brute",
+   "file": "8.webp"
+  },
+  {
+   "id": "9",
+   "name": "AsGard Warrior",
+   "file": "9.webp"
+  },
+  {
+   "id": "10",
+   "name": "Elder Goat",
+   "file": "10.webp"
+  }
+ ],
+ "liveOnlyMonsters": [],
+ "orphanItemIcons": [
+  "items/iron-sword.webp",
+  "items/steel-sword.webp",
+  "items/mythril-sword.webp",
+  "items/dragon-sword.webp",
+  "items/stuner-axe.webp",
+  "items/gladiator-sword.webp",
+  "items/lance.webp",
+  "items/sniper.webp",
+  "items/iron-helmet.webp",
+  "items/steel-helmet.webp",
+  "items/mythril-helmet.webp",
+  "items/dragon-helmet.webp",
+  "items/iron-armor.webp",
+  "items/steel-armor.webp",
+  "items/mythril-armor.webp",
+  "items/dragon-armor.webp",
+  "items/iron-gauntlet.webp",
+  "items/steel-gauntlet.webp",
+  "items/mythril-gauntlet.webp",
+  "items/dragon-gauntlet.webp",
+  "items/iron-boots.webp",
+  "items/steel-boots.webp",
+  "items/mythril-boots.webp",
+  "items/dragon-boots.webp",
+  "items/iron-pants.webp",
+  "items/steel-pants.webp",
+  "items/mythril-pants.webp",
+  "items/dragon-pants.webp",
+  "items/speed-potion.webp",
+  "items/greater-healing-potion.webp",
+  "items/iron-ore.webp",
+  "items/fresh-herb.webp",
+  "items/monster-hide.webp",
+  "items/monster-fang.webp",
+  "items/old-coin.webp",
+  "items/refine-stone.webp",
+  "items/travelers-cape.webp",
+  "items/ring-of-vigor.webp",
+  "items/glove.webp",
+  "items/armor.webp",
+  "items/boots.webp",
+  "items/pants.webp",
+  "items/zeny.webp",
+  "items/novice-sword.webp",
+  "items/waghnak.webp",
+  "items/cap.webp",
+  "items/goggles.webp",
+  "items/crab-claw-small.webp",
+  "items/crab-shell.webp",
+  "items/bee-sting.webp",
+  "items/goat-horn.webp",
+  "items/decayed-nail.webp",
+  "items/giant-crab-claw.webp",
+  "items/brute-tusk.webp",
+  "items/asgard-emblem.webp",
+  "items/elder-horn.webp",
+  "items/crab-eye.webp",
+  "items/tiny-pearl.webp",
+  "items/crab-meat.webp",
+  "items/coral-chip.webp",
+  "items/bee-wing.webp",
+  "items/honeycomb.webp",
+  "items/goat-wool.webp",
+  "items/goat-bell.webp",
+  "items/torn-rag.webp",
+  "items/old-bone.webp",
+  "items/hard-carapace.webp",
+  "items/giant-pearl.webp",
+  "items/coarse-hide.webp",
+  "items/beast-heart.webp",
+  "items/broken-blade.webp",
+  "items/warrior-medal.webp",
+  "items/elder-wool.webp",
+  "items/sage-beard.webp",
+  "items/supporter-pack-alt.webp",
+  "items/snake-hat.webp",
+  "items/gacha-egg.webp",
+  "items/celestial-kitten.webp",
+  "items/stone-blank.webp",
+  "items/stone-blank-2.webp",
+  "items/stone-blank-3.webp",
+  "items/stone-blank-4.webp",
+  "items/stone-blank-5.webp"
+ ],
+ "skillIconOnly": [
+  "_attack",
+  "_unknown"
+ ],
+ "skillNoIcon": [
+  "whirlwind (Cyclone Axe)",
+  "starfall (Starfall)",
+  "angel-starfall (Seraph Starfall)",
+  "focus-shooting (Focus Shooting)",
+  "earthquake (Tectonic Rage)"
+ ],
+ "spiritOrphans": [
+  "celestial-kitten",
+  "spellbook",
+  "grimoire"
+ ],
+ "roOnlyCount": 858,
+ "roOnlySample": [
+  {
+   "id": 501,
+   "name": "Red Potion"
+  },
+  {
+   "id": 502,
+   "name": "Orange Potion"
+  },
+  {
+   "id": 503,
+   "name": "Yellow Potion"
+  },
+  {
+   "id": 504,
+   "name": "White Potion"
+  },
+  {
+   "id": 505,
+   "name": "Blue Potion"
+  },
+  {
+   "id": 507,
+   "name": "Red Herb"
+  },
+  {
+   "id": 508,
+   "name": "Yellow Herb"
+  },
+  {
+   "id": 509,
+   "name": "White Herb"
+  },
+  {
+   "id": 510,
+   "name": "Blue Herb"
+  },
+  {
+   "id": 511,
+   "name": "Green Herb"
+  },
+  {
+   "id": 512,
+   "name": "Apple"
+  },
+  {
+   "id": 513,
+   "name": "Banana"
+  },
+  {
+   "id": 514,
+   "name": "Grape"
+  },
+  {
+   "id": 515,
+   "name": "Carrot"
+  },
+  {
+   "id": 516,
+   "name": "Potato"
+  },
+  {
+   "id": 517,
+   "name": "Meat"
+  },
+  {
+   "id": 518,
+   "name": "Honey"
+  },
+  {
+   "id": 519,
+   "name": "Milk"
+  },
+  {
+   "id": 520,
+   "name": "Hinalle Leaflet"
+  },
+  {
+   "id": 521,
+   "name": "Aloe Leaflet"
+  },
+  {
+   "id": 522,
+   "name": "Mastela Fruit"
+  },
+  {
+   "id": 523,
+   "name": "Holy Water"
+  },
+  {
+   "id": 525,
+   "name": "Panacea"
+  },
+  {
+   "id": 526,
+   "name": "Royal Jelly"
+  },
+  {
+   "id": 528,
+   "name": "Monster's Feed"
+  },
+  {
+   "id": 529,
+   "name": "Candy"
+  },
+  {
+   "id": 530,
+   "name": "Candy Cane"
+  },
+  {
+   "id": 531,
+   "name": "Apple Juice"
+  },
+  {
+   "id": 532,
+   "name": "Banana Juice"
+  },
+  {
+   "id": 533,
+   "name": "Grape Juice"
+  },
+  {
+   "id": 535,
+   "name": "Pumpkin"
+  },
+  {
+   "id": 536,
+   "name": "Ice Cream"
+  },
+  {
+   "id": 537,
+   "name": "Pet Food"
+  },
+  {
+   "id": 538,
+   "name": "Well-baked Cookie"
+  },
+  {
+   "id": 539,
+   "name": "Piece of Cake"
+  },
+  {
+   "id": 549,
+   "name": "Yam"
+  },
+  {
+   "id": 568,
+   "name": "Lemon"
+  },
+  {
+   "id": 578,
+   "name": "Strawberry"
+  },
+  {
+   "id": 582,
+   "name": "Orange"
+  },
+  {
+   "id": 601,
+   "name": "Fly Wing"
+  },
+  {
+   "id": 602,
+   "name": "Butterfly Wing"
+  },
+  {
+   "id": 603,
+   "name": "Old Blue Box"
+  },
+  {
+   "id": 604,
+   "name": "Dead Branch"
+  },
+  {
+   "id": 605,
+   "name": "Anodyne"
+  },
+  {
+   "id": 606,
+   "name": "Aloevera"
+  },
+  {
+   "id": 607,
+   "name": "Yggdrasil Berry"
+  },
+  {
+   "id": 608,
+   "name": "Yggdrasil Seed"
+  },
+  {
+   "id": 609,
+   "name": "Amulet"
+  },
+  {
+   "id": 610,
+   "name": "Yggdrasil Leaf"
+  },
+  {
+   "id": 611,
+   "name": "Magnifier"
+  },
+  {
+   "id": 616,
+   "name": "Old Card Album"
+  },
+  {
+   "id": 617,
+   "name": "Old Purple Box"
+  },
+  {
+   "id": 618,
+   "name": "Worn Out Scroll"
+  },
+  {
+   "id": 619,
+   "name": "Unripe Apple"
+  },
+  {
+   "id": 620,
+   "name": "Orange Juice"
+  },
+  {
+   "id": 621,
+   "name": "Bitter Herb"
+  },
+  {
+   "id": 622,
+   "name": "Rainbow Carrot"
+  },
+  {
+   "id": 623,
+   "name": "Earthworm the Dude"
+  },
+  {
+   "id": 624,
+   "name": "Rotten Fish"
+  },
+  {
+   "id": 625,
+   "name": "Rusty Iron"
+  }
+ ],
+ "extraCards": [],
+ "bossHits": [
+  "9041",
+  "9040",
+  "9042",
+  "9044",
+  "9045",
+  "9046"
+ ],
+ "loadHits": []
+}

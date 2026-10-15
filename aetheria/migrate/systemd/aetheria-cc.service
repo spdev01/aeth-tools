@@ -1,0 +1,18 @@
+[Unit]
+Description=Aetheria Command Center (dashboard + bot supervisor, port 4310)
+After=network-online.target aetheria-tor1.service aetheria-tor2.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=__USER__
+WorkingDirectory=__INSTALL__/command-center
+# tor binary for the in-CC watchdog; AETHERIA_HOST=0.0.0.0 only if you firewall the dashboard
+Environment=AETHERIA_TOR_BIN=__TOR__
+Environment=AETHERIA_HOST=127.0.0.1
+ExecStart=__NODE__ server/index.js
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

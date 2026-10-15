@@ -9,6 +9,7 @@ import WebSocket from 'ws';
 import fs from 'node:fs';
 import { encode, decodeMulti } from '@msgpack/msgpack';
 import { Reflection } from '@colyseus/schema';
+import { apiFetch, wsOptions } from './net.js';
 
 export const BASE_DEFAULT = 'https://www.aetheria-online.in.th';
 
@@ -16,6 +17,7 @@ export class AetheriaClient {
   constructor(opts = {}) {
     this.base = opts.base || BASE_DEFAULT;
     this.token = opts.token;
+    this.deviceId = opts.deviceId || null; // device identity (new client 2026-10-12): persistent UUID sent to /world/enter
     this.ws = null;
     this.handlers = { message: [], state: [], join: [], close: [], error: [] };
     this.joinInfo = null;
@@ -31,27 +33,53 @@ export class AetheriaClient {
   }
   emit(evt, ...args) { for (const fn of [...(this.handlers[evt] || [])]) fn(...args); }
 
-  // ---------- REST ----------
+  // ---------- REST ---------- (rides this bot's Tor circuit; header shape = captured Chrome)
   async api(pathname, { method = 'GET', body } = {}) {
-    const res = await fetch(this.base + pathname, {
-      method,
-      headers: { Authorization: `Bearer ${this.token}`, 'Content-Type': 'application/json' },
-      body: body ? JSON.stringify(body) : undefined,
-    });
+    const res = await apiFetch(this.base + pathname, { method, body, token: this.token });
     const text = await res.text();
     let json = null; try { json = JSON.parse(text); } catch {}
     return { status: res.status, json, text: json ? null : text };
   }
   async listCharacters() { return (await this.api('/characters')).json; }
   async createCharacter(name) { return (await this.api('/characters', { method: 'POST', body: { name } })).json; }
-  async worldEnter(characterId) { return (await this.api('/world/enter', { method: 'POST', body: { characterId } })).json; }
+  async worldEnter(characterId) {
+    // NEW CLIENT (2026-10-12): /world/enter carries a persistent device UUID (localStorage 'aetheria.device'
+    // in the real client). After the anti-bot update, missing deviceId = instant "not a real browser" tell.
+    const body = { characterId };
+    if (this.deviceId) body.deviceId = this.deviceId;
+    return (await this.api('/world/enter', { method: 'POST', body })).json;
+  }
 
-  async getReservation(characterId) {
-    const enter = await this.worldEnter(characterId);
+  async getReservation(characterId, opts = {}) {
+    const { onQueue = null, abort = null } = opts;
+    let enter = await this.worldEnter(characterId);
+    // SERVER QUEUE PROTOCOL (2026-10-10, world/enter): at capacity the world replies
+    //   { queued:true, position, waiting, etaSeconds, pollMs }
+    // and the contract is to RE-POLL world/enter every pollMs until admitted — NOT to treat it as a
+    // failed connect attempt. The old ladder burned all 12 attempts in ~70s, failed the step, relogged
+    // and re-queued (churn), and the leftover duplicate queue tickets got the fresh session kicked
+    // (ws_close 1006 seconds after joining) — patient polling is both correct and calmer.
+    if (enter && enter.queued) {
+      const ping = () => { try { onQueue?.(enter); } catch {} };
+      ping();
+      let lastAt = Date.now();
+      const deadline = Date.now() + 45 * 60 * 1000; // sanity cap — a longer queue means something else is wrong
+      for (;;) {
+        if (abort && abort()) throw new Error('stop requested during login queue');
+        if (Date.now() > deadline) throw new Error('login queue wait exceeded 45 minutes: ' + JSON.stringify(enter));
+        const pm = Math.min(10000, Math.max(1000, Number(enter.pollMs) || 2000));
+        await new Promise((r) => setTimeout(r, pm));
+        enter = await this.worldEnter(characterId);
+        if (!enter || !enter.queued) break;
+        if (Date.now() - lastAt > 20000) {
+          lastAt = Date.now();
+          ping();
+        }
+      }
+    }
     if (!enter || !enter.roomId) throw new Error('world/enter failed: ' + JSON.stringify(enter));
-    const mmRes = await fetch(enter.endpoint + '/matchmake/joinById/' + enter.roomId, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ticket: enter.ticket }),
+    const mmRes = await apiFetch(enter.endpoint + '/matchmake/joinById/' + enter.roomId, {
+      method: 'POST', body: { ticket: enter.ticket },
     });
     const reservation = await mmRes.json();
     if (!reservation || !reservation.sessionId) throw new Error('matchmake failed: ' + JSON.stringify(reservation));
@@ -60,8 +88,8 @@ export class AetheriaClient {
   }
 
   // ---------- Connect ----------
-  async connect(characterId) {
-    const { enter, reservation, wsUrl } = await this.getReservation(characterId);
+  async connect(characterId, opts = {}) {
+    const { enter, reservation, wsUrl } = await this.getReservation(characterId, opts);
     this.enter = enter; this.reservation = reservation; this.wsUrl = wsUrl;
     this.mapId = enter.mapId;
     await this.connectSocket(wsUrl);
@@ -72,16 +100,18 @@ export class AetheriaClient {
   // Rejoin a room directly (used after 'travel' messages: {roomId, ticket, endpoint})
   async rejoinRoom(travel) {
     const { roomId, ticket, mapId, endpoint: newEndpoint } = travel;
+    this.busyAt = Date.now(); // marks an intentional travel/rejoin in flight (guards the runner's fast auto-reconnect)
     if (!roomId || !ticket) throw new Error('travel msg missing roomId/ticket: ' + JSON.stringify(travel));
     // 1) consented leave of current room (exactly like the game client)
     try { this.ws && this.ws.send(Buffer.from([0x0c])); } catch {}
     await new Promise((r) => setTimeout(r, 900));
-    try { this.ws && this.ws.removeAllListeners(); this.ws && this.ws.close(); } catch {}
+    this.hardClose(); // CRASH-PROOF teardown: close() on a CONNECTING socket emits 'error' on nextTick —
+    // outside any try/catch — so the socket must always keep an error listener before being closed
+    // (this raced Tor's slower connects after deathRespawn and killed runners with exit code 3)
     // 2) matchmake the new room
     const endpoint = newEndpoint || this.enter.endpoint;
-    const mmRes = await fetch(endpoint + '/matchmake/joinById/' + roomId, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ticket, batch: true }),
+    const mmRes = await apiFetch(endpoint + '/matchmake/joinById/' + roomId, {
+      method: 'POST', body: { ticket, batch: true },
     });
     const reservation = await mmRes.json();
     if (!reservation || !reservation.sessionId) throw new Error('rejoin matchmake failed: ' + JSON.stringify(reservation));
@@ -94,6 +124,7 @@ export class AetheriaClient {
     const joined = await this.waitJoin();
     if (!joined) throw new Error('rejoin connect did not join: ' + this.wsUrl);
     this.arrived();
+    this.busyAt = 0;
     return this;
   }
 
@@ -102,7 +133,7 @@ export class AetheriaClient {
     this.worldDecoder = null;
     this.world = null;
     this.worldAt = 0;
-    const ws = new WebSocket(wsUrl);
+    const ws = new WebSocket(wsUrl, wsOptions()); // Tor circuit + Chrome handshake headers + permessage-deflate
     this.ws = ws;
     await new Promise((resolve, reject) => {
       ws.once('open', resolve); ws.once('error', reject);
@@ -201,7 +232,18 @@ export class AetheriaClient {
     catch (e) { this.emit('error', { kind: 'send', type, err: String((e && e.message) || e) }); }
   }
 
-  close() { try { this.ws && this.ws.close(); } catch {} }
+  hardClose() {
+    try {
+      const ws = this.ws;
+      if (!ws) return;
+      ws.removeAllListeners();
+      ws.on('error', () => {}); // close/terminate on CONNECTING → abortHandshake → nextTick emit('error') — swallow it
+      if (ws.readyState === WebSocket.CONNECTING) ws.terminate();
+      else ws.close();
+    } catch {}
+  }
+
+  close() { this.hardClose(); }
 
   // Send leave-room frame (0x0c) then wait — frees our seat so the next joinById succeeds immediately.
   async leaveGraceful(ms = 700) {

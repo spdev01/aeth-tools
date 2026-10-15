@@ -1,0 +1,1036 @@
+{
+  "9001": {
+    "attack": {
+      "id": "slime-attack",
+      "normal": 183.0,
+      "ground": 226
+    },
+    "death": {
+      "id": "slime-death",
+      "normal": 177.8,
+      "ground": 202
+    },
+    "hurt": {
+      "id": "slime-hurt",
+      "normal": 235.3,
+      "ground": 235
+    },
+    "walk": {
+      "id": "slime-walk",
+      "normal": 223.7,
+      "ground": 247
+    }
+  },
+  "9002": {
+    "attack": {
+      "id": "caterpillar-attack",
+      "normal": 194.0,
+      "ground": 230
+    },
+    "hurt": {
+      "id": "caterpillar-hurt",
+      "normal": 208.3,
+      "ground": 234
+    },
+    "death": {
+      "id": "caterpillar-death",
+      "normal": 206.2,
+      "ground": 225
+    },
+    "walk": {
+      "id": "caterpillar-walk",
+      "normal": 200.5,
+      "ground": 223
+    }
+  },
+  "9003": {
+    "attack": {
+      "id": "rabbit-attack",
+      "normal": 154.0,
+      "ground": 219
+    },
+    "hurt": {
+      "id": "rabbit-hurt",
+      "normal": 180.8,
+      "ground": 236
+    },
+    "death": {
+      "id": "rabbit-death",
+      "normal": 152.5,
+      "ground": 211
+    },
+    "walk": {
+      "id": "rabbit-walk",
+      "normal": 166.4,
+      "ground": 240
+    }
+  },
+  "9004": {
+    "attack": {
+      "id": "cocoon-attack",
+      "normal": 137.0,
+      "ground": 240
+    },
+    "hurt": {
+      "id": "cocoon-hurt",
+      "normal": 169.8,
+      "ground": 250
+    },
+    "death": {
+      "id": "cocoon-death",
+      "normal": 140.7,
+      "ground": 236
+    },
+    "walk": {
+      "id": "cocoon-walk",
+      "normal": 131.7,
+      "ground": 250
+    }
+  },
+  "9010": {
+    "attack": {
+      "id": "treant-attack",
+      "normal": 194.0,
+      "ground": 236
+    },
+    "hurt": {
+      "id": "treant-hurt",
+      "normal": 208.6,
+      "ground": 244
+    },
+    "death": {
+      "id": "treant-death",
+      "normal": 198.0,
+      "ground": 242
+    },
+    "walk": {
+      "id": "treant-walk",
+      "normal": 222.6,
+      "ground": 250
+    }
+  },
+  "9011": {
+    "attack": {
+      "id": "cricket-attack",
+      "normal": 160.0,
+      "ground": 224
+    },
+    "hurt": {
+      "id": "cricket-hurt",
+      "normal": 185.7,
+      "ground": 239
+    },
+    "death": {
+      "id": "cricket-death",
+      "normal": 182.8,
+      "ground": 228
+    },
+    "walk": {
+      "id": "cricket-walk",
+      "normal": 183.8,
+      "ground": 243
+    }
+  },
+  "9012": {
+    "attack": {
+      "id": "jellyfish-attack",
+      "normal": 164.0,
+      "ground": 224
+    },
+    "hurt": {
+      "id": "jellyfish-hurt",
+      "normal": 191.3,
+      "ground": 240
+    },
+    "death": {
+      "id": "jellyfish-death",
+      "normal": 190.6,
+      "ground": 235
+    },
+    "walk": {
+      "id": "jellyfish-walk",
+      "normal": 206.3,
+      "ground": 247
+    }
+  },
+  "9013": {
+    "attack": {
+      "id": "hydra-attack",
+      "normal": 206.0,
+      "ground": 227
+    },
+    "hurt": {
+      "id": "hydra-hurt",
+      "normal": 215.8,
+      "ground": 225
+    },
+    "death": {
+      "id": "hydra-death",
+      "normal": 207.8,
+      "ground": 225
+    },
+    "walk": {
+      "id": "hydra-walk",
+      "normal": 229.7,
+      "ground": 241
+    }
+  },
+  "9014": {
+    "attack": {
+      "id": "wolf-attack",
+      "normal": 218.0,
+      "ground": 222
+    },
+    "hurt": {
+      "id": "wolf-hurt",
+      "normal": 235.1,
+      "ground": 225
+    },
+    "death": {
+      "id": "wolf-death",
+      "normal": 221.7,
+      "ground": 221
+    },
+    "walk": {
+      "id": "wolf-walk",
+      "normal": 212.3,
+      "ground": 221
+    }
+  },
+  "9015": {
+    "attack": {
+      "id": "mandragora-attack",
+      "normal": 223.0,
+      "ground": 235
+    },
+    "hurt": {
+      "id": "mandragora-hurt",
+      "normal": 239.8,
+      "ground": 242
+    },
+    "death": {
+      "id": "mandragora-death",
+      "normal": 232.9,
+      "ground": 238
+    },
+    "walk": {
+      "id": "mandragora-walk",
+      "normal": 217.9,
+      "ground": 231
+    }
+  },
+  "9016": {
+    "attack": {
+      "id": "bat-attack",
+      "normal": 241.0,
+      "ground": 233
+    },
+    "hurt": {
+      "id": "bat-hurt",
+      "normal": 241.7,
+      "ground": 228
+    },
+    "death": {
+      "id": "bat-death",
+      "normal": 238.1,
+      "ground": 222
+    },
+    "walk": {
+      "id": "bat-walk",
+      "normal": 231.1,
+      "ground": 211
+    }
+  },
+  "9017": {
+    "attack": {
+      "id": "kobold-miner-attack",
+      "normal": 207.0,
+      "ground": 248
+    },
+    "hurt": {
+      "id": "kobold-miner-hurt",
+      "normal": 201.5,
+      "ground": 250
+    },
+    "death": {
+      "id": "kobold-miner-death",
+      "normal": 218.7,
+      "ground": 237
+    },
+    "walk": {
+      "id": "kobold-miner-walk",
+      "normal": 231.7,
+      "ground": 243
+    }
+  },
+  "9018": {
+    "attack": {
+      "id": "orc-brute-attack",
+      "normal": 184.0,
+      "ground": 250
+    },
+    "hurt": {
+      "id": "orc-brute-hurt",
+      "normal": 199.8,
+      "ground": 247
+    },
+    "death": {
+      "id": "orc-brute-death",
+      "normal": 200.9,
+      "ground": 236
+    },
+    "walk": {
+      "id": "orc-brute-walk",
+      "normal": 228.0,
+      "ground": 240
+    }
+  },
+  "9019": {
+    "attack": {
+      "id": "orc-bowman-attack",
+      "normal": 177.0,
+      "ground": 231
+    },
+    "hurt": {
+      "id": "orc-bowman-hurt",
+      "normal": 213.9,
+      "ground": 246
+    },
+    "death": {
+      "id": "orc-bowman-death",
+      "normal": 177.0,
+      "ground": 230
+    },
+    "walk": {
+      "id": "orc-bowman-walk",
+      "normal": 209.1,
+      "ground": 250
+    }
+  },
+  "9020": {
+    "attack": {
+      "id": "fire-imp-attack",
+      "normal": 145.0,
+      "ground": 211
+    },
+    "hurt": {
+      "id": "fire-imp-hurt",
+      "normal": 186.4,
+      "ground": 235
+    },
+    "death": {
+      "id": "fire-imp-death",
+      "normal": 176.0,
+      "ground": 214
+    },
+    "walk": {
+      "id": "fire-imp-walk",
+      "normal": 235.5,
+      "ground": 249
+    }
+  },
+  "9021": {
+    "attack": {
+      "id": "magma-golem-attack",
+      "normal": 187.0,
+      "ground": 220
+    },
+    "hurt": {
+      "id": "magma-golem-hurt",
+      "normal": 232.0,
+      "ground": 232
+    },
+    "death": {
+      "id": "magma-golem-death",
+      "normal": 194.7,
+      "ground": 210
+    },
+    "walk": {
+      "id": "magma-golem-walk",
+      "normal": 226.8,
+      "ground": 230
+    }
+  },
+  "9022": {
+    "attack": {
+      "id": "harpy-attack",
+      "normal": 225.0,
+      "ground": 241
+    },
+    "hurt": {
+      "id": "harpy-hurt",
+      "normal": 234.7,
+      "ground": 234
+    },
+    "death": {
+      "id": "harpy-death",
+      "normal": 230.4,
+      "ground": 229
+    },
+    "walk": {
+      "id": "harpy-walk",
+      "normal": 188.3,
+      "ground": 229
+    }
+  },
+  "9023": {
+    "attack": {
+      "id": "griffin-cub-attack",
+      "normal": 171.0,
+      "ground": 216
+    },
+    "hurt": {
+      "id": "griffin-cub-hurt",
+      "normal": 203.4,
+      "ground": 231
+    },
+    "death": {
+      "id": "griffin-cub-death",
+      "normal": 179.4,
+      "ground": 215
+    },
+    "walk": {
+      "id": "griffin-cub-walk",
+      "normal": 224.6,
+      "ground": 234
+    }
+  },
+  "9024": {
+    "attack": {
+      "id": "wild-boar-attack",
+      "normal": 192.0,
+      "ground": 210
+    },
+    "hurt": {
+      "id": "wild-boar-hurt",
+      "normal": 224.0,
+      "ground": 226
+    },
+    "death": {
+      "id": "wild-boar-death",
+      "normal": 197.5,
+      "ground": 210
+    },
+    "walk": {
+      "id": "wild-boar-walk",
+      "normal": 221.7,
+      "ground": 217
+    }
+  },
+  "9025": {
+    "attack": {
+      "id": "man-eater-attack",
+      "normal": 195.0,
+      "ground": 234
+    },
+    "hurt": {
+      "id": "man-eater-hurt",
+      "normal": 210.9,
+      "ground": 243
+    },
+    "death": {
+      "id": "man-eater-death",
+      "normal": 194.3,
+      "ground": 235
+    },
+    "walk": {
+      "id": "man-eater-walk",
+      "normal": 209.9,
+      "ground": 247
+    }
+  },
+  "9026": {
+    "attack": {
+      "id": "snowman-attack",
+      "normal": 206.0,
+      "ground": 233
+    },
+    "hurt": {
+      "id": "snowman-hurt",
+      "normal": 212.4,
+      "ground": 232
+    },
+    "death": {
+      "id": "snowman-death",
+      "normal": 207.8,
+      "ground": 233
+    },
+    "walk": {
+      "id": "snowman-walk",
+      "normal": 183.5,
+      "ground": 237
+    }
+  },
+  "9027": {
+    "attack": {
+      "id": "ice-golem-attack",
+      "normal": 173.0,
+      "ground": 216
+    },
+    "hurt": {
+      "id": "ice-golem-hurt",
+      "normal": 191.7,
+      "ground": 226
+    },
+    "death": {
+      "id": "ice-golem-death",
+      "normal": 176.9,
+      "ground": 216
+    },
+    "walk": {
+      "id": "ice-golem-walk",
+      "normal": 200.2,
+      "ground": 226
+    }
+  },
+  "9028": {
+    "attack": {
+      "id": "merman-attack",
+      "normal": 199.0,
+      "ground": 219
+    },
+    "hurt": {
+      "id": "merman-hurt",
+      "normal": 238.3,
+      "ground": 233
+    },
+    "death": {
+      "id": "merman-death",
+      "normal": 200.5,
+      "ground": 223
+    },
+    "walk": {
+      "id": "merman-walk",
+      "normal": 245.7,
+      "ground": 242
+    }
+  },
+  "9029": {
+    "attack": {
+      "id": "sea-mine-attack",
+      "normal": 195.0,
+      "ground": 241
+    },
+    "hurt": {
+      "id": "sea-mine-hurt",
+      "normal": 197.6,
+      "ground": 244
+    },
+    "death": {
+      "id": "sea-mine-death",
+      "normal": 193.1,
+      "ground": 245
+    },
+    "walk": {
+      "id": "sea-mine-walk",
+      "normal": 220.7,
+      "ground": 242
+    }
+  },
+  "9030": {
+    "attack": {
+      "id": "wraith-attack",
+      "normal": 172.0,
+      "ground": 207
+    },
+    "hurt": {
+      "id": "wraith-hurt",
+      "normal": 188.3,
+      "ground": 220
+    },
+    "death": {
+      "id": "wraith-death",
+      "normal": 185.9,
+      "ground": 219
+    },
+    "walk": {
+      "id": "wraith-walk",
+      "normal": 214.7,
+      "ground": 220
+    }
+  },
+  "9031": {
+    "attack": {
+      "id": "gargoyle-attack",
+      "normal": 189.0,
+      "ground": 228
+    },
+    "hurt": {
+      "id": "gargoyle-hurt",
+      "normal": 222.1,
+      "ground": 247
+    },
+    "death": {
+      "id": "gargoyle-death",
+      "normal": 207.9,
+      "ground": 230
+    },
+    "walk": {
+      "id": "gargoyle-walk",
+      "normal": 224.7,
+      "ground": 240
+    }
+  },
+  "9032": {
+    "attack": {
+      "id": "zombie-attack",
+      "normal": 202.0,
+      "ground": 249
+    },
+    "hurt": {
+      "id": "zombie-hurt",
+      "normal": 204.3,
+      "ground": 250
+    },
+    "death": {
+      "id": "zombie-death",
+      "normal": 194.0,
+      "ground": 235
+    },
+    "walk": {
+      "id": "zombie-walk",
+      "normal": 210.5,
+      "ground": 250
+    }
+  },
+  "9033": {
+    "attack": {
+      "id": "lich-attack",
+      "normal": 150.0,
+      "ground": 212
+    },
+    "hurt": {
+      "id": "lich-hurt",
+      "normal": 192.4,
+      "ground": 224
+    },
+    "death": {
+      "id": "lich-death",
+      "normal": 174.6,
+      "ground": 217
+    },
+    "walk": {
+      "id": "lich-walk",
+      "normal": 220.7,
+      "ground": 237
+    }
+  },
+  "9034": {
+    "attack": {
+      "id": "poison-toad-attack",
+      "normal": 205.0,
+      "ground": 208
+    },
+    "hurt": {
+      "id": "poison-toad-hurt",
+      "normal": 225.6,
+      "ground": 219
+    },
+    "death": {
+      "id": "poison-toad-death",
+      "normal": 212.3,
+      "ground": 217
+    },
+    "walk": {
+      "id": "poison-toad-walk",
+      "normal": 198.6,
+      "ground": 224
+    }
+  },
+  "9035": {
+    "attack": {
+      "id": "medusa-attack",
+      "normal": 188.0,
+      "ground": 246
+    },
+    "hurt": {
+      "id": "medusa-hurt",
+      "normal": 197.4,
+      "ground": 250
+    },
+    "death": {
+      "id": "medusa-death",
+      "normal": 176.2,
+      "ground": 237
+    },
+    "walk": {
+      "id": "medusa-walk",
+      "normal": 188.8,
+      "ground": 234
+    }
+  },
+  "9049": {
+    "attack": {
+      "id": "rotroot-treant-attack",
+      "normal": 194.0,
+      "ground": 217
+    },
+    "hurt": {
+      "id": "rotroot-treant-hurt",
+      "normal": 248.2,
+      "ground": 231
+    },
+    "death": {
+      "id": "rotroot-treant-death",
+      "normal": 213.2,
+      "ground": 221
+    },
+    "walk": {
+      "id": "rotroot-treant-walk",
+      "normal": 237.3,
+      "ground": 243
+    }
+  },
+  "9050": {
+    "attack": {
+      "id": "bog-hydra-attack",
+      "normal": 203.0,
+      "ground": 205
+    },
+    "hurt": {
+      "id": "bog-hydra-hurt",
+      "normal": 227.5,
+      "ground": 219
+    },
+    "death": {
+      "id": "bog-hydra-death",
+      "normal": 220.3,
+      "ground": 217
+    },
+    "walk": {
+      "id": "bog-hydra-walk",
+      "normal": 243.1,
+      "ground": 231
+    }
+  },
+  "9051": {
+    "attack": {
+      "id": "plague-moth-attack",
+      "normal": 210.0,
+      "ground": 237
+    },
+    "hurt": {
+      "id": "plague-moth-hurt",
+      "normal": 234.5,
+      "ground": 248
+    },
+    "death": {
+      "id": "plague-moth-death",
+      "normal": 222.6,
+      "ground": 237
+    },
+    "walk": {
+      "id": "plague-moth-walk",
+      "normal": 201.1,
+      "ground": 250
+    }
+  },
+  "9052": {
+    "attack": {
+      "id": "sand-wyrm-attack",
+      "normal": 198.0,
+      "ground": 219
+    },
+    "hurt": {
+      "id": "sand-wyrm-hurt",
+      "normal": 216.0,
+      "ground": 224
+    },
+    "death": {
+      "id": "sand-wyrm-death",
+      "normal": 200.5,
+      "ground": 220
+    },
+    "walk": {
+      "id": "sand-wyrm-walk",
+      "normal": 185.5,
+      "ground": 222
+    }
+  },
+  "9053": {
+    "attack": {
+      "id": "dune-scorpion-king-attack",
+      "normal": 239.0,
+      "ground": 239
+    },
+    "hurt": {
+      "id": "dune-scorpion-king-hurt",
+      "normal": 242.5,
+      "ground": 239
+    },
+    "death": {
+      "id": "dune-scorpion-king-death",
+      "normal": 240.3,
+      "ground": 232
+    },
+    "walk": {
+      "id": "dune-scorpion-king-walk",
+      "normal": 240.0,
+      "ground": 237
+    }
+  },
+  "9054": {
+    "attack": {
+      "id": "mirage-djinn-attack",
+      "normal": 155.0,
+      "ground": 197
+    },
+    "hurt": {
+      "id": "mirage-djinn-hurt",
+      "normal": 231.2,
+      "ground": 232
+    },
+    "death": {
+      "id": "mirage-djinn-death",
+      "normal": 222.5,
+      "ground": 230
+    },
+    "walk": {
+      "id": "mirage-djinn-walk",
+      "normal": 220.5,
+      "ground": 250
+    }
+  },
+  "9055": {
+    "attack": {
+      "id": "royal-mummy-attack",
+      "normal": 195.0,
+      "ground": 232
+    },
+    "hurt": {
+      "id": "royal-mummy-hurt",
+      "normal": 224.4,
+      "ground": 250
+    },
+    "death": {
+      "id": "royal-mummy-death",
+      "normal": 206.8,
+      "ground": 229
+    },
+    "walk": {
+      "id": "royal-mummy-walk",
+      "normal": 212.1,
+      "ground": 245
+    }
+  },
+  "9056": {
+    "attack": {
+      "id": "anubis-guard-attack",
+      "normal": 137.0,
+      "ground": 195
+    },
+    "hurt": {
+      "id": "anubis-guard-hurt",
+      "normal": 209.8,
+      "ground": 232
+    },
+    "death": {
+      "id": "anubis-guard-death",
+      "normal": 195.5,
+      "ground": 222
+    },
+    "walk": {
+      "id": "anubis-guard-walk",
+      "normal": 214.6,
+      "ground": 250
+    }
+  },
+  "9057": {
+    "attack": {
+      "id": "obsidian-sphinx-attack",
+      "normal": 201.0,
+      "ground": 204
+    },
+    "hurt": {
+      "id": "obsidian-sphinx-hurt",
+      "normal": 224.7,
+      "ground": 217
+    },
+    "death": {
+      "id": "obsidian-sphinx-death",
+      "normal": 214.1,
+      "ground": 208
+    },
+    "walk": {
+      "id": "obsidian-sphinx-walk",
+      "normal": 231.3,
+      "ground": 204
+    }
+  },
+  "9058": {
+    "attack": {
+      "id": "magma-titan-attack",
+      "normal": 208.0,
+      "ground": 226
+    },
+    "hurt": {
+      "id": "magma-titan-hurt",
+      "normal": 245.3,
+      "ground": 228
+    },
+    "death": {
+      "id": "magma-titan-death",
+      "normal": 216.0,
+      "ground": 220
+    },
+    "walk": {
+      "id": "magma-titan-walk",
+      "normal": 232.4,
+      "ground": 250
+    }
+  },
+  "9059": {
+    "attack": {
+      "id": "flame-drake-attack",
+      "normal": 225.0,
+      "ground": 232
+    },
+    "hurt": {
+      "id": "flame-drake-hurt",
+      "normal": 237.8,
+      "ground": 231
+    },
+    "death": {
+      "id": "flame-drake-death",
+      "normal": 232.2,
+      "ground": 225
+    },
+    "walk": {
+      "id": "flame-drake-walk",
+      "normal": 238.3,
+      "ground": 213
+    }
+  },
+  "9060": {
+    "attack": {
+      "id": "inferno-lord-attack",
+      "normal": 231.0,
+      "ground": 217
+    },
+    "hurt": {
+      "id": "inferno-lord-hurt",
+      "normal": 247.9,
+      "ground": 217
+    },
+    "death": {
+      "id": "inferno-lord-death",
+      "normal": 235.7,
+      "ground": 210
+    },
+    "walk": {
+      "id": "inferno-lord-walk",
+      "normal": 241.9,
+      "ground": 224
+    }
+  },
+  "9047": {
+    "attack": {
+      "id": "skeleton-soldier-attack",
+      "normal": 203.0,
+      "ground": 226
+    },
+    "hurt": {
+      "id": "skeleton-soldier-hurt",
+      "normal": 212.9,
+      "ground": 229
+    },
+    "death": {
+      "id": "skeleton-soldier-death",
+      "normal": 188.9,
+      "ground": 204
+    },
+    "walk": {
+      "id": "skeleton-soldier-walk",
+      "normal": 206.2,
+      "ground": 237
+    }
+  },
+  "9048": {
+    "attack": {
+      "id": "anubis-sentinel-attack",
+      "normal": 195.0,
+      "ground": 248
+    },
+    "hurt": {
+      "id": "anubis-sentinel-hurt",
+      "normal": 206.4,
+      "ground": 250
+    },
+    "death": {
+      "id": "anubis-sentinel-death",
+      "normal": 203.4,
+      "ground": 224
+    },
+    "walk": {
+      "id": "anubis-sentinel-walk",
+      "normal": 214.7,
+      "ground": 250
+    }
+  },
+  "9036": {
+    "attack": {
+      "id": "cursed-templar-attack",
+      "normal": 224.0,
+      "ground": 224
+    },
+    "hurt": {
+      "id": "cursed-templar-hurt",
+      "normal": 244.2,
+      "ground": 219
+    },
+    "death": {
+      "id": "cursed-templar-death",
+      "normal": 222.0,
+      "ground": 202
+    },
+    "walk": {
+      "id": "cursed-templar-walk",
+      "normal": 234.9,
+      "ground": 222
+    }
+  },
+  "9037": {
+    "attack": {
+      "id": "hollow-bishop-attack",
+      "normal": 235.0,
+      "ground": 237
+    },
+    "hurt": {
+      "id": "hollow-bishop-hurt",
+      "normal": 244.6,
+      "ground": 243
+    },
+    "death": {
+      "id": "hollow-bishop-death",
+      "normal": 245.2,
+      "ground": 228
+    },
+    "walk": {
+      "id": "hollow-bishop-walk",
+      "normal": 231.0,
+      "ground": 231
+    }
+  },
+  "9038": {
+    "attack": {
+      "id": "gargoyle-sentinel-attack",
+      "normal": 230.0,
+      "ground": 227
+    },
+    "hurt": {
+      "id": "gargoyle-sentinel-hurt",
+      "normal": 222.1,
+      "ground": 225
+    },
+    "death": {
+      "id": "gargoyle-sentinel-death",
+      "normal": 207.4,
+      "ground": 208
+    },
+    "walk": {
+      "id": "gargoyle-sentinel-walk",
+      "normal": 252.0,
+      "ground": 219
+    }
+  }
+}

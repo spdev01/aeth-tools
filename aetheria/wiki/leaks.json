@@ -1,0 +1,885 @@
+{
+ "generatedAt": "2026-10-15T08:03:43.196Z",
+ "worlds": [
+  {
+   "world": 2,
+   "name": "ทวีปหยกโบราณ · Ancient Jade Continent",
+   "status": "In development",
+   "img": "assets/art/world/atlas-world2.webp"
+  },
+  {
+   "world": 3,
+   "name": "อาณาจักรฟ้าแตก · Shattered Sky Kingdom",
+   "status": "Coming soon",
+   "img": "assets/art/world/atlas-world3.webp"
+  },
+  {
+   "world": 4,
+   "name": "แดนปีศาจ · Demon Realm",
+   "status": "Future",
+   "img": "assets/art/world/atlas-world4.webp"
+  }
+ ],
+ "unreleasedMonsters": [
+  {
+   "id": "1",
+   "name": "Crab",
+   "thumb": "assets/thumbs/leaks/1.webp"
+  },
+  {
+   "id": "3",
+   "name": "Baby Bee",
+   "thumb": "assets/thumbs/leaks/3.webp"
+  },
+  {
+   "id": "4",
+   "name": "Young Crab",
+   "thumb": "assets/thumbs/leaks/4.webp"
+  },
+  {
+   "id": "5",
+   "name": "Wild Goat",
+   "thumb": "assets/thumbs/leaks/5.webp"
+  },
+  {
+   "id": "6",
+   "name": "Rotten Zombie",
+   "thumb": "assets/thumbs/leaks/6.webp"
+  },
+  {
+   "id": "7",
+   "name": "Giant Crab",
+   "thumb": "assets/thumbs/leaks/7.webp"
+  },
+  {
+   "id": "8",
+   "name": "Savage Brute",
+   "thumb": "assets/thumbs/leaks/8.webp"
+  },
+  {
+   "id": "9",
+   "name": "AsGard Warrior",
+   "thumb": "assets/thumbs/leaks/9.webp"
+  },
+  {
+   "id": "10",
+   "name": "Elder Goat",
+   "thumb": "assets/thumbs/leaks/10.webp"
+  }
+ ],
+ "cutItemIcons": [
+  {
+   "slug": "iron-sword",
+   "name": "Iron Sword",
+   "icon": "assets/art/icons/items/iron-sword.webp"
+  },
+  {
+   "slug": "steel-sword",
+   "name": "Steel Sword",
+   "icon": "assets/art/icons/items/steel-sword.webp"
+  },
+  {
+   "slug": "mythril-sword",
+   "name": "Mythril Sword",
+   "icon": "assets/art/icons/items/mythril-sword.webp"
+  },
+  {
+   "slug": "dragon-sword",
+   "name": "Dragon Sword",
+   "icon": "assets/art/icons/items/dragon-sword.webp"
+  },
+  {
+   "slug": "stuner-axe",
+   "name": "Stuner Axe",
+   "icon": "assets/art/icons/items/stuner-axe.webp"
+  },
+  {
+   "slug": "gladiator-sword",
+   "name": "Gladiator Sword",
+   "icon": "assets/art/icons/items/gladiator-sword.webp"
+  },
+  {
+   "slug": "lance",
+   "name": "Lance",
+   "icon": "assets/art/icons/items/lance.webp"
+  },
+  {
+   "slug": "sniper",
+   "name": "Sniper",
+   "icon": "assets/art/icons/items/sniper.webp"
+  },
+  {
+   "slug": "iron-helmet",
+   "name": "Iron Helmet",
+   "icon": "assets/art/icons/items/iron-helmet.webp"
+  },
+  {
+   "slug": "steel-helmet",
+   "name": "Steel Helmet",
+   "icon": "assets/art/icons/items/steel-helmet.webp"
+  },
+  {
+   "slug": "mythril-helmet",
+   "name": "Mythril Helmet",
+   "icon": "assets/art/icons/items/mythril-helmet.webp"
+  },
+  {
+   "slug": "dragon-helmet",
+   "name": "Dragon Helmet",
+   "icon": "assets/art/icons/items/dragon-helmet.webp"
+  },
+  {
+   "slug": "iron-armor",
+   "name": "Iron Armor",
+   "icon": "assets/art/icons/items/iron-armor.webp"
+  },
+  {
+   "slug": "steel-armor",
+   "name": "Steel Armor",
+   "icon": "assets/art/icons/items/steel-armor.webp"
+  },
+  {
+   "slug": "mythril-armor",
+   "name": "Mythril Armor",
+   "icon": "assets/art/icons/items/mythril-armor.webp"
+  },
+  {
+   "slug": "dragon-armor",
+   "name": "Dragon Armor",
+   "icon": "assets/art/icons/items/dragon-armor.webp"
+  },
+  {
+   "slug": "iron-gauntlet",
+   "name": "Iron Gauntlet",
+   "icon": "assets/art/icons/items/iron-gauntlet.webp"
+  },
+  {
+   "slug": "steel-gauntlet",
+   "name": "Steel Gauntlet",
+   "icon": "assets/art/icons/items/steel-gauntlet.webp"
+  },
+  {
+   "slug": "mythril-gauntlet",
+   "name": "Mythril Gauntlet",
+   "icon": "assets/art/icons/items/mythril-gauntlet.webp"
+  },
+  {
+   "slug": "dragon-gauntlet",
+   "name": "Dragon Gauntlet",
+   "icon": "assets/art/icons/items/dragon-gauntlet.webp"
+  },
+  {
+   "slug": "iron-boots",
+   "name": "Iron Boots",
+   "icon": "assets/art/icons/items/iron-boots.webp"
+  },
+  {
+   "slug": "steel-boots",
+   "name": "Steel Boots",
+   "icon": "assets/art/icons/items/steel-boots.webp"
+  },
+  {
+   "slug": "mythril-boots",
+   "name": "Mythril Boots",
+   "icon": "assets/art/icons/items/mythril-boots.webp"
+  },
+  {
+   "slug": "dragon-boots",
+   "name": "Dragon Boots",
+   "icon": "assets/art/icons/items/dragon-boots.webp"
+  },
+  {
+   "slug": "iron-pants",
+   "name": "Iron Pants",
+   "icon": "assets/art/icons/items/iron-pants.webp"
+  },
+  {
+   "slug": "steel-pants",
+   "name": "Steel Pants",
+   "icon": "assets/art/icons/items/steel-pants.webp"
+  },
+  {
+   "slug": "mythril-pants",
+   "name": "Mythril Pants",
+   "icon": "assets/art/icons/items/mythril-pants.webp"
+  },
+  {
+   "slug": "dragon-pants",
+   "name": "Dragon Pants",
+   "icon": "assets/art/icons/items/dragon-pants.webp"
+  },
+  {
+   "slug": "speed-potion",
+   "name": "Speed Potion",
+   "icon": "assets/art/icons/items/speed-potion.webp"
+  },
+  {
+   "slug": "greater-healing-potion",
+   "name": "Greater Healing Potion",
+   "icon": "assets/art/icons/items/greater-healing-potion.webp"
+  },
+  {
+   "slug": "iron-ore",
+   "name": "Iron Ore",
+   "icon": "assets/art/icons/items/iron-ore.webp"
+  },
+  {
+   "slug": "fresh-herb",
+   "name": "Fresh Herb",
+   "icon": "assets/art/icons/items/fresh-herb.webp"
+  },
+  {
+   "slug": "monster-hide",
+   "name": "Monster Hide",
+   "icon": "assets/art/icons/items/monster-hide.webp"
+  },
+  {
+   "slug": "monster-fang",
+   "name": "Monster Fang",
+   "icon": "assets/art/icons/items/monster-fang.webp"
+  },
+  {
+   "slug": "old-coin",
+   "name": "Old Coin",
+   "icon": "assets/art/icons/items/old-coin.webp"
+  },
+  {
+   "slug": "refine-stone",
+   "name": "Refine Stone",
+   "icon": "assets/art/icons/items/refine-stone.webp"
+  },
+  {
+   "slug": "travelers-cape",
+   "name": "Travelers Cape",
+   "icon": "assets/art/icons/items/travelers-cape.webp"
+  },
+  {
+   "slug": "ring-of-vigor",
+   "name": "Ring of Vigor",
+   "icon": "assets/art/icons/items/ring-of-vigor.webp"
+  },
+  {
+   "slug": "glove",
+   "name": "Glove",
+   "icon": "assets/art/icons/items/glove.webp"
+  },
+  {
+   "slug": "armor",
+   "name": "Armor",
+   "icon": "assets/art/icons/items/armor.webp"
+  },
+  {
+   "slug": "boots",
+   "name": "Boots",
+   "icon": "assets/art/icons/items/boots.webp"
+  },
+  {
+   "slug": "pants",
+   "name": "Pants",
+   "icon": "assets/art/icons/items/pants.webp"
+  },
+  {
+   "slug": "zeny",
+   "name": "Zeny",
+   "icon": "assets/art/icons/items/zeny.webp"
+  },
+  {
+   "slug": "novice-sword",
+   "name": "Novice Sword",
+   "icon": "assets/art/icons/items/novice-sword.webp"
+  },
+  {
+   "slug": "waghnak",
+   "name": "Waghnak",
+   "icon": "assets/art/icons/items/waghnak.webp"
+  },
+  {
+   "slug": "cap",
+   "name": "Cap",
+   "icon": "assets/art/icons/items/cap.webp"
+  },
+  {
+   "slug": "goggles",
+   "name": "Goggles",
+   "icon": "assets/art/icons/items/goggles.webp"
+  },
+  {
+   "slug": "crab-claw-small",
+   "name": "Crab Claw Small",
+   "icon": "assets/art/icons/items/crab-claw-small.webp"
+  },
+  {
+   "slug": "crab-shell",
+   "name": "Crab Shell",
+   "icon": "assets/art/icons/items/crab-shell.webp"
+  },
+  {
+   "slug": "bee-sting",
+   "name": "Bee Sting",
+   "icon": "assets/art/icons/items/bee-sting.webp"
+  },
+  {
+   "slug": "goat-horn",
+   "name": "Goat Horn",
+   "icon": "assets/art/icons/items/goat-horn.webp"
+  },
+  {
+   "slug": "decayed-nail",
+   "name": "Decayed Nail",
+   "icon": "assets/art/icons/items/decayed-nail.webp"
+  },
+  {
+   "slug": "giant-crab-claw",
+   "name": "Giant Crab Claw",
+   "icon": "assets/art/icons/items/giant-crab-claw.webp"
+  },
+  {
+   "slug": "brute-tusk",
+   "name": "Brute Tusk",
+   "icon": "assets/art/icons/items/brute-tusk.webp"
+  },
+  {
+   "slug": "asgard-emblem",
+   "name": "Asgard Emblem",
+   "icon": "assets/art/icons/items/asgard-emblem.webp"
+  },
+  {
+   "slug": "elder-horn",
+   "name": "Elder Horn",
+   "icon": "assets/art/icons/items/elder-horn.webp"
+  },
+  {
+   "slug": "crab-eye",
+   "name": "Crab Eye",
+   "icon": "assets/art/icons/items/crab-eye.webp"
+  },
+  {
+   "slug": "tiny-pearl",
+   "name": "Tiny Pearl",
+   "icon": "assets/art/icons/items/tiny-pearl.webp"
+  },
+  {
+   "slug": "crab-meat",
+   "name": "Crab Meat",
+   "icon": "assets/art/icons/items/crab-meat.webp"
+  },
+  {
+   "slug": "coral-chip",
+   "name": "Coral Chip",
+   "icon": "assets/art/icons/items/coral-chip.webp"
+  },
+  {
+   "slug": "bee-wing",
+   "name": "Bee Wing",
+   "icon": "assets/art/icons/items/bee-wing.webp"
+  },
+  {
+   "slug": "honeycomb",
+   "name": "Honeycomb",
+   "icon": "assets/art/icons/items/honeycomb.webp"
+  },
+  {
+   "slug": "goat-wool",
+   "name": "Goat Wool",
+   "icon": "assets/art/icons/items/goat-wool.webp"
+  },
+  {
+   "slug": "goat-bell",
+   "name": "Goat Bell",
+   "icon": "assets/art/icons/items/goat-bell.webp"
+  },
+  {
+   "slug": "torn-rag",
+   "name": "Torn Rag",
+   "icon": "assets/art/icons/items/torn-rag.webp"
+  },
+  {
+   "slug": "old-bone",
+   "name": "Old Bone",
+   "icon": "assets/art/icons/items/old-bone.webp"
+  },
+  {
+   "slug": "hard-carapace",
+   "name": "Hard Carapace",
+   "icon": "assets/art/icons/items/hard-carapace.webp"
+  },
+  {
+   "slug": "giant-pearl",
+   "name": "Giant Pearl",
+   "icon": "assets/art/icons/items/giant-pearl.webp"
+  },
+  {
+   "slug": "coarse-hide",
+   "name": "Coarse Hide",
+   "icon": "assets/art/icons/items/coarse-hide.webp"
+  },
+  {
+   "slug": "beast-heart",
+   "name": "Beast Heart",
+   "icon": "assets/art/icons/items/beast-heart.webp"
+  },
+  {
+   "slug": "broken-blade",
+   "name": "Broken Blade",
+   "icon": "assets/art/icons/items/broken-blade.webp"
+  },
+  {
+   "slug": "warrior-medal",
+   "name": "Warrior Medal",
+   "icon": "assets/art/icons/items/warrior-medal.webp"
+  },
+  {
+   "slug": "elder-wool",
+   "name": "Elder Wool",
+   "icon": "assets/art/icons/items/elder-wool.webp"
+  },
+  {
+   "slug": "sage-beard",
+   "name": "Sage Beard",
+   "icon": "assets/art/icons/items/sage-beard.webp"
+  },
+  {
+   "slug": "supporter-pack-alt",
+   "name": "Supporter Pack Alt",
+   "icon": "assets/art/icons/items/supporter-pack-alt.webp"
+  },
+  {
+   "slug": "snake-hat",
+   "name": "Snake Hat",
+   "icon": "assets/art/icons/items/snake-hat.webp"
+  },
+  {
+   "slug": "gacha-egg",
+   "name": "Gacha Egg",
+   "icon": "assets/art/icons/items/gacha-egg.webp"
+  },
+  {
+   "slug": "celestial-kitten",
+   "name": "Celestial Kitten",
+   "icon": "assets/art/icons/items/celestial-kitten.webp"
+  },
+  {
+   "slug": "stone-blank",
+   "name": "Stone Blank",
+   "icon": "assets/art/icons/items/stone-blank.webp"
+  },
+  {
+   "slug": "stone-blank-2",
+   "name": "Stone Blank 2",
+   "icon": "assets/art/icons/items/stone-blank-2.webp"
+  },
+  {
+   "slug": "stone-blank-3",
+   "name": "Stone Blank 3",
+   "icon": "assets/art/icons/items/stone-blank-3.webp"
+  },
+  {
+   "slug": "stone-blank-4",
+   "name": "Stone Blank 4",
+   "icon": "assets/art/icons/items/stone-blank-4.webp"
+  },
+  {
+   "slug": "stone-blank-5",
+   "name": "Stone Blank 5",
+   "icon": "assets/art/icons/items/stone-blank-5.webp"
+  }
+ ],
+ "unopenedClasses": [
+  {
+   "id": "paladin",
+   "name": "Paladin",
+   "face": "assets/art/classes/paladin-face.webp"
+  },
+  {
+   "id": "revenant",
+   "name": "Revenant",
+   "face": "assets/art/classes/revenant-face.webp"
+  },
+  {
+   "id": "stormweaver",
+   "name": "Stormweaver",
+   "face": "assets/art/classes/stormweaver-face.webp"
+  },
+  {
+   "id": "frost-sage",
+   "name": "Frost Sage",
+   "face": "assets/art/classes/frost-sage-face.webp"
+  },
+  {
+   "id": "sniper",
+   "name": "Sniper",
+   "face": "assets/art/classes/sniper-face.webp"
+  },
+  {
+   "id": "high-priest",
+   "name": "High Priest",
+   "face": "assets/art/classes/high-priest-face.webp"
+  },
+  {
+   "id": "champion",
+   "name": "Champion",
+   "face": "assets/art/classes/champion-face.webp"
+  },
+  {
+   "id": "whitesmith",
+   "name": "Whitesmith",
+   "face": "assets/art/classes/whitesmith-face.webp"
+  },
+  {
+   "id": "creator",
+   "name": "Creator",
+   "face": "assets/art/classes/creator-face.webp"
+  },
+  {
+   "id": "assassin-cross",
+   "name": "Assassin Cross",
+   "face": "assets/art/classes/assassin-cross-face.webp"
+  },
+  {
+   "id": "stalker",
+   "name": "Stalker",
+   "face": "assets/art/classes/stalker-face.webp"
+  },
+  {
+   "id": "draken-paladin",
+   "name": "Draken Paladin",
+   "face": "assets/art/classes/draken-paladin-face.webp"
+  }
+ ],
+ "inProgressClass": {
+  "id": "dragon-knight",
+  "name": "Dragon Knight",
+  "face": "assets/art/classes/dragon-knight-face.webp",
+  "skills": 1
+ },
+ "bosses": [
+  {
+   "id": 9040,
+   "name": "Orc Warlord",
+   "level": 70,
+   "img": "assets/art/bosses/9040.webp"
+  },
+  {
+   "id": 9041,
+   "name": "Goblin Chieftain Grukk",
+   "level": 58,
+   "img": "assets/art/bosses/9041.webp"
+  },
+  {
+   "id": 9042,
+   "name": "Prismatic Golem",
+   "level": 85,
+   "img": "assets/art/bosses/9042.webp"
+  },
+  {
+   "id": 9044,
+   "name": "Thalassa, Kraken Queen",
+   "level": 95,
+   "img": "assets/art/bosses/9044.webp"
+  },
+  {
+   "id": 9045,
+   "name": "Morvath, the Lich King",
+   "level": 105,
+   "img": "assets/art/bosses/9045.webp"
+  },
+  {
+   "id": 9046,
+   "name": "Nekh-Amun, the Pharaoh",
+   "level": 135,
+   "img": "assets/art/bosses/9046.webp"
+  }
+ ],
+ "iconlessSkills": [
+  {
+   "id": "whirlwind",
+   "name": "Cyclone Axe",
+   "classId": "novice",
+   "maxLevel": 10
+  },
+  {
+   "id": "starfall",
+   "name": "Starfall",
+   "classId": "novice",
+   "maxLevel": 1
+  },
+  {
+   "id": "angel-starfall",
+   "name": "Seraph Starfall",
+   "classId": "novice",
+   "maxLevel": 1
+  },
+  {
+   "id": "focus-shooting",
+   "name": "Focus Shooting",
+   "classId": "archer",
+   "maxLevel": 1
+  },
+  {
+   "id": "earthquake",
+   "name": "Tectonic Rage",
+   "classId": "novice",
+   "maxLevel": 5
+  }
+ ],
+ "spiritOrphans": [
+  "celestial-kitten",
+  "spellbook",
+  "grimoire"
+ ],
+ "roDb": {
+  "count": 858,
+  "sample": [
+   {
+    "id": 501,
+    "name": "Red Potion"
+   },
+   {
+    "id": 502,
+    "name": "Orange Potion"
+   },
+   {
+    "id": 503,
+    "name": "Yellow Potion"
+   },
+   {
+    "id": 504,
+    "name": "White Potion"
+   },
+   {
+    "id": 505,
+    "name": "Blue Potion"
+   },
+   {
+    "id": 507,
+    "name": "Red Herb"
+   },
+   {
+    "id": 508,
+    "name": "Yellow Herb"
+   },
+   {
+    "id": 509,
+    "name": "White Herb"
+   },
+   {
+    "id": 510,
+    "name": "Blue Herb"
+   },
+   {
+    "id": 511,
+    "name": "Green Herb"
+   },
+   {
+    "id": 512,
+    "name": "Apple"
+   },
+   {
+    "id": 513,
+    "name": "Banana"
+   },
+   {
+    "id": 514,
+    "name": "Grape"
+   },
+   {
+    "id": 515,
+    "name": "Carrot"
+   },
+   {
+    "id": 516,
+    "name": "Potato"
+   },
+   {
+    "id": 517,
+    "name": "Meat"
+   },
+   {
+    "id": 518,
+    "name": "Honey"
+   },
+   {
+    "id": 519,
+    "name": "Milk"
+   },
+   {
+    "id": 520,
+    "name": "Hinalle Leaflet"
+   },
+   {
+    "id": 521,
+    "name": "Aloe Leaflet"
+   },
+   {
+    "id": 522,
+    "name": "Mastela Fruit"
+   },
+   {
+    "id": 523,
+    "name": "Holy Water"
+   },
+   {
+    "id": 525,
+    "name": "Panacea"
+   },
+   {
+    "id": 526,
+    "name": "Royal Jelly"
+   },
+   {
+    "id": 528,
+    "name": "Monster's Feed"
+   },
+   {
+    "id": 529,
+    "name": "Candy"
+   },
+   {
+    "id": 530,
+    "name": "Candy Cane"
+   },
+   {
+    "id": 531,
+    "name": "Apple Juice"
+   },
+   {
+    "id": 532,
+    "name": "Banana Juice"
+   },
+   {
+    "id": 533,
+    "name": "Grape Juice"
+   },
+   {
+    "id": 535,
+    "name": "Pumpkin"
+   },
+   {
+    "id": 536,
+    "name": "Ice Cream"
+   },
+   {
+    "id": 537,
+    "name": "Pet Food"
+   },
+   {
+    "id": 538,
+    "name": "Well-baked Cookie"
+   },
+   {
+    "id": 539,
+    "name": "Piece of Cake"
+   },
+   {
+    "id": 549,
+    "name": "Yam"
+   },
+   {
+    "id": 568,
+    "name": "Lemon"
+   },
+   {
+    "id": 578,
+    "name": "Strawberry"
+   },
+   {
+    "id": 582,
+    "name": "Orange"
+   },
+   {
+    "id": 601,
+    "name": "Fly Wing"
+   },
+   {
+    "id": 602,
+    "name": "Butterfly Wing"
+   },
+   {
+    "id": 603,
+    "name": "Old Blue Box"
+   },
+   {
+    "id": 604,
+    "name": "Dead Branch"
+   },
+   {
+    "id": 605,
+    "name": "Anodyne"
+   },
+   {
+    "id": 606,
+    "name": "Aloevera"
+   },
+   {
+    "id": 607,
+    "name": "Yggdrasil Berry"
+   },
+   {
+    "id": 608,
+    "name": "Yggdrasil Seed"
+   },
+   {
+    "id": 609,
+    "name": "Amulet"
+   },
+   {
+    "id": 610,
+    "name": "Yggdrasil Leaf"
+   },
+   {
+    "id": 611,
+    "name": "Magnifier"
+   },
+   {
+    "id": 616,
+    "name": "Old Card Album"
+   },
+   {
+    "id": 617,
+    "name": "Old Purple Box"
+   },
+   {
+    "id": 618,
+    "name": "Worn Out Scroll"
+   },
+   {
+    "id": 619,
+    "name": "Unripe Apple"
+   },
+   {
+    "id": 620,
+    "name": "Orange Juice"
+   },
+   {
+    "id": 621,
+    "name": "Bitter Herb"
+   },
+   {
+    "id": 622,
+    "name": "Rainbow Carrot"
+   },
+   {
+    "id": 623,
+    "name": "Earthworm the Dude"
+   },
+   {
+    "id": 624,
+    "name": "Rotten Fish"
+   },
+   {
+    "id": 625,
+    "name": "Rusty Iron"
+   }
+  ]
+ },
+ "teases": [
+  "Rune Stones (ศิลาปลุกพลัง) — full preview UI in the client: “Preview · not open yet”. 516 stone items already exist in the data (Chain / Fork / Piercing / …).",
+  "World 2 Ancient Jade Continent — “In development” (map art complete).",
+  "World 3 Shattered Sky Kingdom — “Coming soon”.",
+  "World 4 Demon Realm — “Future content”.",
+  "Class browser ships with unopened classes — “Not playable yet — being designed” (12 classes have art + 0 skills; Dragon Knight is in progress with 1 skill).",
+  "Daily guild quests — “in progress, coming soon”. Guild shop — “not open yet”, donations accrue as points.",
+  "Top-up (เติมเงิน) — “opens soon”.",
+  "High-level monster land — “coming soon”."
+ ]
+}

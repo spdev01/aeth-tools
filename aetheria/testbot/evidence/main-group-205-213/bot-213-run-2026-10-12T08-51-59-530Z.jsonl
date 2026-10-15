@@ -1,0 +1,17 @@
+{"t":"2026-10-12T08:52:02.130Z","evt":"proxy_exit","data":{"proxy":"socks5h://***@127.0.0.1:19213","ip":"171.25.193.81","phase":"pre_login"}}
+{"t":"2026-10-12T08:52:04.763Z","evt":"run_start","data":{"upto":34,"logFile":"E:\\GitHub\\lumivaraonline\\aetheria\\command-center\\data\\bots\\213\\run-2026-10-12T08-51-59-530Z.jsonl","char":"Deed"}}
+{"t":"2026-10-12T08:52:05.269Z","evt":"character","data":{"id":10041453,"name":"Deed"}}
+{"t":"2026-10-12T08:52:06.084Z","evt":"queue_wait","data":{"position":304,"waiting":304,"etaSeconds":13}}
+{"t":"2026-10-12T08:52:28.944Z","evt":"queue_wait","data":{"position":96,"waiting":283,"etaSeconds":4}}
+{"t":"2026-10-12T08:52:39.789Z","evt":"connect_retry","data":{"attempt":1,"err":"world/enter failed: {\"error\":\"ตัวละครในบัญชีนี้ออนไลน์อยู่แล้ว\"}"}}
+{"t":"2026-10-12T08:52:40.554Z","evt":"kick_session_ok","data":{"status":200,"err":null}}
+{"t":"2026-10-12T08:52:40.555Z","evt":"kick_ladder_done","data":{"ok":true,"tries":1,"status":200,"sec":1}}
+{"t":"2026-10-12T08:52:43.678Z","evt":"queue_wait","data":{"position":302,"waiting":302,"etaSeconds":13}}
+{"t":"2026-10-12T08:53:05.978Z","evt":"queue_wait","data":{"position":110,"waiting":261,"etaSeconds":5}}
+{"t":"2026-10-12T08:53:05.979Z","evt":"stop_during_login","data":{}}
+{"t":"2026-10-12T08:53:05.979Z","evt":"joined","data":{}}
+{"t":"2026-10-12T08:53:05.980Z","evt":"client_error","data":{"kind":"send","type":"inspect_privacy","err":"Cannot read properties of null (reading 'send')"}}
+{"t":"2026-10-12T08:53:06.689Z","evt":"inspect_privacy_sent","data":{"hidden":null}}
+{"t":"2026-10-12T08:53:07.230Z","evt":"map_resync","data":{"to":"scorch_dunes","mapName":"เนินทรายแผดเผา"}}
+{"t":"2026-10-12T08:53:07.231Z","evt":"HEARTBEAT","data":{"step":null,"selfId":null,"weapon":null,"equipment":null,"map":"scorch_dunes","lastMoveTile":null,"lastMoveAgeSec":null,"anchorTile":null,"hp":null,"maxHp":null,"sp":null,"maxSp":null,"bashLv":null,"hpItems":0,"weaves":0,"pots":0,"mobHits":0,"pets":null,"stats":null,"statusPoints":null,"skillPoints":null,"skills":null,"weightScrolls":0,"bag":{"used":null,"free":null,"weight":null,"weightLimit":null},"zeny":null,"base":null,"job":null,"classId":null,"auto":null,"dead":false,"sus":false,"world":null,"killsTotal":0,"hitsInTotal":0}}
+{"t":"2026-10-12T08:53:07.232Z","evt":"directives_applied","data":{"rev":8,"auto":true,"weave":["gloria","back-stab","snatcher","raid"],"autoChannel":true,"collect":true,"keep":318,"errand":true,"grant":false}}

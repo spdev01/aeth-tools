@@ -48,8 +48,14 @@ export async function listServerCharacters(token) {
   return json.characters ?? [];
 }
 
-export async function createCharacterFor(account, { token: provided } = {}) {
+export async function createCharacterFor(account, { token: provided, name: customName = null } = {}) {
   const token = provided ?? await login(account.userId, account.password);
+  // caller-provided name first — single attempt (a rejected name won't get better by retrying it verbatim)
+  if (customName) {
+    const { status, json } = await api('/characters', { method: 'POST', token, body: { name: customName } });
+    if (status === 200 && json.characterId) return { name: customName, token };
+    throw new Error(`name "${customName}" rejected ${status}: ${JSON.stringify(json).slice(0, 140)}`);
+  }
   let name = null, lastErr = null;
   const taken = new Set(store.data.characters.map((c) => c.name.toLowerCase()));
   for (let attempt = 0; attempt < 5; attempt++) {

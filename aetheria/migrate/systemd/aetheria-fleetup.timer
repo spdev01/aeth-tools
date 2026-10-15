@@ -1,0 +1,10 @@
+[Unit]
+Description=Aetheria fleet auto-start: 75s after boot, then every 5 minutes (self-heals dead runners)
+
+[Timer]
+OnBootSec=75s
+OnUnitActiveSec=300s
+AccuracySec=30s
+
+[Install]
+WantedBy=timers.target

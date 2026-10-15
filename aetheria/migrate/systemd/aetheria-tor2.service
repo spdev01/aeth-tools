@@ -1,0 +1,15 @@
+[Unit]
+Description=Aetheria Tor daemon 2 (even bot ids - SOCKS 20000+id, control 9052)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=__USER__
+ExecStart=__TOR__ -f __INSTALL__/command-center/data/tor2/torrc
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

@@ -120,20 +120,62 @@ import { decodeMulti } from '@msgpack/msgpack';
   }
 
   // ---------- REST taps (character identity, passive) ----------
-  const seen = { characters: null, charId: null, sessionId: null };
+  const seen = { characters: null, charId: null, sessionId: null, jwtName: null };
   let lastIdent = null;
   let lastIdentName = null;
+  // The page sometimes restores the character list in-memory and skips GET /characters on warm
+  // reloads — then the ident event carries no name. The game client tags every REST call with
+  // `Authorization: Bearer <token>`; stash the newest one and fetch the list ourselves (once).
+  let authTok = null;
+  let nameTried = false;
+  const stashTok = (h) => {
+    try {
+      if (!h) return;
+      let v = null;
+      if (typeof h === 'string') v = h;
+      else if (typeof h.get === 'function') v = h.get('authorization');
+      else if (Array.isArray(h)) {
+        const e = h.find((x) => Array.isArray(x) && String(x[0]).toLowerCase() === 'authorization');
+        if (e) v = e[1];
+      } else if (typeof h === 'object') {
+        for (const k of Object.keys(h)) if (k.toLowerCase() === 'authorization') v = h[k];
+      }
+      if (v && /^Bearer\s+\S+/i.test(String(v))) authTok = String(v);
+    } catch {}
+  };
+  const ensureName = () => {
+    if (nameTried || !authTok || seen.charId == null) return;
+    nameTried = true;
+    try {
+      fetch(location.origin + '/characters', { headers: { Authorization: authTok }, cache: 'no-store' }).catch(() => {});
+    } catch {}
+  };
   const maybeIdent = () => {
     if (seen.charId == null) return;
     const list = Array.isArray(seen.characters) ? seen.characters : [];
-    const c = list.find((x) => x && (x.characterId === seen.charId || x.id === seen.charId));
-    const name = c ? c.name : null;
+    const c = list.find((x) => x && (String(x.characterId) === String(seen.charId) || String(x.id) === String(seen.charId)));
+    const name = c ? c.name : seen.jwtName || null;
     if (String(seen.charId) === lastIdent && name == null) return; // nothing new
     if (String(seen.charId) === lastIdent && name === lastIdentName) return;
     lastIdent = String(seen.charId);
     lastIdentName = name;
     lastIdentPayload = { characterId: seen.charId, name, sessionId: seen.sessionId };
     emit({ ev: 'ident', ...lastIdentPayload });
+    if (name == null) ensureName();
+  };
+
+  // The real game client never calls /world/enter — it joins the room through
+  // POST /matchmake/joinById/<roomId> with a signed JWT ticket whose payload carries the
+  // character identity ({"characterId":…,"name":…}). Decode it passively.
+  const jwtPayload = (tok) => {
+    try {
+      let s = String(tok || '').split('.')[1] || '';
+      if (!s) return null;
+      s = s.replace(/-/g, '+').replace(/_/g, '/');
+      s += '='.repeat((4 - (s.length % 4)) % 4);
+      const p = JSON.parse(decodeURIComponent(escape(atob(s))));
+      return p && typeof p === 'object' ? p : null;
+    } catch { return null; }
   };
 
   const onRest = (url, { reqBody, respText, respJson } = {}) => {
@@ -142,17 +184,33 @@ import { decodeMulti } from '@msgpack/msgpack';
       emit({ ev: 'rest', path: String(url).replace(/^https?:\/\/[^/]+/, '').slice(0, 80), body: typeof reqBody === 'string' ? reqBody.slice(0, 60) : null });
       if (/\/world\/enter/.test(url) && typeof reqBody === 'string') {
         const b = JSON.parse(reqBody);
-        if (b && b.characterId != null) {
+        if (b && b.characterId != null && seen.charId == null) {
           seen.charId = b.characterId;
           maybeIdent();
         }
-      } else if (/\/characters(\?|$)/.test(url)) {
+      }
+      if (/\/characters(\?|$)/.test(url)) {
         const j = respJson !== undefined ? respJson : respText ? JSON.parse(respText) : null;
-        if (j) {
-          seen.characters = j;
+        const list = Array.isArray(j) ? j : j && Array.isArray(j.characters) ? j.characters : null;
+        if (list && list.length) {
+          seen.characters = list;
           maybeIdent();
         }
-      } else if (/\/matchmake\/joinById/.test(url)) {
+      }
+      if (/\/matchmake\/joinById/.test(url)) {
+        if (typeof reqBody === 'string') {
+          try {
+            const b = JSON.parse(reqBody);
+            const pl = b && b.ticket ? jwtPayload(b.ticket) : null;
+            if (pl) {
+              const cid = pl.characterId != null ? pl.characterId : pl.charId != null ? pl.charId : null;
+              if (cid != null) seen.charId = cid;
+              const nm = pl.name || pl.characterName || pl.charName || null;
+              if (nm && seen.jwtName == null) seen.jwtName = String(nm);
+              if (cid != null || seen.jwtName) maybeIdent();
+            }
+          } catch {}
+        }
         const j = respJson !== undefined ? respJson : respText ? JSON.parse(respText) : null;
         if (j && j.sessionId) {
           seen.sessionId = j.sessionId;
@@ -167,6 +225,7 @@ import { decodeMulti } from '@msgpack/msgpack';
     if (of) {
       window.fetch = function (input, init) {
         const url = typeof input === 'string' ? input : (input && input.url) || '';
+        try { stashTok((init && init.headers) || (input && typeof input === 'object' ? input.headers : null)); } catch {}
         const p = of.apply(this, arguments);
         try {
           if (GAME.test(url)) {
@@ -196,6 +255,13 @@ import { decodeMulti } from '@msgpack/msgpack';
           this.__axUrl = String(url);
         } catch {}
         return oOpen.apply(this, arguments);
+      };
+      const oSRH = XHR.prototype.setRequestHeader;
+      XHR.prototype.setRequestHeader = function (k, v) {
+        try {
+          if (String(k).toLowerCase() === 'authorization' && /^Bearer\s+\S+/i.test(String(v))) authTok = String(v);
+        } catch {}
+        return oSRH.apply(this, arguments);
       };
       XHR.prototype.send = function (body) {
         try {

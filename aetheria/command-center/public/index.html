@@ -26,6 +26,8 @@
     <button data-tab="accounts">Accounts</button>
     <button data-tab="stress">Stress</button>
     <button data-tab="collector">Collector</button>
+    <button data-tab="shopping">Shopping</button>
+    <button data-tab="captchas">Captchas</button>
   </div>
 </nav>
 
@@ -34,6 +36,7 @@
   <section id="tab-dash">
     <div class="bar">
       <label class="chk"><input type="checkbox" id="sel-all" /> select all</label>
+      <button id="sel-none" class="btn small" title="untick every selected bot (clears the whole selection)">✕ deselect all</button>
       <button id="play-sel" class="btn ok">▶ Play selected</button>
       <button id="pause-sel" class="btn warn">⏸ Pause selected</button>
       <button id="stop-sel" class="btn bad">⏹ Stop selected</button>
@@ -41,8 +44,6 @@
       <button id="stop-all" class="btn bad">⛔ STOP ALL</button>
       <button id="dc-all" class="btn bad" title="EMERGENCY — instantly severs every bot's game connection (hard kill, no graceful leave); bots stay OFF until you start them again">🔥 DISCONNECT ALL</button>
       <span class="sep"></span>
-      <button id="view-grid" class="btn on">▦ Grid</button>
-      <button id="view-list" class="btn">☰ List</button>
       <button id="plans-btn" class="btn" title="saved config plans — save once, apply to ticked bots">📋 Plans</button>
       <span class="muted" id="dash-note"></span>
     </div>
@@ -87,8 +88,13 @@
     </div>
 
     <h3 class="sect">Accounts &amp; characters</h3>
+    <div class="row" style="margin:4px 0 8px">
+      <label class="chk"><input type="checkbox" id="accsel-all" /> select all shown</label>
+      <button id="acc-del" class="btn bad" title="remove the ticked accounts — asks first whether to also wipe them from the program">🗑 Delete selected</button>
+      <span id="acc-del-msg" class="muted small"></span>
+    </div>
     <table id="accounts-table">
-      <thead><tr><th>account</th><th>userId</th><th>password</th><th>type</th><th>character</th><th>class / lv</th><th>map</th><th>include</th><th></th></tr></thead>
+      <thead><tr><th title="tick to select for deletion">✓</th><th>account</th><th>userId</th><th>password</th><th>type</th><th>character</th><th>class / lv</th><th>map</th><th>include</th><th></th></tr></thead>
       <tbody></tbody>
     </table>
   </section>
@@ -107,37 +113,35 @@
       <div id="st-summary"></div>
     </div>
   </section>
+  <!-- ============ CAPTCHAS ============ -->
+  <section id="tab-captchas" class="hidden">
+    <div class="panel" style="margin-bottom:12px">
+      <h3>🛡️ Captcha shield — survival log</h3>
+      <div id="cap-summary" class="row" style="flex-wrap:wrap;gap:8px;margin-bottom:8px"></div>
+      <p class="muted small">The anti-cheat “human check” pops up mid-farm: the bot reads the Thai prompt, matches it against the four option icons, and answers like a player would. <b>Survived</b> = the check cleared with no retry from the server. Raw per-event forensics live in each bot’s <code>captcha.jsonl</code>; counters persist across restarts in <code>captcha-stats.json</code>.</p>
+    </div>
+    <table id="captchas-table">
+      <thead><tr><th>bot</th><th>state</th><th>map</th><th title="challenge messages received (also counts the server's clear/dismiss message — may read +1 per cleared check)">seen</th><th title="answers we sent">answered</th><th title="checks cleared (server confirmed, no retry)">survived</th><th title="wrong picks (server re-sent the check)">failed</th><th>rate</th><th>last result</th><th>last seen</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
   <!-- ============ COLLECTOR ============ -->
   <section id="tab-collector" class="hidden">
     <div class="panelgrid">
-      <div class="panel">
-        <h3>Collector settings</h3>
-        <div class="row">
-          <label>collector character <input type="text" id="col-name" placeholder="VaultKeeper" /></label>
-          <label>channel <input type="number" id="col-channel" value="1" min="1" max="20" /></label>
-        </div>
-        <div class="row">
-          <label>spot x <input type="number" id="col-x" value="880" /></label>
-          <label>spot y <input type="number" id="col-y" value="1520" /></label>
-          <button id="col-save" class="btn ok">Save</button>
-          <button id="col-detect" class="btn small">⌖ detect from live position</button>
-          <span id="col-msg" class="muted small"></span>
-        </div>
-        <p class="muted small">Bots travel to capital, sell junk at the vendor, then trade the <b>whitelist</b> (from bag + storage) and zeny (keeping 50k) to the collector — capacity-aware with store-and-repeat, one bot at a time via the queue below. If you move the collector character, hit <b>⌖ detect</b> to adopt its live channel + position (otherwise it walks back to the saved spot within a minute). In the queue: <b>✕</b> skips a bot for this round (it keeps farming — held until you release it, or it refills into a new round), <b>⏹</b> empties everyone waiting, <b>↺</b> releases held bots.</p>
-        <div class="row">
-          <button id="col-clean" class="btn small">🧹 clean non-whitelist items out of collector storage</button>
-          <span class="muted small">withdraws &amp; sells everything not in the whitelist — run while the queue is idle</span>
-        </div>
+      <div class="panel" style="grid-column: 1 / -1">
+        <h3>Collector pool — caps &amp; holdings
+          <button id="col-add" class="btn small" title="create a new collector account right now (same path the auto-create uses when every collector is full)">+ create collector</button>
+        </h3>
+        <div id="col-msg" class="muted small" style="display:block;margin:2px 0 6px"></div>
+        <div id="col-list" class="muted small">no collectors in the pool yet</div>
       </div>
-      <div class="panel">
+      <div class="panel" style="grid-column: 1 / -1">
         <h3>Collect queue</h3>
         <div id="col-queue" class="muted small">queue empty</div>
         <div class="row">
-          <button id="col-all" class="btn">⇪ Queue ALL bots</button>
-        </div>
-        <div class="row">
           <label class="chk"><input type="checkbox" id="col-auto" /> auto-collect every</label>
-          <input type="number" id="col-auto-hrs" value="6" min="1" max="48" style="width:70px" />
+          <input type="number" id="col-auto-hrs" value="1" min="1" max="48" style="width:70px" />
           <span>hours</span>
           <span class="muted small" id="col-auto-msg">queues only bots that have whitelist items banked or zeny waiting</span>
         </div>
@@ -159,13 +163,25 @@
     <h3 class="sect">Totals across all characters</h3>
     <div class="panel"><div id="tr-totals"></div></div>
   </section>
+
+  <!-- ============ SHOPPING (gear-up) ============ -->
+  <section id="tab-shopping" class="hidden">
+    <div class="panel" style="grid-column: 1 / -1">
+      <h3>Gear-up queue</h3>
+      <div id="shop-msg" class="muted small" style="margin:2px 0 6px">tick knights with red gear dots on the dashboard, then hit 🛒 gear up</div>
+      <div id="shop-queue" class="muted small">queue empty</div>
+      <p class="muted small">🛒 jobs go to the collector with the most zeny · it pauses collection, buys the missing gems / weapon / refine materials (auction house — cheapest buy-now listing; its own storage ores come first) · refines the weapon to +7 at the blacksmith · trades everything to the knight, which equips it and goes back to farming. Leftover ores stay with the collector for the next job.</p>
+    </div>
+  </section>
 </main>
 
 <footer id="logdrawer" class="hidden">
+  <div id="drawer-grip" data-tip="drag to resize · double-click to expand or collapse"></div>
   <div class="loghead">
     <span id="log-title">live log</span>
     <button id="drawer-tab-log" class="btn small on">Log</button>
     <button id="drawer-tab-bag" class="btn small">Bag</button>
+    <button id="drawer-tab-earn" class="btn small">📈 Earn</button>
     <span class="muted small">(click a bot card to focus · newest last)</span>
     <button id="log-close" class="btn small">✕</button>
     <button id="log-clear" class="btn small">clear</button>
@@ -173,6 +189,7 @@
   </div>
   <div id="log-body"></div>
 </footer>
+<div id="cc-tip" class="hidden"></div>
 
 <div id="cfg-modal" class="modal hidden">
   <div class="modal-card">
@@ -230,12 +247,19 @@
         <span class="muted small">add → reorder with ↑ ↓ — one cast per cycle tick while farming</span>
       </div>
       <div id="cfg-weave-list" class="cfg-weavelist"></div>
-      <div class="cfg-lab">bag-full errand — on weight ≥ X% or bag ≥ 90 slots: sell everything except whitelist + cards · restock — bots never use their own storage</div>
+      <div class="cfg-lab">buff items - the AUTO engine consumes these from the bag to keep the buff on (this Rogue plan uses Fire Converter 90041)</div>
+      <div class="row">
+        <input type="text" id="cfg-buff-input" list="cfg-keep-items" placeholder="search item... (from the wiki)" style="min-width:260px" />
+        <button id="cfg-buff-add" class="btn small">Add</button>
+        <span class="muted small">consumed while farming - never sold, never collected to the treasury</span>
+      </div>
+      <div id="cfg-buff-list"></div>
+      <div class="cfg-lab">bag-full errand — on weight ≥ X% or bag ≥ 90 slots: sell everything except whitelist + cards · restock — whitelist banking follows the 📦 storage flag below</div>
       <div class="row">
         <label class="chk"><input type="checkbox" id="cfg-errand" /> go to town at</label>
         <input type="number" id="cfg-errandpct" value="70" min="50" max="100" /> % weight (or 90 slots)
       </div>
-      <div class="cfg-lab">whitelist for THIS bot — kept/collected items (never sold · traded to the collector in batches · never stored by bots)</div>
+      <div class="cfg-lab">whitelist for THIS bot — kept/collected items (never sold · traded to the collector in batches · banked in storage when the 📦 flag below is on)</div>
       <div class="row">
         <input type="text" id="cfg-keep-input" list="cfg-keep-items" placeholder="search item… (from the wiki)" style="min-width:260px" />
         <datalist id="cfg-keep-items"></datalist>
@@ -245,12 +269,16 @@
       <div id="cfg-keep-list"></div>
       <div class="row">
         <label class="chk"><input type="checkbox" id="cfg-cards" /> 🎴 keep ALL cards</label>
-        <span class="muted small">treats every card as whitelist — never sold &amp; sent to the collector (bots never bank) · rides along with the whitelist on every Apply</span>
+        <span class="muted small">treats every card as whitelist — never sold &amp; sent to the collector · rides along with the whitelist on every Apply</span>
+      </div>
+      <div class="row">
+        <label class="chk"><input type="checkbox" id="cfg-storewl" /> 📦 store whitelist items in this bot's own storage</label>
+        <span class="muted small">ON = whitelist is banked in storage while farming; a manual collect pulls it all back out and trades it to the collector · OFF = items ride in the bag (older behavior) · this flag lives on the plan</span>
       </div>
       <div class="row">
         <label class="chk"><input type="checkbox" id="cfg-collect" /> queue for collector at weight ≥</label>
         <input type="number" id="cfg-collectpct" value="70" min="50" max="100" /> % (or 90 slots)
-        <span class="muted small">one-at-a-time queue — the bot keeps farming while it waits · collect turns sell junk and trade whitelist + zeny to the collector in batches — bots never touch their own storage</span>
+        <span class="muted small">one-at-a-time queue — collection is MANUAL: on the dashboard tick bots (or click a group pill) and press ⇪ collect ticked · collect turns sell junk and trade whitelist + zeny to the collector in batches</span>
       </div>
       <pre id="cfg-now" class="cfg-now"></pre>
       <div class="cfg-lab" id="cfg-planrow-lab">plan — save this form as a reusable plan (same name overwrites) or load one into the form</div>
@@ -259,6 +287,11 @@
         <label>plan name <input type="text" id="cfg-plan-name" placeholder="plan name" style="width:130px" /></label>
         <button id="cfg-plan-save" class="btn small">💾 save as plan</button>
         <span class="muted small" id="cfg-plan-msg"></span>
+      </div>
+      <div class="row">
+        <label class="chk"><input type="checkbox" id="cfg-autocollect" /> auto-collect this plan's bots</label>
+        <label>every <input type="number" id="cfg-autocollect-min" value="240" min="15" max="1440" style="width:80px" /> min</label>
+        <span class="muted small">plan-level schedule — bots riding this plan queue for collection on that cadence (the main group stays excluded)</span>
       </div>
     </div>
     <div class="modal-foot">
@@ -275,10 +308,20 @@
 <div id="wh-modal" class="modal hidden">
   <div class="modal-card" style="max-width:780px">
     <div class="modal-head">
-      <b>Whitelist across all bots — bags + storage</b>
+      <b id="wh-title">Whitelist across all bots — bags + storage</b>
       <button id="wh-close" class="btn small">✕</button>
     </div>
     <div class="modal-body"><div id="wh-body"></div></div>
+  </div>
+</div>
+
+<div id="cp-modal" class="modal hidden">
+  <div class="modal-card" style="max-width:560px">
+    <div class="modal-head">
+      <b id="cp-title">Pick a character</b>
+      <button id="cp-close" class="btn small">✕</button>
+    </div>
+    <div class="modal-body"><div id="cp-body"></div></div>
   </div>
 </div>
 

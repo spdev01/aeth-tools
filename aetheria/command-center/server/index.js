@@ -49,20 +49,25 @@ const readBody = (req) => new Promise((resolve) => { let b = ''; req.on('data', 
 const sanitizePlanCfg = (cfg = {}) => {
   const out = {};
   if (['leveling', 'farming'].includes(cfg.mode)) out.mode = cfg.mode;
-  for (const k of ['auto', 'weave', 'autoChannel', 'collect', 'errand', 'farm', 'cards']) if (cfg[k] !== undefined) out[k] = cfg[k];
+  for (const k of ['auto', 'weave', 'autoChannel', 'collect', 'errand', 'farm', 'cards', 'storeWhitelist']) if (cfg[k] !== undefined) out[k] = cfg[k];
+  // per-plan auto-collect schedule (2026-10-10): {enabled, everyMin} — the scheduler queues bots riding
+  // this plan on that cadence; plans without it never auto-collect
+  if (cfg.autoCollect !== undefined) out.autoCollect = { enabled: !!cfg.autoCollect?.enabled, everyMin: Math.max(15, parseInt(cfg.autoCollect?.everyMin, 10) || 240) };
   if (Array.isArray(cfg.keep)) out.keep = cfg.keep.map((x) => parseInt(x, 10)).filter(Number.isFinite).slice(0, 200);
   return out;
 };
 
 const stateView = () => ({
-  accounts: store.data.accounts.map((a) => ({ ...a, password: undefined, chars: store.charsOfAccount(a.id).map((c) => ({ id: c.id, characterId: c.characterId, name: c.name, classId: c.classId, baseLevel: c.baseLevel, jobLevel: c.jobLevel, mapName: c.mapName, included: c.included })) })),
+  accounts: store.data.accounts.filter((a) => !a.removed).map((a) => ({ ...a, password: undefined, chars: store.charsOfAccount(a.id).map((c) => ({ id: c.id, characterId: c.characterId, name: c.name, classId: c.classId, baseLevel: c.baseLevel, jobLevel: c.jobLevel, mapName: c.mapName, included: c.included })) })),
   characters: store.data.characters.map((c) => ({ ...c })),
   bots: manager.view(),
   settings: store.getSettings(),
   plans: store.getSettings().plans ?? [],
   collect: manager.collectView(),
+  shop: manager.shopView(),
   fleet: manager.fleetView(),
   jobs: jobsView(),
+  tor: manager.torHealth ?? null,
 });
 
 // ---------- routes ----------
@@ -84,14 +89,127 @@ const server = http.createServer(async (req, res) => {
       const r = accounts.importAccounts({ lines: body.lines, autoInclude: body.autoInclude !== false });
       return json(res, 200, { imported: r.imported, results: r.results.filter((x) => !x.ok), jobId: r.job?.id });
     }
+    // remove accounts from the command center. purge=false → hide the account, retire its bots, exclude its
+    // characters (rows kept); purge=true → also delete account/character/bot rows + bot data dirs from the program.
+    if (p === '/api/accounts/delete' && req.method === 'POST') {
+      const body = await readBody(req);
+      const ids = (Array.isArray(body.ids) ? body.ids : []).map((x) => parseInt(x, 10)).filter(Number.isFinite);
+      const purge = body.purge === true;
+      const out = { removed: 0, purged: 0, chars: 0, bots: 0, names: [] };
+      for (const id of ids) {
+        const acc = store.findAccount(id);
+        if (!acc) continue;
+        const chars = store.charsOfAccount(id);
+        const charIds = new Set(chars.map((c) => c.id));
+        const bots = store.data.bots.filter((b) => charIds.has(b.characterId));
+        out.names.push(acc.userId);
+        for (const b of bots) {
+          try { manager.stop(b.id); } catch {}
+          try { manager.dequeueCollect(b.id, { hold: false }); } catch {}
+          b.retired = true;
+        }
+        for (const c of chars) c.included = 0;
+        if (!purge) {
+          acc.removed = true;
+          acc.updatedAt = Date.now();
+          out.removed++;
+        } else {
+          store.data.bots = store.data.bots.filter((b) => !charIds.has(b.characterId));
+          store.data.characters = store.data.characters.filter((c) => c.accountId !== id);
+          store.data.accounts = store.data.accounts.filter((a) => a.id !== id);
+          for (const b of bots) {
+            try { manager.runtime.delete(b.id); } catch {}
+            try { fs.rmSync(manager.dirOf(b.id), { recursive: true, force: true }); } catch {}
+            const qi = manager.tradeQueue.indexOf(b.id);
+            if (qi >= 0) manager.tradeQueue.splice(qi, 1);
+            if (manager.activeTrade === b.id) manager.activeTrade = null;
+          }
+          const sc = store.getSettings();
+          if (sc.collector && chars.some((c) => c.name === sc.collector.charName)) sc.collector = null;
+          out.purged++; out.chars += chars.length; out.bots += bots.length;
+        }
+      }
+      store.save();
+      broadcast({ type: 'state_dirty' });
+      return json(res, 200, { ok: true, ...out, purge });
+    }
+    // 🧑 pick: list the game account's ACTUAL characters (Accounts-tab picker) — 2026-10-08
+    if (/^\/api\/accounts\/\d+\/gamechars$/.test(p) && req.method === 'GET') {
+      const id = parseInt(p.split('/')[3], 10);
+      const account = store.findAccount(id);
+      if (!account) return json(res, 404, { error: 'account not found' });
+      try {
+        const token = await accounts.login(account.userId, account.password);
+        const list = await accounts.listServerCharacters(token);
+        const have = new Set(store.charsOfAccount(id).map((c) => String(c.name ?? '').toLowerCase()));
+        return json(res, 200, {
+          ok: true,
+          characters: (list ?? []).map((x) => ({ characterId: x.characterId, name: x.name, classId: x.classId, baseLevel: x.baseLevel, jobLevel: x.jobLevel, mapName: x.mapName, linked: have.has(String(x.name ?? '').toLowerCase()) })),
+        });
+      } catch (e) {
+        return json(res, 500, { error: String((e && e.message) || e) });
+      }
+    }
+    // ⬇ pull ONE game character from an imported account into the CC: create/refresh its row, enroll a bot
+    // (→ shows up on the Dashboard immediately, stopped) and seed run-state so the runner joins this char.
+    if (/^\/api\/accounts\/\d+\/pull$/.test(p) && req.method === 'POST') {
+      const id = parseInt(p.split('/')[3], 10);
+      const account = store.findAccount(id);
+      if (!account) return json(res, 404, { error: 'account not found' });
+      const body = await readBody(req);
+      const want = String(body.name ?? '').trim();
+      if (!want) return json(res, 400, { error: 'name required' });
+      try {
+        const token = await accounts.login(account.userId, account.password);
+        const list = await accounts.listServerCharacters(token);
+        const me = (list ?? []).find((x) => String(x.name ?? '').toLowerCase() === want.toLowerCase());
+        if (!me) return json(res, 404, { error: 'character not on server: ' + want, chars: (list ?? []).map((x) => x.name) });
+        let c = store.charsOfAccount(id).find((x) => String(x.name ?? '').toLowerCase() === String(me.name).toLowerCase());
+        if (!c) {
+          c = accounts.addCharacter(account, { characterId: me.characterId, name: me.name, classId: me.classId ?? 'novice', baseLevel: me.baseLevel ?? 1, jobLevel: me.jobLevel ?? 1, mapName: me.mapName ?? null, included: true });
+        } else {
+          c.characterId = me.characterId ?? c.characterId;
+          c.classId = me.classId ?? c.classId;
+          c.baseLevel = me.baseLevel ?? c.baseLevel;
+          c.jobLevel = me.jobLevel ?? c.jobLevel;
+          c.mapName = me.mapName ?? c.mapName;
+          c.included = 1;
+          c.updatedAt = Date.now();
+          store.save();
+        }
+        let bot = store.data.bots.find((b) => b.characterId === c.id);
+        if (!bot) bot = manager.ensureBot(c.id);
+        try {
+          const dir = manager.dirOf(bot.id);
+          const rsFile = path.join(dir, 'run-state.json');
+          let rs = {}; try { rs = JSON.parse(fs.readFileSync(rsFile, 'utf8')); } catch {}
+          rs.characterId = me.characterId; rs.charName = me.name;
+          fs.mkdirSync(dir, { recursive: true });
+          fs.writeFileSync(rsFile, JSON.stringify(rs, null, 1));
+        } catch {}
+        broadcast({ type: 'state_dirty' });
+        return json(res, 200, { ok: true, name: c.name, characterId: c.characterId, bot: bot?.id ?? null });
+      } catch (e) {
+        return json(res, 500, { error: String((e && e.message) || e) });
+      }
+    }
     if (/^\/api\/accounts\/\d+\/characters$/.test(p) && req.method === 'POST') {
       const id = parseInt(p.split('/')[3], 10);
       const account = store.findAccount(id);
       if (!account) return json(res, 404, { error: 'account not found' });
-      const { name } = await accounts.createCharacterFor(account);
-      const c = accounts.addCharacter(account, { name, included: !!account.includeDefault });
+      const body = await readBody(req).catch(() => ({}));
+      const custom = typeof body?.name === 'string' && body.name.trim() ? body.name.trim().slice(0, 24) : null;
+      let note = null, created;
+      try {
+        created = await accounts.createCharacterFor(account, { name: custom });
+      } catch (e) {
+        if (!custom) throw e;
+        note = String((e && e.message) || e); // custom name refused (charset/length/taken) — fall back to the generated pool
+        created = await accounts.createCharacterFor(account);
+      }
+      const c = accounts.addCharacter(account, { name: created.name, included: !!account.includeDefault });
       broadcast({ type: 'state_dirty' });
-      return json(res, 200, c);
+      return json(res, 200, { ...c, note });
     }
     if (/^\/api\/accounts\/\d+\/password$/.test(p) && req.method === 'GET') {
       // localhost-only convenience: reveal a stored account password on explicit request
@@ -109,7 +227,7 @@ const server = http.createServer(async (req, res) => {
       if (!bot) return json(res, 404, { error: 'bot not found' });
       const body = await readBody(req);
       const cfg = {};
-      for (const k of ['auto', 'weave', 'autoChannel', 'collect', 'errand', 'farm', 'cleanup', 'cards']) if (body[k] !== undefined) cfg[k] = body[k];
+      for (const k of ['auto', 'weave', 'autoChannel', 'collect', 'errand', 'farm', 'cleanup', 'cards', 'storeWhitelist']) if (body[k] !== undefined) cfg[k] = body[k];
       // per-bot whitelist (array of item ids); bots that never had one default to the global list
       if (Array.isArray(body.keep)) cfg.keep = body.keep.map((x) => parseInt(x, 10)).filter(Number.isFinite).slice(0, 200);
       else if (!(bot.cfg?.keep ?? []).length) cfg.keep = store.getSettings().tracked ?? [];
@@ -119,7 +237,7 @@ const server = http.createServer(async (req, res) => {
     if (p === '/api/bots/config-all' && req.method === 'POST') {
       const body = await readBody(req);
       const cfg = {};
-      for (const k of ['auto', 'weave', 'autoChannel', 'collect', 'errand', 'farm', 'cards']) if (body[k] !== undefined) cfg[k] = body[k];
+      for (const k of ['auto', 'weave', 'autoChannel', 'collect', 'errand', 'farm', 'cards', 'storeWhitelist']) if (body[k] !== undefined) cfg[k] = body[k];
       if (Array.isArray(body.keep)) cfg.keep = body.keep.map((x) => parseInt(x, 10)).filter(Number.isFinite).slice(0, 200);
       const mode = ['leveling', 'farming'].includes(body.mode) ? body.mode : null;
       if (cfg.cards) await initWiki().catch(() => {});
@@ -141,7 +259,7 @@ const server = http.createServer(async (req, res) => {
       const body = await readBody(req);
       const ids = (Array.isArray(body.ids) ? body.ids : []).map((x) => parseInt(x, 10)).filter(Number.isFinite);
       const cfg = {};
-      for (const k of ['auto', 'weave', 'autoChannel', 'collect', 'errand', 'farm', 'cards']) if (body[k] !== undefined) cfg[k] = body[k];
+      for (const k of ['auto', 'weave', 'autoChannel', 'collect', 'errand', 'farm', 'cards', 'storeWhitelist']) if (body[k] !== undefined) cfg[k] = body[k];
       if (Array.isArray(body.keep)) cfg.keep = body.keep.map((x) => parseInt(x, 10)).filter(Number.isFinite).slice(0, 200);
       const mode = ['leveling', 'farming'].includes(body.mode) ? body.mode : null;
       if (cfg.cards) await initWiki().catch(() => {});
@@ -174,6 +292,9 @@ const server = http.createServer(async (req, res) => {
       if (!bot) return json(res, 404, { error: 'bot not found' });
       return json(res, 200, await manager.kickSession(id));
     }
+    if (p === '/api/collect/queue-all' && req.method === 'POST') {
+      return json(res, 200, manager.queueAllEligible());
+    }
     if (p === '/api/collect/dequeue' && req.method === 'POST') {
       const body = await readBody(req);
       return json(res, 200, manager.dequeueCollect(parseInt(body.id, 10), { hold: body.hold !== false }));
@@ -185,6 +306,25 @@ const server = http.createServer(async (req, res) => {
       const body = await readBody(req);
       return json(res, 200, manager.releaseCollect(body.id != null ? parseInt(body.id, 10) : null));
     }
+    if (p === '/api/shop/queue' && req.method === 'POST') {
+      const body = await readBody(req);
+      return json(res, 200, manager.queueShop(body.ids ?? []));
+    }
+    if (p === '/api/shop/dequeue' && req.method === 'POST') {
+      const body = await readBody(req);
+      return json(res, 200, manager.dequeueShop(parseInt(body.id, 10)));
+    }
+    if (p === '/api/shop/clear' && req.method === 'POST') {
+      return json(res, 200, manager.clearShopWaiting());
+    }
+    if (p === '/api/shop/drop' && req.method === 'POST') {
+      const body = await readBody(req);
+      return json(res, 200, manager.dropShop(parseInt(body.id, 10)));
+    }
+    if (p === '/api/shop/retry' && req.method === 'POST') {
+      const body = await readBody(req);
+      return json(res, 200, manager.retryShopJob(body.id != null ? parseInt(body.id, 10) : null, { all: body.id == null }));
+    }
     if (/^\/api\/bots\/\d+\/mode$/.test(p) && req.method === 'POST') {
       const id = parseInt(p.split('/')[3], 10);
       const bot = store.findBot(id);
@@ -195,7 +335,7 @@ const server = http.createServer(async (req, res) => {
     }
     if (/^\/api\/bots\/\d+\/restart$/.test(p) && req.method === 'POST') {
       const id = parseInt(p.split('/')[3], 10);
-      return json(res, 200, await manager.restartBot(id));
+      return json(res, 200, await manager.restartBot(id, { kick: true }));
     }
     if (p === '/api/bots/restart-all' && req.method === 'POST') {
       const body = await readBody(req);
@@ -203,18 +343,26 @@ const server = http.createServer(async (req, res) => {
     }
     if (p === '/api/bots/restart-many' && req.method === 'POST') {
       const body = await readBody(req);
-      return json(res, 200, await manager.restartMany(Array.isArray(body.ids) ? body.ids : []));
+      return json(res, 200, await manager.restartMany(Array.isArray(body.ids) ? body.ids : [], { kick: true }));
     }
     if (p === '/api/bots/disconnect-all' && req.method === 'POST') return json(res, 200, manager.disconnectAll());
     if (p === '/api/settings/collector' && req.method === 'POST') {
       const body = await readBody(req);
       const s = store.getSettings();
       if (body.charName !== undefined || body.channel !== undefined || body.spotX !== undefined || body.spotY !== undefined) {
-        s.collector = {
+        const nextCollector = {
           charName: String(body.charName ?? s.collector?.charName ?? '').trim(),
           channel: Math.max(1, parseInt(body.channel, 10) || s.collector?.channel || 1),
           spot: { x: parseInt(body.spotX, 10) || s.collector?.spot?.x || 880, y: parseInt(body.spotY, 10) || s.collector?.spot?.y || 1520 },
         };
+        if (!Array.isArray(s.collectors)) s.collectors = [];
+        // one collector per channel (user rule 2026-10-10): never move one onto another's channel
+        const clash0 = s.collectors.find((c, i) => i > 0 && (c.channel ?? 1) === nextCollector.channel);
+        if (clash0) return json(res, 409, { ok: false, error: `channel ${nextCollector.channel} already has collector ${clash0.charName} — one collector per channel` });
+        s.collector = nextCollector;
+        // keep the multi-collector pool in sync — collector #1 IS the legacy single collector
+        if (s.collectors[0]) { s.collectors[0].charName = s.collector.charName; s.collectors[0].channel = s.collector.channel; s.collectors[0].spot = s.collector.spot; }
+        else s.collectors.push({ id: store.nextId('collector'), charName: s.collector.charName, channel: s.collector.channel, spot: s.collector.spot, zenyCap: 297431629, itemCapPerItem: 4995, createdAt: Date.now() });
       }
       if (body.autoCollect) {
         const ac = s.autoCollect ?? { enabled: false, everyMin: 360, minZeny: 15000, minStacks: 1, lastAt: 0 };
@@ -228,6 +376,49 @@ const server = http.createServer(async (req, res) => {
       const cb = store.data.bots.find((b) => store.findCharacter(b.characterId)?.name === s.collector?.charName);
       if (cb && s.collector) manager.applySettings(cb.id, { collect: { enabled: true, channel: s.collector.channel, spot: s.collector.spot } });
       return json(res, 200, { ok: true, collector: s.collector, autoCollect: s.autoCollect });
+    }
+    // multi-collector pool (2026-10-08): add/update a collector row (caps included) or remove one by id
+    if (p === '/api/settings/collectors' && req.method === 'POST') {
+      const body = await readBody(req);
+      const s = store.getSettings();
+      if (!Array.isArray(s.collectors)) s.collectors = [];
+      if (body.remove != null) {
+        const id = parseInt(body.remove, 10);
+        s.collectors = s.collectors.filter((c) => c.id !== id);
+        manager._syncLegacyCollector();
+        store.save();
+        broadcast({ type: 'state_dirty' });
+        return json(res, 200, { ok: true, removed: id, collectors: s.collectors });
+      }
+      const id = parseInt(body.id, 10);
+      const existing = Number.isFinite(id) ? s.collectors.find((c) => c.id === id) : null;
+      const row = existing ?? { id: store.nextId('collector'), createdAt: Date.now() };
+      if (body.channel !== undefined) {
+        const nextCh = Math.max(1, parseInt(body.channel, 10) || row.channel || 1);
+        // one collector per channel (user rule 2026-10-10): refuse to park two collectors on one channel
+        const clash = s.collectors.find((c) => c !== row && (c.channel ?? 1) === nextCh);
+        if (clash) return json(res, 409, { ok: false, error: `channel ${nextCh} already has collector ${clash.charName} — one collector per channel` });
+        row.channel = nextCh;
+      }
+      if (body.charName !== undefined) row.charName = String(body.charName).trim();
+      if (body.spotX !== undefined || body.spotY !== undefined) row.spot = { x: parseInt(body.spotX, 10) || row.spot?.x || 880, y: parseInt(body.spotY, 10) || row.spot?.y || 1520 };
+      if (body.zenyCap !== undefined) row.zenyCap = Math.max(0, parseInt(body.zenyCap, 10) || 0);
+      if (body.itemCapPerItem !== undefined) row.itemCapPerItem = Math.max(0, parseInt(body.itemCapPerItem, 10) || 0);
+      if (!row.zenyCap) row.zenyCap = 297431629;
+      if (!row.itemCapPerItem) row.itemCapPerItem = 4995;
+      if (!existing) s.collectors.push(row);
+      manager._syncLegacyCollector();
+      store.save();
+      // push the (possibly changed) spot/channel to that collector bot so it re-parks there
+      const cb = manager.collectorBotFor(row);
+      if (cb) manager.applySettings(cb.id, { collect: { enabled: true, channel: row.channel ?? 1, spot: row.spot ?? { x: 880, y: 1520 } } });
+      broadcast({ type: 'state_dirty' });
+      return json(res, 200, { ok: true, collector: row, collectors: s.collectors });
+    }
+    // manual trigger for the auto-create path (same code that fires when the whole pool is full)
+    if (p === '/api/collectors/ensure' && req.method === 'POST') {
+      const r = await manager.ensureCollectorCapacity('manual trigger').catch((e) => ({ ok: false, error: String((e && e.message) || e) }));
+      return json(res, 200, r);
     }
     if (p === '/api/settings/tracked' && req.method === 'POST') {
       const body = await readBody(req);
@@ -385,6 +576,13 @@ const server = http.createServer(async (req, res) => {
       return json(res, 200, { started });
     }
     if (p === '/api/bots/stop-all' && req.method === 'POST') { await manager.stopAll(); return json(res, 200, { ok: true }); }
+    // boot / power-cycle recovery (the Debian aetheria-fleetup.timer calls this): start every bot whose
+    // persisted intent is running (wantRun=true); intentionally-stopped bots are respected and skipped
+    if (p === '/api/bots/start-all' && req.method === 'POST') {
+      const body = await readBody(req);
+      const rm = Math.max(0, Math.min(60000, parseInt(body?.rampMs, 10) || 2500));
+      return json(res, 200, await manager.startAll({ rampMs: rm }));
+    }
     // enroll every included character that has no dashboard bot yet (register/import only create account+character;
     // the dashboard renders BOTS — without this they are invisible until the first start)
     if (p === '/api/bots/sync' && req.method === 'POST') {
@@ -418,7 +616,7 @@ const server = http.createServer(async (req, res) => {
       const body = await readBody(req);
       const ids = Array.isArray(body.ids) ? body.ids.map((x) => parseInt(x, 10)).filter(Number.isFinite) : [];
       const chars = ids.map((id) => store.findBot(id)?.characterId).filter((x) => x != null);
-      const started = await manager.startMany(chars, { rampMs: Math.max(0, Math.min(60000, body.rampMs ?? 2000)) });
+      const started = await manager.startMany(chars, { rampMs: Math.max(0, Math.min(60000, body.rampMs ?? 2000)), kick: true });
       return json(res, 200, { started });
     }
     if (p === '/api/bots/stop-many' && req.method === 'POST') {
@@ -446,6 +644,13 @@ const server = http.createServer(async (req, res) => {
       const limit = Math.min(2000, parseInt(url.searchParams.get('limit') || '300', 10));
       return json(res, 200, { events: eventsRing.filter((e) => e.botId === botId).slice(-limit) });
     }
+    // per-bot earnings breakdown (drawer graph): estimated loot value + realized zeny per local hour
+    if (/^\/api\/bots\/\d+\/earnings$/.test(p) && req.method === 'GET') {
+      const botId = parseInt(p.split('/')[3], 10);
+      if (!store.findBot(botId)) return json(res, 404, { error: 'bot not found' });
+      const hours = Math.min(72, Math.max(6, parseInt(url.searchParams.get('hours') || '24', 10) || 24));
+      return json(res, 200, { ok: true, ...manager.earnings.detailFor(botId, { hours }) });
+    }
 
     // ---- static ----
     let file = p === '/' ? '/index.html' : p;
@@ -454,7 +659,9 @@ const server = http.createServer(async (req, res) => {
     fs.readFile(full, (err, buf) => {
       if (err) return json(res, 404, { error: 'not found' });
       const mime = full.endsWith('.html') ? 'text/html' : full.endsWith('.js') ? 'text/javascript' : full.endsWith('.css') ? 'text/css' : 'application/octet-stream';
-      res.writeHead(200, { 'Content-Type': mime + '; charset=utf-8' });
+      // no-store: this dashboard is edited live — a normally-reloaded tab that kept a heuristically-cached
+      // app.js ran for hours on stale code (missing new handlers) and looked like "the feature doesn't work"
+      res.writeHead(200, { 'Content-Type': mime + '; charset=utf-8', 'Cache-Control': 'no-store, must-revalidate' });
       res.end(buf);
     });
   } catch (e) {
@@ -476,8 +683,9 @@ server.on('upgrade', (req, socket, head) => {
   });
 });
 
-server.listen(PORT, '127.0.0.1', () => {
-  console.log(`Aetheria Command Center v${VERSION} → http://127.0.0.1:${PORT}`);
+const HOST = process.env.AETHERIA_HOST || '127.0.0.1'; // Debian: set AETHERIA_HOST=0.0.0.0 only behind a firewall
+server.listen(PORT, HOST, () => {
+  console.log(`Aetheria Command Center v${VERSION} → http://${HOST}:${PORT}`);
   console.log(`data dir: ${store.dir}`);
   console.log(`bots dir: ${path.join(store.dir, 'bots')}`);
 });

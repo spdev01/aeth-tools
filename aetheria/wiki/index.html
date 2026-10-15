@@ -1,0 +1,378 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Aetheria · Scraped Wiki</title>
+<style>
+  :root { --bg:#0c0e12; --panel:#141920; --panel2:#1a212b; --line:#26303d; --gold:#d8b45a; --gold2:#f0d488; --txt:#dfe6ee; --dim:#8fa0b3; --red:#e05555; --green:#5fc97a; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--txt); font:14px/1.5 "Segoe UI",system-ui,sans-serif; }
+  header { position:sticky; top:0; z-index:10; display:flex; align-items:center; gap:16px; padding:10px 18px; background:linear-gradient(180deg,#161b23,#10141a); border-bottom:1px solid var(--line); }
+  .brand { font-size:17px; font-weight:600; letter-spacing:.4px; white-space:nowrap; }
+  .brand b { color:var(--gold); }
+  .brand small { color:var(--dim); font-weight:400; margin-left:8px; font-size:11px; }
+  #search { flex:1; max-width:460px; background:#0b0e13; border:1px solid var(--line); color:var(--txt); padding:8px 12px; border-radius:6px; outline:none; }
+  #search:focus { border-color:var(--gold); }
+  .counts { color:var(--dim); font-size:12px; margin-left:auto; white-space:nowrap; }
+  .layout { display:flex; min-height:calc(100vh - 52px); }
+  nav { width:168px; flex:none; padding:12px 8px; border-right:1px solid var(--line); background:#0f1319; }
+  nav button { display:block; width:100%; text-align:left; background:none; border:0; color:var(--txt); padding:8px 12px; border-radius:6px; cursor:pointer; font-size:13.5px; }
+  nav button:hover { background:var(--panel2); }
+  nav button.on { background:var(--panel2); color:var(--gold); box-shadow:inset 2px 0 0 var(--gold); }
+  main { flex:1; display:flex; min-width:0; }
+  #view { flex:1; padding:16px 18px; min-width:0; }
+  #detail { width:380px; flex:none; border-left:1px solid var(--line); background:var(--panel); padding:16px; overflow-y:auto; max-height:calc(100vh - 52px); position:sticky; top:52px; }
+  #detail.hidden { display:none; }
+  h2 { margin:4px 0 12px; font-size:16px; color:var(--gold2); font-weight:600; }
+  h3 { margin:14px 0 6px; font-size:13px; color:var(--gold); text-transform:uppercase; letter-spacing:.6px; }
+  .sub { color:var(--dim); font-size:12px; margin-bottom:12px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:8px; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:8px; cursor:pointer; display:flex; gap:8px; align-items:center; min-height:64px; }
+  .card:hover { border-color:var(--gold); background:var(--panel2); }
+  .card img { width:40px; height:40px; object-fit:contain; image-rendering:pixelated; flex:none; }
+  .card .nm { font-size:12.5px; line-height:1.25; }
+  .card .id { color:var(--dim); font-size:11px; }
+  .mcard { flex-direction:column; text-align:center; }
+  .mcard img { width:72px; height:72px; }
+  .ccard img { width:120px; height:120px; }
+  .chips { display:flex; gap:6px; flex-wrap:wrap; margin:6px 0; }
+  .chip { background:#0b0e13; border:1px solid var(--line); border-radius:10px; padding:1px 8px; font-size:11px; color:var(--dim); }
+  .chip.gold { color:var(--gold); border-color:#4a3f22; }
+  table { width:100%; border-collapse:collapse; font-size:12.5px; }
+  td { padding:3px 6px; border-bottom:1px solid var(--line); vertical-align:top; }
+  td:first-child { color:var(--dim); white-space:nowrap; }
+  .bar { position:relative; height:5px; background:#0b0e13; border-radius:3px; overflow:hidden; }
+  .bar i { position:absolute; inset:0 auto 0 0; background:var(--gold); }
+  .dtl-img { display:block; margin:0 auto 10px; max-width:140px; max-height:140px; image-rendering:pixelated; }
+  .sheet { max-width:100%; max-height:220px; image-rendering:pixelated; border:1px solid var(--line); border-radius:6px; background:#06070a; }
+  .btn { background:#0b0e13; color:var(--txt); border:1px solid var(--line); padding:6px 14px; border-radius:6px; cursor:pointer; margin-top:10px; }
+  .btn:hover { border-color:var(--gold); color:var(--gold); }
+  select { background:#0b0e13; color:var(--txt); border:1px solid var(--line); border-radius:6px; padding:7px 8px; }
+  .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:12px; }
+  .bigimg { max-width:100%; border:1px solid var(--line); border-radius:8px; }
+  .note { border:1px solid var(--line); border-radius:8px; margin-bottom:8px; overflow:hidden; }
+  .note summary { cursor:pointer; padding:10px 12px; background:var(--panel); list-style:none; }
+  .note summary:hover { background:var(--panel2); }
+  .note b { color:var(--gold2); margin-right:8px; }
+  .note .items { padding:4px 14px 12px; }
+  .note .items div { margin:4px 0; font-size:13px; }
+  .tag { display:inline-block; font-size:10px; border-radius:4px; padding:1px 6px; margin-right:6px; vertical-align:1px; }
+  .tag.new { background:#12321c; color:var(--green); }
+  .tag.change { background:#2b2410; color:var(--gold); }
+  .tag.fix { background:#10233a; color:#6db3e8; }
+  .tag.balance { background:#32101f; color:#e86d9a; }
+  .searchres { position:absolute; top:46px; left:180px; width:460px; max-height:420px; overflow:auto; background:#10151c; border:1px solid var(--line); border-radius:8px; z-index:30; display:none; }
+  .searchres div { padding:7px 12px; cursor:pointer; border-bottom:1px solid #1a212b; display:flex; gap:8px; align-items:center; }
+  .searchres div:hover { background:var(--panel2); }
+  .searchres .k { color:var(--dim); font-size:11px; margin-left:auto; }
+  .stat-hero { display:flex; gap:14px; flex-wrap:wrap; margin:10px 0 18px; }
+  .stat { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px 18px; text-align:center; min-width:104px; }
+  .stat b { display:block; font-size:22px; color:var(--gold2); }
+  .stat span { color:var(--dim); font-size:11.5px; }
+  .worldrow { display:flex; gap:12px; flex-wrap:wrap; }
+  .worldrow .globe { width:86px; }
+  .fam { color:var(--dim); font-size:11px; }
+  ::-webkit-scrollbar { width:10px; height:10px; } ::-webkit-scrollbar-thumb { background:#232c38; border-radius:5px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">⚔ <b>Aetheria</b> Scraped Wiki <small id="gen"></small></div>
+  <input id="search" placeholder="Search items / monsters / skills…" autocomplete="off" />
+  <div class="searchres" id="searchres"></div>
+  <div class="counts" id="counts"></div>
+</header>
+<div class="layout">
+  <nav id="nav"></nav>
+  <main>
+    <div id="view"></div>
+    <aside id="detail" class="hidden"></aside>
+  </main>
+</div>
+<script>
+const $ = (s) => document.querySelector(s);
+let DATA = null, LEAKS = null, itemMap = new Map(), monsterMap = new Map();
+const RARITY = { common:'#8fa0b3', uncommon:'#5fc97a', rare:'#6db3e8', epic:'#b07fe8', legendary:'#e8a04c', mythic:'#e05555' };
+const TABS = [
+  ['overview','⌂ Overview'], ['items','🗡 Items'], ['cards','🃏 Cards'], ['monsters','👾 Monsters'], ['skills','✨ Skills'],
+  ['classes','🧙 Classes'], ['npcs','🧑 NPCs'], ['maps','🗺 Maps'], ['world','🌍 World'], ['events','📅 Events'], ['patch','📰 Patch notes'], ['datamined','🔮 Datamined'],
+];
+let tab = 'overview', itemsShown = 120, itemFilter = '', itemType = '';
+
+function esc(s){ return String(s ?? '').replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function fmtDate(ms){ return new Date(ms).toISOString().slice(0,10); }
+function openDetail(html){ $('#detail').classList.remove('hidden'); $('#detail').innerHTML = html; }
+
+async function boot(){
+  DATA = await (await fetch('data.json')).json();
+  try { LEAKS = await (await fetch('leaks.json')).json(); } catch { LEAKS = null; }
+  for (const i of DATA.items) itemMap.set(String(i.id), i);
+  for (const m of DATA.monsters) monsterMap.set(String(m.id), m);
+  $('#gen').textContent = 'scraped ' + DATA.generatedAt.slice(0,16).replace('T',' ') + ' · ' + DATA.source.replace('https://','');
+  $('#counts').textContent = `${DATA.counts.items} items · ${DATA.counts.monsters} monsters · ${DATA.counts.skills} skills · ${DATA.counts.maps} maps`;
+  $('#nav').innerHTML = TABS.map(([k,l]) => `<button data-tab="${k}">${l}</button>`).join('');
+  $('#nav').onclick = (e) => { const t = e.target.closest('button'); if (t) route(t.dataset.tab); };
+  $('#search').addEventListener('input', onSearch);
+  route('overview');
+}
+function route(t){
+  tab = t; itemsShown = 120;
+  document.querySelectorAll('#nav button').forEach((b) => b.classList.toggle('on', b.dataset.tab === t));
+  $('#detail').classList.add('hidden');
+  ({ overview: viewOverview, items: viewItems, cards: viewCards, monsters: viewMonsters, skills: viewSkills,
+     classes: viewClasses, npcs: viewNpcs, maps: viewMaps, world: viewWorld, events: viewEvents, patch: viewPatch, datamined: viewDatamined })[t]();
+}
+
+// ---------- views ----------
+function viewOverview(){
+  const c = DATA.counts;
+  $('#view').innerHTML = `
+    <h2>Scraped from the live game</h2>
+    <div class="sub">All art + stats below were pulled straight off ${esc(DATA.source)} — item icons, monster sprite sheets, class art, card art, NPC portraits, world atlas and biome loading screens — then joined with the game's own data feeds.</div>
+    <div class="stat-hero">
+      <div class="stat"><b>${c.items}</b><span>items</span></div>
+      <div class="stat"><b>${c.monsters}</b><span>monsters</span></div>
+      <div class="stat"><b>${c.skills}</b><span>skills</span></div>
+      <div class="stat"><b>${c.classes}</b><span>classes</span></div>
+      <div class="stat"><b>${c.maps}</b><span>maps</span></div>
+      <div class="stat"><b>${c.npcs}</b><span>NPC portraits</span></div>
+    </div>
+    <h3>Data sources</h3>
+    <table>
+      <tr><td>/wiki-data</td><td>items · monsters (stats, drops, spawns) · skills · classes · maps · elements</td></tr>
+      <tr><td>/art/icons/manifest.json</td><td>${c.items} item icons + ${DATA.skills.filter(s=>s.icon).length} skill icons</td></tr>
+      <tr><td>/art/monsters/manifest.json</td><td>${DATA.monsters.filter(m=>m.sheet).length} animated sprite sheets</td></tr>
+      <tr><td>/art/classes · /art/cards · /art/npcs</td><td>class portraits · card art · NPC busts</td></tr>
+      <tr><td>/art/world · /art/loading</td><td>world atlas (4 worlds) · biome loading art</td></tr>
+      <tr><td>/patch-notes · /world/events</td><td>${DATA.patchNotes.length} changelog entries · ${DATA.events.length} live events</td></tr>
+    </table>
+    <h3>Latest update — ${esc(DATA.patchNotes[0]?.date ?? '')}</h3>
+    <div>${esc(DATA.patchNotes[0]?.title ?? '')}</div>
+    <div class="chips">${(DATA.patchNotes[0]?.items ?? []).slice(0, 6).map((i) => `<span class="chip">${esc(i.text.slice(0, 90))}${i.text.length > 90 ? '…' : ''}</span>`).join('')}</div>`;
+}
+
+function itemCard(i){
+  const rc = RARITY[i.rarity] || '#8fa0b3';
+  return `<div class="card" onclick="showItem(${i.id})">
+    ${i.icon ? `<img src="${i.icon}" alt="">` : `<img src="" alt="">`}
+    <div><div class="nm" style="color:${rc}">${esc(i.name)}</div><div class="id">#${i.id} · ${esc(i.type ?? '')}${i.equipmentType ? ' · ' + esc(i.equipmentType) : ''}</div></div></div>`;
+}
+function viewItems(){
+  const types = [...new Set(DATA.items.map((i) => i.type).filter(Boolean))].sort();
+  $('#view').innerHTML = `
+    <h2>Items <span class="fam">(${DATA.items.length})</span></h2>
+    <div class="row"><select id="typef"><option value="">all types</option>${types.map((t) => `<option ${t===itemType?'selected':''}>${t}</option>`).join('')}</select>
+    <input id="itemq" placeholder="filter by name / id…" value="${esc(itemFilter)}" style="background:#0b0e13;border:1px solid var(--line);color:var(--txt);padding:7px 10px;border-radius:6px;width:260px"></div>
+    <div class="grid" id="itemgrid"></div><div id="more" style="text-align:center"></div>`;
+  $('#typef').onchange = (e) => { itemType = e.target.value; itemsShown = 120; drawItems(); };
+  $('#itemq').oninput = (e) => { itemFilter = e.target.value.toLowerCase(); itemsShown = 120; drawItems(); };
+  drawItems();
+}
+function drawItems(){
+  const f = DATA.items.filter((i) => (!itemType || i.type === itemType) &&
+    (!itemFilter || String(i.id) === itemFilter || i.name.toLowerCase().includes(itemFilter)));
+  $('#itemgrid').innerHTML = f.slice(0, itemsShown).map(itemCard).join('');
+  $('#more').innerHTML = f.length > itemsShown ? `<button class="btn" onclick="itemsShown+=240;drawItems()">show more (${f.length - itemsShown} left)</button>` : `<div class="sub" style="margin-top:8px">${f.length} result(s)</div>`;
+}
+function viewCards(){
+  const cards = DATA.items.filter((i) => i.type === 'Card');
+  $('#view').innerHTML = `<h2>Card art <span class="fam">(${cards.length})</span></h2>
+    <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(170px,1fr))">
+    ${cards.map((c) => `<div class="card mcard ccard" onclick="showItem(${c.id})">
+      ${(c.cardArt || c.icon) ? `<img src="${c.cardArt || c.icon}" alt="">` : ''}
+      <div class="nm">${esc(c.name)}</div><div class="id">#${c.id}</div></div>`).join('')}</div>`;
+}
+function viewMonsters(){
+  $('#view').innerHTML = `<h2>Monsters <span class="fam">(${DATA.monsters.length})</span></h2>
+    <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(130px,1fr))">
+    ${DATA.monsters.map((m) => `<div class="card mcard" onclick="showMonster(${m.id})">
+      ${m.thumb ? `<img src="${m.thumb}" alt="">` : ''}
+      <div class="nm">${esc(m.name)}</div><div class="id">Lv${m.level ?? '?'}${m.trainingDummy ? ' · dummy' : ''}</div></div>`).join('')}</div>`;
+}
+function viewSkills(){
+  const byClass = {};
+  for (const s of DATA.skills) (byClass[s.classId ?? '?'] ??= []).push(s);
+  $('#view').innerHTML = `<h2>Skills <span class="fam">(${DATA.skills.length})</span></h2>` +
+    Object.entries(byClass).sort().map(([cls, arr]) => `<h3>${esc(cls)}</h3><div class="grid">${arr.map((s) => `
+      <div class="card" onclick="showSkill('${s.id}')">
+        ${s.icon ? `<img src="${s.icon}" alt="">` : ''}
+        <div><div class="nm">${esc(s.name)}</div><div class="id">${esc(s.kind ?? '')} · Lv${s.maxLevel ?? '?'}</div></div></div>`).join('')}</div>`).join('');
+}
+function viewClasses(){
+  $('#view').innerHTML = `<h2>Classes <span class="fam">(${DATA.classes.length})</span></h2>
+    <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(120px,1fr))">
+    ${DATA.classes.map((c) => `<div class="card mcard" onclick="showClass('${c.id}')">
+      ${(c.face || c.full) ? `<img src="${c.face || c.full}" alt="">` : ''}
+      <div class="nm">${esc(c.name)}</div></div>`).join('')}</div>`;
+}
+function viewNpcs(){
+  $('#view').innerHTML = `<h2>NPCs <span class="fam">(${DATA.npcs.length})</span></h2>
+    <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr))">
+    ${DATA.npcs.map((n) => `<div class="card mcard" onclick="showNpc('${n.slug}')">
+      ${(n.portrait || n.face) ? `<img style="width:84px;height:84px" src="${n.portrait || n.face}" alt="">` : ''}
+      <div class="nm">${esc(n.name)}</div></div>`).join('')}</div>`;
+}
+function viewMaps(){
+  $('#view').innerHTML = `<h2>Maps <span class="fam">(${DATA.maps.length})</span></h2>
+    <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(210px,1fr))">
+    ${DATA.maps.map((m) => `<div class="card mcard" onclick="showMap('${m.id}')" style="align-items:stretch">
+      ${m.loading ? `<img style="width:100%;height:86px;object-fit:cover" src="${m.loading}" alt="">` : `<div style="height:86px;background:#080a0e;border-radius:6px"></div>`}
+      <div class="nm">${esc(m.name)}</div><div class="id">${m.monsters.length} monster type(s)</div></div>`).join('')}</div>`;
+}
+function viewWorld(){
+  $('#view').innerHTML = `<h2>World atlas</h2><div class="sub">Scraped from the game's world-map screen.</div>` +
+    DATA.world.atlas.map((a) => `<h3>World ${a.world}</h3><img class="bigimg" src="${a.img}" style="max-height:420px">`).join('') +
+    `<h3>Globes</h3><div class="worldrow">${DATA.world.globes.map((g) => `<div class="globe"><img style="width:86px" src="${g.img}">W${g.world}</div>`).join('')}</div>` +
+    `<h3>Loading screens (biomes)</h3><div class="worldrow">${DATA.loading.map((l) => `<div><img class="bigimg" style="width:230px" src="${l.img}"><div class="fam">${esc(l.name)}</div></div>`).join('')}</div>`;
+}
+function viewEvents(){
+  $('#view').innerHTML = `<h2>Live events <span class="fam">(${DATA.events.length})</span></h2>` +
+    DATA.events.map((e) => `<div class="note"><div style="padding:12px">
+      ${e.banner ? `<img class="bigimg" style="max-height:150px" src="assets/art/${esc(e.banner)}">` : ''}
+      <h3 style="margin:8px 0 2px">${esc(e.title)} ${e.badge ? `<span class="chip gold">${esc(e.badge)}</span>` : ''}</h3>
+      <div class="sub">${e.startsAt > 0 ? fmtDate(e.startsAt) + ' → ' : ''}${fmtDate(e.endsAt)}</div>
+      ${(e.details ?? []).map((d) => `<div style="margin:4px 0">• ${esc(d)}</div>`).join('')}
+    </div></div>`).join('');
+}
+function viewPatch(){
+  $('#view').innerHTML = `<h2>Patch notes <span class="fam">(${DATA.patchNotes.length})</span></h2>` +
+    DATA.patchNotes.map((n, i) => `<details class="note" ${i === 0 ? 'open' : ''}><summary><b>${esc(n.date)}</b> ${esc(n.title)}</summary>
+      <div class="items">${(n.items ?? []).map((it) => `<div><span class="tag ${esc(it.tag)}">${esc(it.tag)}</span>${esc(it.text)}</div>`).join('')}</div></details>`).join('');
+}
+
+// ---------- details ----------
+function showItem(id){
+  const i = itemMap.get(String(id)); if (!i) return;
+  const img = i.cardArt || i.icon;
+  const attrs = (i.attributes ?? []).map((a) => `<tr><td>${esc(a.type)}</td><td>+${a.value}${a.perRefine ? ` (+${a.perRefine}/refine)` : ''}</td></tr>`).join('');
+  const eff = (i.effects ?? []).map((e) => `<div>• ${esc(typeof e === 'string' ? e : JSON.stringify(e))}</div>`).join('');
+  const drops = (i.droppedBy ?? []).map((d) => `<div>• ${esc(d.monster ?? d.name ?? JSON.stringify(d))}${d.chance != null ? ` <span class="fam">${(d.chance*100).toFixed(2)}%</span>` : ''}</div>`).join('');
+  const shops = (i.soldBy ?? []).map((s) => `<div>• ${esc(s.shop ?? '')} ${s.price ? `<span class="fam">${s.price}z</span>` : ''}</div>`).join('');
+  openDetail(`
+    ${img ? `<img class="dtl-img" src="${img}">` : ''}
+    <h2>${esc(i.name)}</h2>
+    <div class="chips"><span class="chip">#${i.id}</span>${i.type ? `<span class="chip">${esc(i.type)}</span>` : ''}
+      ${i.rarity ? `<span class="chip" style="color:${RARITY[i.rarity]}">${esc(i.rarity)}</span>` : ''}
+      ${i.equipmentType ? `<span class="chip">${esc(i.equipmentType)}</span>` : ''}${i.weaponType ? `<span class="chip">${esc(i.weaponType)}</span>` : ''}</div>
+    <table>
+      ${i.equipLevelMin ? `<tr><td>equip level</td><td>${i.equipLevelMin}+</td></tr>` : ''}
+      ${i.slots != null ? `<tr><td>slots</td><td>${i.slots}</td></tr>` : ''}
+      ${i.sellPrice != null ? `<tr><td>sell price</td><td>${i.sellPrice}z</td></tr>` : ''}
+      ${i.weight != null ? `<tr><td>weight</td><td>${i.weight}</td></tr>` : ''}
+      ${(i.jobs ?? []).length ? `<tr><td>jobs</td><td>${i.jobs.join(', ')}</td></tr>` : ''}
+    </table>
+    ${attrs ? `<h3>Attributes</h3><table>${attrs}</table>` : ''}
+    ${eff ? `<h3>Effects</h3>${eff}` : ''}
+    ${i.description ? `<h3>Description</h3><div>${esc(i.description)}</div>` : ''}
+    ${drops ? `<h3>Dropped by</h3>${drops}` : ''}
+    ${shops ? `<h3>Sold by</h3>${shops}` : ''}`);
+}
+function showMonster(id){
+  const m = monsterMap.get(String(id)); if (!m) return;
+  const st = m.stats ? Object.entries(m.stats).map(([k, v]) => `${k} ${v}`).join(' · ') : '';
+  const drops = (m.drops ?? []).map((d) => { const it = itemMap.get(String(d.itemId)); return `<tr><td>${it ? esc(it.name) : '#' + d.itemId}</td><td style="width:80px"><div class="bar"><i style="width:${Math.min(100, (d.chance ?? 0) * 100 * (d.chance < 0.01 ? 8 : 1))}%"></i></div></td><td>${((d.chance ?? 0) * 100).toFixed(d.chance < 0.001 ? 4 : 2)}%</td><td>${d.min ?? ''}–${d.max ?? ''}</td></tr>`; }).join('');
+  const spawns = (m.spawns ?? []).map((s) => `<tr><td>${esc(s.map ?? s.mapId)}</td><td>${esc(s.area ?? '')}</td><td>×${s.count ?? '?'}</td></tr>`).join('');
+  openDetail(`
+    ${m.sheet ? `<img class="sheet" src="${m.sheet}">` : m.thumb ? `<img class="dtl-img" src="${m.thumb}">` : ''}
+    <h2>${esc(m.name)}</h2>
+    <div class="chips"><span class="chip">#${m.id}</span><span class="chip">Lv ${m.level ?? '?'}</span>
+      ${m.element ? `<span class="chip">${esc(m.element)}${m.elementLevel ?? ''}</span>` : ''}${m.race ? `<span class="chip">${esc(m.race)}</span>` : ''}${m.size ? `<span class="chip">${esc(m.size)}</span>` : ''}</div>
+    <table>
+      <tr><td>HP</td><td>${(m.hp ?? 0).toLocaleString()}</td></tr>
+      <tr><td>ATK</td><td>${m.atk ?? '?'}${m.atkMax ? '–' + m.atkMax : ''}</td></tr>
+      <tr><td>DEF / MDEF</td><td>${m.def ?? '?'} / ${m.mdef ?? '?'}</td></tr>
+      <tr><td>EXP / JEXP</td><td>${m.exp ?? '?'} / ${m.jobExp ?? '?'}</td></tr>
+      ${st ? `<tr><td>stats</td><td>${st}</td></tr>` : ''}
+    </table>
+    ${drops ? `<h3>Drops</h3><table>${drops}</table>` : ''}
+    ${spawns ? `<h3>Spawns</h3><table>${spawns}</table>` : ''}`);
+}
+function showSkill(id){
+  const s = DATA.skills.find((x) => x.id === id); if (!s) return;
+  openDetail(`${s.icon ? `<img class="dtl-img" src="${s.icon}">` : ''}
+    <h2>${esc(s.name)}</h2>
+    <div class="chips"><span class="chip">${esc(s.classId ?? '?')}</span><span class="chip">${esc(s.kind ?? '')}</span><span class="chip">max Lv${s.maxLevel ?? '?'}</span>${s.target ? `<span class="chip">${esc(s.target)}</span>` : ''}</div>
+    <div class="sub">id: ${esc(s.id)}</div>`);
+}
+function showClass(id){
+  const c = DATA.classes.find((x) => x.id === id); if (!c) return;
+  openDetail(`<h2>${esc(c.name)}</h2>
+    ${c.full ? `<h3>Full</h3><img class="bigimg" src="${c.full}" style="max-height:240px">` : ''}
+    ${c.femaleFull ? `<h3>Full (female)</h3><img class="bigimg" src="${c.femaleFull}" style="max-height:240px">` : ''}
+    <div class="row">${c.face ? `<img class="dtl-img" src="${c.face}">` : ''}${c.femaleFace ? `<img class="dtl-img" src="${c.femaleFace}">` : ''}</div>`);
+}
+function showNpc(slug){
+  const n = DATA.npcs.find((x) => x.slug === slug); if (!n) return;
+  openDetail(`<h2>${esc(n.name)}</h2>
+    ${n.portrait ? `<img class="bigimg" src="${n.portrait}" style="max-width:100%">` : ''}
+    ${n.face ? `<div class="row"><img class="dtl-img" src="${n.face}"></div>` : ''}`);
+}
+function showMap(id){
+  const m = DATA.maps.find((x) => x.id === id); if (!m) return;
+  openDetail(`<h2>${esc(m.name)}</h2><div class="sub">${esc(m.id)}</div>
+    ${m.loading ? `<img class="bigimg" src="${m.loading}" style="max-width:100%">` : ''}
+    <h3>Spawns (${m.monsters.length})</h3><table>${m.monsters.map((x) => `<tr><td onclick="showMonster(${x.id})" style="cursor:pointer;color:var(--gold2)">${esc(x.name)}</td><td class="fam">Lv${x.level ?? '?'} · ${x.areas.map(esc).join(' · ')}</td></tr>`).join('')}</table>`);
+}
+
+// ---------- datamined (leaks) ----------
+function viewDatamined(){
+  const L = LEAKS;
+  if (!L) { $('#view').innerHTML = '<h2>🔮 Datamined</h2><div class="sub">leaks.json missing — run tmp-build-leaks.mjs</div>'; return; }
+  $('#view').innerHTML = `
+    <h2>🔮 Datamined — content shipped in the assets, not yet in the live game</h2>
+    <div class="sub">Scraped from the client bundles, manifests and public art folders. These are unreleased / cut / future things the game files already contain.</div>
+    <h3>Future worlds — full map art already shipped</h3>
+    <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(320px,1fr))">
+    ${L.worlds.map((w) => `<div class="card mcard" style="align-items:stretch">
+      <img style="width:100%;height:190px;object-fit:cover" src="${w.img}">
+      <div class="nm">World ${w.world} — ${esc(w.name)}</div><div class="id">${esc(w.status)}</div></div>`).join('')}</div>
+    <h3>Unreleased monsters (${L.unreleasedMonsters.length}) — sprites in the assets, no game data</h3>
+    <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(120px,1fr))">
+    ${L.unreleasedMonsters.map((m) => `<div class="card mcard"><img style="width:72px;height:72px" src="${m.thumb}"><div class="nm">${esc(m.name)}</div><div class="id">#${m.id}</div></div>`).join('')}</div>
+    <h3>Cut item tier — icons shipped, no live item (${L.cutItemIcons.length})</h3>
+    <div class="sub">An entire iron → steel → mythril → dragon equipment line + beach-zone drops (crab claws, bee stings, goat horns…) exist as art only.</div>
+    <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(128px,1fr))">
+    ${L.cutItemIcons.map((c) => `<div class="card"><img src="${c.icon}" style="width:36px;height:36px"><div><div class="nm">${esc(c.name)}</div><div class="id">${esc(c.slug)}</div></div></div>`).join('')}</div>
+    <h3>Unopened classes (${L.unopenedClasses.length + 1}) — art ready, “not playable yet”</h3>
+    <div class="sub">Client text: “Not playable yet — being designed”. Dragon Knight is in progress (1 skill).</div>
+    <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(110px,1fr))">
+    ${[L.inProgressClass, ...L.unopenedClasses].map((c) => `<div class="card mcard"><img src="${c.face}" style="width:64px;height:64px"><div class="nm">${esc(c.name)}</div><div class="id">${c.skills ? c.skills + ' skill (in progress)' : 'no skills yet'}</div></div>`).join('')}</div>
+    <h3>MVP boss art (${L.bosses.length})</h3>
+    <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr))">
+    ${L.bosses.map((b) => `<div class="card mcard"><img style="width:96px;height:96px" src="${b.img}"><div class="nm">${esc(b.name)}</div><div class="id">Lv${b.level}</div></div>`).join('')}</div>
+    <h3>Rune Stone system — in the client as “Preview · not open yet”</h3>
+    <div class="sub">516 Awakening-Stone items (Chain / Fork / Piercing × 4 rarities × all skills) are already in the public data. ${L.spiritOrphans.length ? `Spirits without a bag yet: ${L.spiritOrphans.map(esc).join(', ')}.` : ''}</div>
+    <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr))">
+    ${DATA.items.filter((i) => i.type === 'AwakeningStone').slice(0, 12).map((i) => `<div class="card" onclick="showItem(${i.id})">${i.icon ? `<img src="${i.icon}" style="width:36px;height:36px">` : ''}<div><div class="nm">${esc(i.name)}</div><div class="id">#${i.id}</div></div></div>`).join('')}</div>
+    <h3>Ragnarok item database — ${L.roDb.count} imported items not live</h3>
+    <div class="chips">${L.roDb.sample.slice(0, 40).map((i) => `<span class="chip">${i.id} ${esc(i.name)}</span>`).join('')}</div>
+    <h3>Skills with data but no icon (${L.iconlessSkills.length})</h3>
+    <div class="chips">${L.iconlessSkills.map((s) => `<span class="chip">${esc(s.name)} (${esc(s.classId ?? '?')}, max ${s.maxLevel ?? '?'})</span>`).join('')}</div>
+    <h3>Coming-soon strings found in the client bundle</h3>
+    ${L.teases.map((t) => `<div style="margin:4px 0">• ${esc(t)}</div>`).join('')}`;
+}
+
+// ---------- search ----------
+function onSearch(e){
+  const q = e.target.value.trim().toLowerCase();
+  const box = $('#searchres');
+  if (!q || q.length < 2) { box.style.display = 'none'; return; }
+  const hits = [];
+  for (const i of DATA.items) { if (i.name.toLowerCase().includes(q) || String(i.id) === q) hits.push({ k: 'item', id: i.id, t: i.name, s: '#' + i.id + ' · ' + (i.type ?? '') , img: i.icon }); if (hits.length > 16) break; }
+  for (const m of DATA.monsters) { if (m.name.toLowerCase().includes(q) || String(m.id) === q) hits.push({ k: 'monster', id: m.id, t: m.name, s: 'Lv' + (m.level ?? '?'), img: m.thumb }); if (hits.length > 24) break; }
+  for (const s of DATA.skills) { if (s.name.toLowerCase().includes(q) || s.id.includes(q)) hits.push({ k: 'skill', id: s.id, t: s.name, s: s.classId ?? '', img: s.icon }); if (hits.length > 30) break; }
+  box.innerHTML = hits.map((h) => `<div onclick="jump('${h.k}','${h.id}')">${h.img ? `<img src="${h.img}" style="width:24px;height:24px">` : ''}<span>${esc(h.t)}</span><span class="k">${esc(h.s)}</span></div>`).join('') || '<div>no matches</div>';
+  box.style.display = 'block';
+}
+function jump(kind, id){
+  $('#searchres').style.display = 'none'; $('#search').value = '';
+  if (kind === 'item') { route('items'); showItem(id); }
+  if (kind === 'monster') { route('monsters'); showMonster(id); }
+  if (kind === 'skill') { route('skills'); showSkill(String(id)); }
+}
+document.addEventListener('click', (e) => { if (!e.target.closest('#search') && !e.target.closest('#searchres')) $('#searchres').style.display = 'none'; });
+boot();
+</script>
+</body>
+</html>

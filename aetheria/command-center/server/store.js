@@ -16,6 +16,23 @@ if (!state.settings) state.settings = { collector: null, tracked: [] };
 if (!state.settings.autoCollect) state.settings.autoCollect = { enabled: false, everyMin: 360, minZeny: 15000, minStacks: 1, lastAt: 0 };
 if (!state.settings.wings) state.settings.wings = { enabled: true, keep: 10 };
 if (!Array.isArray(state.settings.plans)) state.settings.plans = [];
+// multi-collector pool (2026-10-08): each collector has a zeny cap + a per-item quantity cap; transfers spill
+// to the next collector when one is full and a fresh collector is auto-created when they all are.
+// Defaults (user-set): zeny 297,431,629 (deliberately non-round) · 4,995 per item.
+if (!Array.isArray(state.settings.collectors)) {
+  state.settings.collectors = state.settings.collector?.charName
+    ? [{
+        id: 1,
+        charName: state.settings.collector.charName,
+        channel: state.settings.collector.channel ?? 1,
+        spot: state.settings.collector.spot ?? { x: 880, y: 1520 },
+        zenyCap: 297431629,
+        itemCapPerItem: 4995,
+        createdAt: Date.now(),
+      }]
+    : [];
+}
+if (!state.meta.nextCollectorId) state.meta.nextCollectorId = state.settings.collectors.length + 1;
 
 let writeQueued = false;
 function persist() {
