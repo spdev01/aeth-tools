@@ -70,7 +70,7 @@ export function openMob(mobId) {
     <div class="ev-total">
       ${(() => { const u = mobImgUrl(m); return u ? `<img class="mobimg big" src="${esc(u)}" data-fb="${esc(m.n)}" alt="">` : ''; })()}
       <span class="big">${fmtZ(ev.total * scale, { compact: scale > 1 })}z</span>
-      <span class="dim">${scaleLabel()} &middot; ${ev.included} of ${ev.rows.length} drops counted</span>
+      <span class="dim">${scale === 1 ? `${fmtZ(ev.total)}z/kill` : `${scaleLabel()} &middot; ${fmtZ(ev.total)}z/kill`} &middot; ${ev.included} of ${ev.rows.length} drops counted</span>
     </div>
     ${ev.excluded ? `<p class="note warn">${ev.excluded} drop row(s) are excluded by the current category / class toggles (dimmed below).</p>` : ''}
     <h4>Stats</h4>

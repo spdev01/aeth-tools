@@ -3,7 +3,7 @@ import {
   state, TYPES, QUICK_SETS, CLASSES, loadCfg, saveCfg, loadDb,
   evOfMob, applyFilters, sortMobs, sortItems, sortMaps,
   buildSrcIndex, srcIndex,
-  fmtZ, fmtWeight, itemIconUrl, mobImgUrl, esc,
+  fmtZ, fmtPct, fmtWeight, itemIconUrl, mobImgUrl, esc,
 } from './engine.js';
 import { openMob, openItem, openMap, closeDetail } from './details.js';
 
@@ -259,6 +259,7 @@ function renderMobs() {
   const sorted = sortMobs(all);
   state.mobs = sorted;
   const scale = state.cfg.scale;
+  const scaleLbl = scale === 1 ? 'per kill' : `per ${scale.toLocaleString('en-US')} kills`;
   const tbody = $('#mob-rows');
   const frag = document.createDocumentFragment();
 
@@ -275,9 +276,9 @@ function renderMobs() {
       <td>${m.hp.toLocaleString('en-US')}</td>
       <td class="left"><span class="badge el-${esc(m.el)}">${esc(m.el)}</span></td>
       <td>${m.boss ? '<span class="badge" style="color:var(--gold);border-color:var(--gold)">boss</span>' : '<span class="dim">-</span>'}</td>
-      <td class="ev">${fmtZ(ev.total * scale, { compact: scale > 1 })}</td>
+      <td class="ev">${fmtZ(ev.total * scale, { compact: scale > 1 })}${scale > 1 ? `<br><small>${fmtZ(ev.total)}/kill</small>` : ''}</td>
       <td>${ev.included}<span class="dim">/${ev.rows.length}</span></td>
-      <td class="left">${top ? topCell(top) : '<span class="dim">-</span>'}</td>
+      <td class="left">${top ? topCell(top, scale) : '<span class="dim">-</span>'}</td>
       <td class="left" title="${esc(m.spawns.map((s) => `${state.db.maps[s.map]?.n ?? s.map} x${s.count}`).join(String.fromCharCode(10)))}"><span class="dim">${m.spawns.length || ''}</span></td>`;
     tr.addEventListener('click', () => { selectRow(tr); openMob(m.id); });
     frag.appendChild(tr);
@@ -285,16 +286,25 @@ function renderMobs() {
   tbody.replaceChildren(frag);
 
   $('#mob-count').textContent = `${sorted.length} monsters`;
-  const scaleLbl = scale === 1 ? 'per kill' : `per ${scale.toLocaleString('en-US')} kills`;
   $('#ev-note').textContent = `EV ${scaleLbl} \u00b7 ${state.cfg.types.size}/${TYPES.length} categories on`;
+  syncEvHeader(scaleLbl);
 }
 
-function topCell(r) {
+function syncEvHeader(scaleLbl) {
+  const th = document.querySelector('#mob-table thead th[data-sort="ev"]');
+  if (!th) return;
+  const st = state.cfg.mobSort;
+  const arrow = st.key === 'ev' ? (st.dir > 0 ? ' \u25b2' : ' \u25bc') : '';
+  th.textContent = `EV \u00b7 ${scaleLbl}${arrow}`;
+}
+
+function topCell(r, scale) {
   const url = itemIconUrl(r.item);
   const icn = url
     ? `<img class="icn" src="${esc(url)}" data-fb="${esc(r.item.n)}" alt="" loading="lazy">`
     : `<span class="icn-fb">${esc(r.item.n.slice(0, 2))}</span>`;
-  return `<span class="itemcell">${icn}${esc(r.item.n)} <span class="dim">${fmtZ(r.ev, { compact: true })}z</span></span>`;
+  const val = fmtZ(r.ev * scale, { compact: true });
+  return `<span class="itemcell" title="biggest EV contributor: drop chance x sell price (${fmtPct(r.chance)}, sells ${fmtZ(r.item.s)}z)">${icn}${esc(r.item.n)} <span class="dim">${val}z</span></span>`;
 }
 
 function selectRow(tr) {

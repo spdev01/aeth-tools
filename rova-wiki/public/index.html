@@ -67,7 +67,7 @@
           <option value="100" selected>per 100 kills</option>
           <option value="1000">per 1,000 kills</option>
         </select>
-        <p class="hint">EV = drop chance &times; NPC sell price of each drop (sell prices from the game&rsquo;s own item database).</p>
+        <p class="hint">EV per kill = (drop rate &divide; 10,000) &times; NPC sell price of each drop. Sell prices come from the game&rsquo;s own item database.</p>
       </div>
     </aside>
     <div class="results">
@@ -155,8 +155,11 @@
       </ul>
       <h3>How to read EV</h3>
       <ul>
-        <li>Drop rates are per kill, out of 10,000 (72.00% = 7200). Each drop rolls independently, so EV simply adds up.</li>
-        <li>Sell price is what a shop pays you for the item, not market price. A rare item nobody can sell is worth the same as its shop price.</li>
+        <li>Drop rates are stored per 10,000 (72.00% = 7200). <b>EV per kill = rate &divide; 10,000 &times; sell price</b>:
+        a 72% drop that sells for 3z adds 2.16z per kill, a 0.02% card that sells for 10z adds 0.002z.</li>
+        <li>The <b>EV column header and the value-scale selector</b> tell you the basis (per kill / per 100 / per 1,000 kills).
+        The same number at different scales is just &times;100 or &times;1,000 - the per-kill value is shown underneath.</li>
+        <li>Each drop rolls independently, so EV simply adds up. Sell price is what a shop pays you, not market price.</li>
         <li>Cards are included via the <b>Card</b> toggle - turn them off to see &ldquo;steady income&rdquo; EV without jackpot items.</li>
         <li>Special drops are rare extras tied to certain maps; the monster page lists the maps it can occur on.</li>
         <li>Buying/selling to the Central Market or players can beat these numbers, but NPC sell value is the guaranteed floor.</li>

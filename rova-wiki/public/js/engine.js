@@ -39,7 +39,7 @@ export const state = {
   cfg: {
     types: new Set(TYPES.map(([t]) => t)),
     classes: { drop: true, mvp: true, spc: true },
-    scale: 100,
+    scale: 1,
     search: { monsters: '', items: '', maps: '' },
     filters: { search: '', lvMin: null, lvMax: null, bossOnly: false, noBoss: false, noSpawn: false, map: '' },
     mobSort: { key: 'ev', dir: -1 },
