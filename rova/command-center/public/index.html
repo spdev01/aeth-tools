@@ -78,7 +78,7 @@
           <button id="ph-go" class="btn" title="generate random credentials locally (not registered on the service yet)">+ Random placeholders</button>
         </div>
         <div id="jobbox"></div>
-        <p class="muted small">Auto-registration is <b>not wired yet</b> — the auth flow (<code>/api/auth/*</code>) must be confirmed on a real environment first (see <code>rova/protocol/ROVA-PROTOCOL-INVENTORY.md</code>). Use import or placeholders until then.</p>
+        <p class="muted small">Registration rides a <b>Tor circuit</b> (<code>POST /api/auth/register</code> over the house SOCKS port — see <code>rova/protocol/AUTH-HANDSHAKE.md</code>). Like every other game call in this tool, there is no direct-connection path. Each run stores userId, password and the server-assigned device id.</p>
       </div>
       <div class="panel">
         <h3>Import accounts</h3>

@@ -186,6 +186,7 @@ table#accounts-table { width: 100%; border-collapse: collapse; background: var(-
 .pwdcell:hover { color: var(--acc); }
 .st-planned { color: var(--warn); }
 .st-imported { color: var(--ok); }
+.st-registered { color: var(--ok); }
 
 /* ---------- collector tab lists ---------- */
 .qline { display: flex; align-items: center; gap: 8px; padding: 5px 2px; border-bottom: 1px solid rgba(255, 255, 255, .045); font-size: 12.5px; }

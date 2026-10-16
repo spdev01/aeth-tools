@@ -1,11 +1,12 @@
 // accounts.js — account + character records for the ROVA fleet.
-//
-// STATUS: registration against the ROVA service is NOT wired yet on purpose. The HTTP auth flow
-// (/api/auth/* — guest/password/token) must be confirmed against a real environment first; see
-// rova/protocol/ROVA-PROTOCOL-INVENTORY.md §1 (auth) and the security review's route inventory.
-// Until then: IMPORT accounts (userId:password per line) or create placeholder records for smoke tests.
+// TOR-ONLY INVARIANT: every request that touches the game service leaves through a SOCKS circuit
+// (server/rova-http.mjs → socks.mjs). There is deliberately no direct-connection code path here.
+// Registration flow live-verified 2026-10-16 — see rova/protocol/AUTH-HANDSHAKE.md.
 import { store } from './store.js';
 import { accountUsername, strongPassword } from './namegen.js';
+import { torRequest } from './rova-http.mjs';
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export function importAccounts(lines, { label = 'imported' } = {}) {
   const rows = String(lines || '').split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
@@ -59,11 +60,54 @@ export function removeAccount(id) {
   return { ok: true };
 }
 
-// Registration stub — fails loudly so nobody assumes it worked.
-export async function registerAccounts() {
-  return {
-    ok: false,
-    notImplemented: true,
-    error: 'ROVA registration adapter not implemented yet — auth flow (/api/auth/*) must be confirmed on a real environment first. Use import or placeholder accounts for now.',
-  };
+// Registration — rides the Tor house circuit (D1). Configure with ROVA_REG_PORT / ROVA_REG_SOCKS_USER / ROVA_REG_SOCKS_PASS.
+const REG_PORT = Number(process.env.ROVA_REG_PORT || 21000);
+const REG_USER = process.env.ROVA_REG_SOCKS_USER || 'canary';
+const REG_PASS = process.env.ROVA_REG_SOCKS_PASS || 'canary';
+const RETRYABLE_NAME = new Set(['username_taken', 'bad_username', 'name_taken', 'bad_name', 'guest_taken']);
+
+export async function registerAccounts(count = 1) {
+  const n = Math.max(1, Math.min(50, parseInt(count, 10) || 1));
+  const added = [];
+  for (let i = 0; i < n; i++) {
+    let done = false, fatal = null;
+    for (let attempt = 0; attempt < 3 && !done && !fatal; attempt++) {
+      const userId = accountUsername();
+      const password = strongPassword(12);
+      let r;
+      try {
+        r = await torRequest({
+          port: REG_PORT, user: REG_USER, pass: REG_PASS, method: 'POST',
+          path: '/api/auth/register',
+          body: { username: userId, password, locale: 'en', invite: '', cbt: '' },
+          timeoutMs: 60000,
+        });
+      } catch (e) {
+        fatal = `tor circuit failed (${e?.message || e}) — check Tor daemons (node cc.mjs tor-start)`;
+        break;
+      }
+      const j = r.json || {};
+      if (r.status === 200 && j.ok !== false && j.token) {
+        const acc = {
+          id: store.nextId('account'),
+          label: 'registered', userId, password,
+          status: 'registered',
+          device: j.device || null,          // server-assigned device id (needed for WS ?dv= and relogin)
+          accountId: j.account?.id ?? null,
+          createdAt: Date.now(),
+        };
+        store.data.accounts.push(acc);
+        added.push(acc);
+        store.save();
+        done = true;
+      } else {
+        const code = j.err || `http_${r.status}`;
+        if (RETRYABLE_NAME.has(code)) { await sleep(500); continue; } // fresh username next attempt
+        fatal = code;
+      }
+    }
+    if (fatal) return { ok: false, error: fatal, added: added.length };
+  }
+  if (!added.length) return { ok: false, error: 'registration produced no accounts' };
+  return { ok: true, added: added.length, accounts: added.map((a) => ({ id: a.id, userId: a.userId, status: a.status })) };
 }
