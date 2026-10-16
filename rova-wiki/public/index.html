@@ -52,11 +52,24 @@
       </div>
       <div class="card">
         <h3>Filters</h3>
-        <label class="row">Level <input id="lv-min" type="number" min="1" max="99" placeholder="1" class="num"> &ndash; <input id="lv-max" type="number" min="1" max="99" placeholder="99" class="num"></label>
-        <label class="row"><input type="checkbox" id="f-boss"> Bosses only</label>
-        <label class="row"><input type="checkbox" id="f-noboss"> Exclude bosses</label>
-        <label class="row"><input type="checkbox" id="f-nospawn"> Only monsters with spawns</label>
-        <label class="row">Map <input id="f-map" list="maps-list" placeholder="any map&hellip;">
+        <label class="row">Level <input data-bind="lvMin" type="number" min="1" max="99" placeholder="1" class="num"> &ndash; <input data-bind="lvMax" type="number" min="1" max="99" placeholder="99" class="num"></label>
+        <label class="row">Aggro
+          <select data-bind="aggro" class="slim">
+            <option value="">any</option>
+            <option value="agg">aggressive</option>
+            <option value="pas">passive</option>
+          </select>
+        </label>
+        <div class="stat-filters" id="mob-stat-filters">
+          <label class="row">DEF <input data-bind="defMin" type="number" min="0" placeholder="min" class="num sm"> <span class="dim">&ndash;</span> <input data-bind="defMax" type="number" min="0" placeholder="max" class="num sm"></label>
+          <label class="row">MDEF <input data-bind="mdefMin" type="number" min="0" placeholder="min" class="num sm"> <span class="dim">&ndash;</span> <input data-bind="mdefMax" type="number" min="0" placeholder="max" class="num sm"></label>
+          <label class="row">HIT <input data-bind="hitMin" type="number" min="0" placeholder="min" class="num sm"> <span class="dim">&ndash;</span> <input data-bind="hitMax" type="number" min="0" placeholder="max" class="num sm"></label>
+          <label class="row">FLEE <input data-bind="fleeMin" type="number" min="0" placeholder="min" class="num sm"> <span class="dim">&ndash;</span> <input data-bind="fleeMax" type="number" min="0" placeholder="max" class="num sm"></label>
+        </div>
+        <label class="row"><input type="checkbox" data-bind="bossOnly"> Bosses only</label>
+        <label class="row"><input type="checkbox" data-bind="noBoss"> Exclude bosses</label>
+        <label class="row"><input type="checkbox" data-bind="noSpawn"> Only monsters with spawns</label>
+        <label class="row">Map <input data-bind="map" list="maps-list" placeholder="any map&hellip;">
           <datalist id="maps-list"></datalist>
         </label>
       </div>
@@ -124,7 +137,23 @@
     <div class="tablebar">
       <span id="map-count" class="count"></span>
       <span class="spacer"></span>
-      <span class="dim">avg EV/kill = spawn-weighted average across the map&rsquo;s monsters</span>
+      <span class="dim" id="map-note">avg EV/kill = spawn-weighted average across the map&rsquo;s monsters</span>
+    </div>
+    <div class="mapctl">
+      <label>Level <input data-bind="lvMin" type="number" min="1" max="99" placeholder="any" class="num"> <span class="dim">&ndash;</span> <input data-bind="lvMax" type="number" min="1" max="99" placeholder="any" class="num"></label>
+      <label>Aggro
+        <select data-bind="aggro" class="slim">
+          <option value="">any</option>
+          <option value="agg">aggressive</option>
+          <option value="pas">passive</option>
+        </select>
+      </label>
+      <label><input type="checkbox" data-bind="mapExBoss"> Exclude bosses from calculation</label>
+      <span class="vsep"></span>
+      <label>DEF <input data-bind="defMin" type="number" min="0" placeholder="min" class="num sm"> <span class="dim">&ndash;</span> <input data-bind="defMax" type="number" min="0" placeholder="max" class="num sm"></label>
+      <label>MDEF <input data-bind="mdefMin" type="number" min="0" placeholder="min" class="num sm"> <span class="dim">&ndash;</span> <input data-bind="mdefMax" type="number" min="0" placeholder="max" class="num sm"></label>
+      <label>HIT <input data-bind="hitMin" type="number" min="0" placeholder="min" class="num sm"> <span class="dim">&ndash;</span> <input data-bind="hitMax" type="number" min="0" placeholder="max" class="num sm"></label>
+      <label>FLEE <input data-bind="fleeMin" type="number" min="0" placeholder="min" class="num sm"> <span class="dim">&ndash;</span> <input data-bind="fleeMax" type="number" min="0" placeholder="max" class="num sm"></label>
     </div>
     <div class="scroll">
       <table id="map-table" class="grid">

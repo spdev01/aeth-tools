@@ -41,7 +41,19 @@ export const state = {
     classes: { drop: true, mvp: true, spc: true },
     scale: 1,
     search: { monsters: '', items: '', maps: '' },
-    filters: { search: '', lvMin: null, lvMax: null, bossOnly: false, noBoss: false, noSpawn: false, map: '' },
+    filters: {
+      // shared monster conditions (monsters list + map calculation)
+      lvMin: null, lvMax: null,
+      aggro: '',
+      defMin: null, defMax: null,
+      mdefMin: null, mdefMax: null,
+      hitMin: null, hitMax: null,
+      fleeMin: null, fleeMax: null,
+      // monsters tab only
+      bossOnly: false, noBoss: false, noSpawn: false, map: '',
+      // maps tab only
+      mapExBoss: true,
+    },
     mobSort: { key: 'ev', dir: -1 },
     itemSort: { key: 'name', dir: 1 },
     mapSort: { key: 'name', dir: 1 },
@@ -139,21 +151,41 @@ export function evSummary(mobs) {
 }
 
 // ---------------- filtering ----------------
+/** Shared monster conditions (level, aggressiveness, DEF/MDEF/HIT/FLEE ranges). Applied to the monsters list AND the map calculation. */
+export function mobStatPass(m) {
+  const f = state.cfg.filters;
+  if (f.lvMin != null && m.lv < f.lvMin) return false;
+  if (f.lvMax != null && m.lv > f.lvMax) return false;
+  if (f.aggro === 'agg' && !m.ag) return false;
+  if (f.aggro === 'pas' && m.ag) return false;
+  const rng = (v, lo, hi) => (lo == null || v >= lo) && (hi == null || v <= hi);
+  if (!rng(m.def, f.defMin, f.defMax)) return false;
+  if (!rng(m.mdef, f.mdefMin, f.mdefMax)) return false;
+  if (!rng(m.hit, f.hitMin, f.hitMax)) return false;
+  if (!rng(m.flee, f.fleeMin, f.fleeMax)) return false;
+  return true;
+}
+
+/** Should this monster's spawns count toward a map's stats under the current map conditions? */
+export function mapSpawnPass(m) {
+  if (!mobStatPass(m)) return false;
+  if (state.cfg.filters.mapExBoss && m.boss) return false;
+  return true;
+}
+
 export function applyFilters(search = '') {
   const { db, cfg } = state;
   const f = cfg.filters;
   const q = search.trim().toLowerCase();
   // strip a trailing "(map id)" that the datalist suggestion appends
   const mapQ = f.map.trim().toLowerCase().replace(/\s*\([^)]*\)\s*$/, '');
-  let mobs = db.mobs;
+  let mobs = db.mobs.filter(mobStatPass);
 
   if (q) {
     // search monsters by name; if it matches a map name, filter by that map too
     const mapHit = Object.entries(db.maps).find(([, mp]) => mp.n.toLowerCase().includes(q));
     mobs = mobs.filter((m) => m._name.includes(q) || (mapHit && m._maps.includes(mapHit[0])));
   }
-  if (f.lvMin != null) mobs = mobs.filter((m) => m.lv >= f.lvMin);
-  if (f.lvMax != null) mobs = mobs.filter((m) => m.lv <= f.lvMax);
   if (f.bossOnly) mobs = mobs.filter((m) => m.boss);
   if (f.noBoss) mobs = mobs.filter((m) => !m.boss);
   if (f.noSpawn) mobs = mobs.filter((m) => m.spawns.length > 0);

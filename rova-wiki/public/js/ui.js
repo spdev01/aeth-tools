@@ -1,7 +1,7 @@
 // ui.js — tabs, filters, tables, search for the ROVA wiki tool.
 import {
   state, TYPES, QUICK_SETS, CLASSES, loadCfg, saveCfg, loadDb,
-  evOfMob, applyFilters, sortMobs, sortItems, sortMaps,
+  evOfMob, applyFilters, mapSpawnPass, sortMobs, sortItems, sortMaps,
   buildSrcIndex, srcIndex,
   fmtZ, fmtPct, fmtWeight, itemIconUrl, mobImgUrl, esc,
 } from './engine.js';
@@ -106,14 +106,39 @@ function renderItemTypeChips() {
 }
 
 function applyCfgToInputs() {
-  const f = state.cfg.filters;
-  $('#lv-min').value = f.lvMin ?? '';
-  $('#lv-max').value = f.lvMax ?? '';
-  $('#f-boss').checked = f.bossOnly;
-  $('#f-noboss').checked = f.noBoss;
-  $('#f-nospawn').checked = f.noSpawn;
-  $('#f-map').value = f.map;
+  syncFiltersUI();
   $('#scale').value = String(state.cfg.scale);
+}
+
+/** Mirror cfg.filters into every [data-bind] control (both tabs stay in sync). */
+function syncFiltersUI() {
+  const f = state.cfg.filters;
+  $$('[data-bind]').forEach((el) => {
+    const k = el.dataset.bind;
+    const v = f[k];
+    if (el.type === 'checkbox') el.checked = !!v;
+    else if (el.type === 'number') el.value = v == null ? '' : String(v);
+    else el.value = v ?? '';
+  });
+}
+
+function readBind(el) {
+  const k = el.dataset.bind;
+  if (el.type === 'checkbox') return el.checked;
+  if (el.type === 'number') return el.value === '' ? null : Math.max(0, Math.floor(Number(el.value)) || 0);
+  return el.value;
+}
+
+let filterTimer = 0;
+function onFilterInput(el) {
+  state.cfg.filters[el.dataset.bind] = readBind(el);
+  saveCfg();
+  clearTimeout(filterTimer);
+  filterTimer = setTimeout(() => {
+    syncFiltersUI();
+    rebuildMapsList();
+    renderActive();
+  }, 150);
 }
 
 // ---------- events ----------
@@ -140,23 +165,16 @@ function wireEvents() {
     }, 140);
   });
 
-  const num = (id, k) => $(id).addEventListener('input', (e) => {
-    const v = e.target.value === '' ? null : Math.max(1, Number(e.target.value) || null);
-    state.cfg.filters[k] = v;
-    saveCfg();
-    renderMobs();
+  // shared monster filters (level, aggro, DEF/MDEF/HIT/FLEE) via data-bind; wired on both tabs
+  document.addEventListener('input', (e) => {
+    const el = e.target.closest?.('[data-bind]');
+    if (el && el.type !== 'checkbox') onFilterInput(el);
   });
-  num('#lv-min', 'lvMin');
-  num('#lv-max', 'lvMax');
+  document.addEventListener('change', (e) => {
+    const el = e.target.closest?.('[data-bind]');
+    if (el && (el.type === 'checkbox' || el.tagName === 'SELECT')) onFilterInput(el);
+  });
 
-  $('#f-boss').addEventListener('change', (e) => { state.cfg.filters.bossOnly = e.target.checked; saveCfg(); renderMobs(); });
-  $('#f-noboss').addEventListener('change', (e) => { state.cfg.filters.noBoss = e.target.checked; saveCfg(); renderMobs(); });
-  $('#f-nospawn').addEventListener('change', (e) => { state.cfg.filters.noSpawn = e.target.checked; saveCfg(); renderMobs(); });
-  let mid = 0;
-  $('#f-map').addEventListener('input', (e) => {
-    clearTimeout(mid);
-    mid = setTimeout(() => { state.cfg.filters.map = e.target.value; saveCfg(); renderMobs(); }, 160);
-  });
   $('#scale').addEventListener('change', (e) => { state.cfg.scale = Number(e.target.value) || 1; saveCfg(); renderAll(); });
   $('#export-csv').addEventListener('click', exportCsv);
   $('#detail-close').addEventListener('click', closeDetail);
@@ -242,14 +260,16 @@ function rebuildMapsList() {
     for (const [mobId, count, lo, hi] of mp.spawns) {
       const m = db.mobs.find((x) => x.id === mobId);
       if (!m) continue;
+      if (!mapSpawnPass(m)) continue;   // level / aggro / stat filters + optional boss exclusion
       const ev = evOfMob(m);
       rows.push({ m, count, lo, hi, ev });
       sum += ev.total * (count || 1);
       cnt += count || 1;
       if (!best || ev.total > best.ev.total) best = { m, ev };
     }
+    if (!rows.length) continue;          // no spawn currently qualifies -> hide the map
     rows.sort((a, b) => b.ev.total - a.ev.total);
-    mapList.push({ id, n: mp.n, rows, mobCount: rows.length, avg: cnt ? sum / cnt : 0, best });
+    mapList.push({ id, n: mp.n, rows, mobCount: rows.length, spawnTotal: cnt, avg: cnt ? sum / cnt : 0, best });
   }
 }
 
@@ -371,6 +391,16 @@ function renderMaps() {
   }
   tbody.replaceChildren(frag);
   $('#map-count').textContent = `${list.length} maps`;
+  const f = state.cfg.filters;
+  const cond = [];
+  if (f.lvMin != null || f.lvMax != null) cond.push(`lv ${f.lvMin ?? 1}-${f.lvMax ?? 99}`);
+  if (f.aggro) cond.push(f.aggro === 'agg' ? 'aggressive' : 'passive');
+  if (f.defMin != null || f.defMax != null) cond.push(`DEF ${f.defMin ?? 0}-${f.defMax ?? '∞'}`);
+  if (f.mdefMin != null || f.mdefMax != null) cond.push(`MDEF ${f.mdefMin ?? 0}-${f.mdefMax ?? '∞'}`);
+  if (f.hitMin != null || f.hitMax != null) cond.push(`HIT ${f.hitMin ?? 0}-${f.hitMax ?? '∞'}`);
+  if (f.fleeMin != null || f.fleeMax != null) cond.push(`FLEE ${f.fleeMin ?? 0}-${f.fleeMax ?? '∞'}`);
+  if (f.mapExBoss) cond.push('bosses excluded');
+  $('#map-note').textContent = 'avg EV/kill = spawn-weighted across qualifying spawns' + (cond.length ? ' · ' + cond.join(' · ') : '');
 }
 
 // ---------- csv ----------

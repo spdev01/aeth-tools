@@ -11,8 +11,11 @@ EV(monster) = Σ  (drop chance × NPC sell price of the dropped item)
 - **Category toggles** — include/exclude Weapons, Armor, Cards, Healing, Usable, Materials, Ammo, Pet Eggs, Pet Armor.
   Presets: `All` / `None` / `No cards` / `Gear only` / `Vendor loot`.
 - **Drop class toggles** — regular / MVP / special drops.
-- **Items browser** — sell/buy price, weight, where it drops (per monster with chance), which shops sell it, quest rewards, boxes.
-- **Maps browser** — spawn counts, respawn timers, spawn-weighted average EV/kill per map (great for picking a farm spot).
+- **Monster filters** - level range, aggressiveness, and DEF / MDEF / HIT / FLEE ranges (shared with the Maps tab),
+  plus bosses-only, exclude-bosses, has-spawns and a map filter on the monster list.
+- **Items browser** - sell/buy price, weight, where it drops (per monster with chance), which shops sell it, quest rewards, boxes.
+- **Maps browser** - spawn counts, respawn timers, spawn-weighted average EV/kill per map. The same monster filters apply
+  to the map calculation, and an **Exclude bosses** switch (on by default) keeps boss EV out of the averages. Great for picking a farm spot.
 - **CSV export** of the current monster list with EV breakdowns.
 - Search, level range, boss filters, map filter. Settings persist in localStorage.
 

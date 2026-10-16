@@ -1,6 +1,6 @@
 // details.js — slide-in detail drawer for monsters, items and maps.
 import {
-  state, evOfMob, srcIndex, fmtZ, fmtPct, fmtWeight, fmtRespawn, itemIconUrl, mobImgUrl, esc,
+  state, evOfMob, srcIndex, mapSpawnPass, fmtZ, fmtPct, fmtWeight, fmtRespawn, itemIconUrl, mobImgUrl, esc,
 } from './engine.js';
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -203,11 +203,14 @@ export function openItem(itemId) {
 export function openMap(mapId) {
   const mp = state.db.maps[mapId];
   if (!mp) return;
+  let excluded = 0;
   const rows = mp.spawns.map(([mobId, count, lo, hi]) => {
     const m = state.db.mobs.find((x) => x.id === mobId);
     if (!m) return null;
+    const ok = mapSpawnPass(m);
+    if (!ok) excluded++;
     const ev = evOfMob(m);
-    return `<tr>
+    return `<tr class="${ok ? '' : 'off'}">
       <td class="left"><span class="link" data-open="mob" data-id="${esc(mobId)}">${esc(m.n)}</span>${m.boss ? ' <span style="color:var(--gold)">&#9733;</span>' : ''}</td>
       <td>${count}</td>
       <td class="dim">${fmtRespawn(lo, hi)}</td>
@@ -216,6 +219,7 @@ export function openMap(mapId) {
   }).filter(Boolean).join('');
 
   const body = `
+    ${excluded ? `<p class="note warn">${excluded} spawn row(s) are excluded by the current map filters (dimmed below) - clear or adjust the filters on the Maps tab to include them.</p>` : ''}
     <p class="note">Number = spawns on this map; EV column uses the current toggles.</p>
     <h4>Monsters (${mp.spawns.length})</h4>
     <table class="drops"><thead><tr><th class="left">Monster</th><th>Spawns</th><th>Respawn</th><th>EV/kill</th></tr></thead>
