@@ -28,9 +28,10 @@ function dechunk(buf) {
 }
 
 // One-shot JSON request through the circuit. Returns { status, headers, body, json }.
+// binary:true returns body as a latin1 string that is byte-preserving for Buffer.from(body,'latin1').
 export async function torRequest({
   port, user, pass, method = 'GET', path = '/', host = ROVA_HOST,
-  headers = {}, body = null, timeoutMs = 45000,
+  headers = {}, body = null, timeoutMs = 45000, binary = false,
 }) {
   const raw = await socks5Connect({ port, user, pass, destHost: host, destPort: 443, timeoutMs: Math.min(timeoutMs, 60000) });
   const sock = tls.connect({ socket: raw, servername: host });
@@ -74,9 +75,9 @@ export async function torRequest({
       let rb = buf.subarray(ii + 4);
       if (String(H['transfer-encoding'] || '').includes('chunked')) rb = dechunk(rb);
       else if (H['content-length'] != null) rb = rb.subarray(0, Number(H['content-length']));
-      const text = rb.toString('utf8');
+      const text = binary ? rb.toString('latin1') : rb.toString('utf8');
       let json = null;
-      try { json = JSON.parse(text); } catch {}
+      if (!binary) { try { json = JSON.parse(text); } catch {} }
       resolve({ status, headers: H, body: text, json });
     }
     sock.write(reqLine + (bodyText == null ? '' : bodyText));

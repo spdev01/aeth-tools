@@ -1,0 +1,5 @@
+# raw game data downloads (large; re-fetch with tools/fetch-all.mjs)
+data/raw/
+
+# mirrored item icons (re-fetch with tools/fetch-icons.mjs)
+public/icons/

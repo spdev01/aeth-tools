@@ -1,0 +1,14 @@
+{
+  "name": "rova-wiki",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Standalone ROVA ONLINE wiki with per-monster drop EV calculator (NPC sell value).",
+  "scripts": {
+    "fetch": "node tools/fetch-all.mjs",
+    "fetch:force": "node tools/fetch-all.mjs --force",
+    "build": "node tools/build-db.mjs",
+    "start": "node tools/serve.mjs",
+    "rebuild": "node tools/fetch-all.mjs && node tools/build-db.mjs"
+  }
+}

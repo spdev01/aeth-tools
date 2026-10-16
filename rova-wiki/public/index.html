@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ROVA Wiki - Drop EV Calculator</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <span class="logo">&#9670;</span>
+    <h1>ROVA Wiki <span class="sub">drop EV calculator</span></h1>
+  </div>
+  <div class="meta" id="meta">
+    <span class="dim">loading&hellip;</span>
+  </div>
+  <div class="search-wrap">
+    <input id="search" type="search" placeholder="Search monsters, items, maps&hellip;" autocomplete="off">
+  </div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button data-tab="monsters" class="on">Monsters <span class="pill" id="pill-mobs"></span></button>
+  <button data-tab="items">Items <span class="pill" id="pill-items"></span></button>
+  <button data-tab="maps">Maps <span class="pill" id="pill-maps"></span></button>
+  <button data-tab="about">About</button>
+</nav>
+
+<main>
+  <!-- ============ MONSTERS ============ -->
+  <section id="view-monsters" class="view">
+    <aside class="side">
+      <div class="card">
+        <h3>Item categories in EV</h3>
+        <div class="chips" id="type-quick">
+          <button data-quick="all">All</button>
+          <button data-quick="none">None</button>
+          <button data-quick="nocards" title="Everything except cards">No cards</button>
+          <button data-quick="gear" title="Weapon + Armor only">Gear only</button>
+          <button data-quick="loot" title="Healing + Usable + Etc + Ammo, what you routinely sell to shops">Vendor loot</button>
+        </div>
+        <div id="type-toggles" class="toggles"></div>
+      </div>
+      <div class="card">
+        <h3>Drop classes</h3>
+        <div class="toggles" id="class-toggles">
+          <label><input type="checkbox" data-cls="drop" checked> Regular drops</label>
+          <label><input type="checkbox" data-cls="mvp" checked> MVP bonus drops</label>
+          <label><input type="checkbox" data-cls="spc" checked> Special drops <span class="dim">(map-limited)</span></label>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Filters</h3>
+        <label class="row">Level <input id="lv-min" type="number" min="1" max="99" placeholder="1" class="num"> &ndash; <input id="lv-max" type="number" min="1" max="99" placeholder="99" class="num"></label>
+        <label class="row"><input type="checkbox" id="f-boss"> Bosses only</label>
+        <label class="row"><input type="checkbox" id="f-noboss"> Exclude bosses</label>
+        <label class="row"><input type="checkbox" id="f-nospawn"> Only monsters with spawns</label>
+        <label class="row">Map <input id="f-map" list="maps-list" placeholder="any map&hellip;">
+          <datalist id="maps-list"></datalist>
+        </label>
+      </div>
+      <div class="card">
+        <h3>Value scale</h3>
+        <select id="scale">
+          <option value="1">per 1 kill</option>
+          <option value="100" selected>per 100 kills</option>
+          <option value="1000">per 1,000 kills</option>
+        </select>
+        <p class="hint">EV = drop chance &times; NPC sell price of each drop (sell prices from the game&rsquo;s own item database).</p>
+      </div>
+    </aside>
+    <div class="results">
+      <div class="tablebar">
+        <span id="mob-count" class="count"></span>
+        <span class="spacer"></span>
+        <span class="dim" id="ev-note"></span>
+        <button id="export-csv" class="mini">Export CSV</button>
+      </div>
+      <div class="scroll">
+        <table id="mob-table" class="grid">
+          <thead><tr>
+            <th data-sort="name" class="left">Monster</th>
+            <th data-sort="lv">Lv</th>
+            <th data-sort="hp">HP</th>
+            <th class="left">Elem</th>
+            <th data-sort="boss">Boss</th>
+            <th data-sort="ev" class="on desc">EV &#9660;</th>
+            <th data-sort="drops">Drops</th>
+            <th data-sort="top" class="left">Top drop</th>
+            <th class="left">Maps</th>
+          </tr></thead>
+          <tbody id="mob-rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ITEMS ============ -->
+  <section id="view-items" class="view off">
+    <div class="tablebar">
+      <span id="item-count" class="count"></span>
+      <span class="spacer"></span>
+      <div class="chips" id="item-type-chips"></div>
+    </div>
+    <div class="scroll">
+      <table id="item-table" class="grid">
+        <thead><tr>
+          <th></th>
+          <th data-sort="name" class="left on asc">Item</th>
+          <th class="left">Type</th>
+          <th data-sort="sell">Sell</th>
+          <th data-sort="buy">Buy</th>
+          <th data-sort="weight">Weight</th>
+          <th class="left">Source</th>
+        </tr></thead>
+        <tbody id="item-rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ MAPS ============ -->
+  <section id="view-maps" class="view off">
+    <div class="tablebar">
+      <span id="map-count" class="count"></span>
+      <span class="spacer"></span>
+      <span class="dim">avg EV/kill = spawn-weighted average across the map&rsquo;s monsters</span>
+    </div>
+    <div class="scroll">
+      <table id="map-table" class="grid">
+        <thead><tr>
+          <th data-sort="name" class="left on asc">Map</th>
+          <th data-sort="mobs">Mobs</th>
+          <th data-sort="avg">Avg EV/kill</th>
+          <th data-sort="best" class="left">Best monster</th>
+          <th data-sort="bestev">Best EV</th>
+        </tr></thead>
+        <tbody id="map-rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ ABOUT ============ -->
+  <section id="view-about" class="view off">
+    <div class="about">
+      <h2>About this tool</h2>
+      <p>This is a standalone wiki for <b>ROVA ONLINE</b> built around one question: <b>what is a monster actually worth per kill?</b></p>
+      <p>For every monster it computes <code>EV = &Sigma; drop% &times; NPC sell price</code> over its drop table, and lets you include or exclude whole item categories
+      (weapons, armor, cards, consumables, materials, ammo, pets) and drop classes (regular / MVP bonus / special) so the number matches the way you play.</p>
+      <h3>Where the data comes from</h3>
+      <ul>
+        <li><b>Monster drops + rates, spawns, shops, quests</b>: the game&rsquo;s own wiki feed (<code>/api/wiki/full</code>).</li>
+        <li><b>Item names, types and NPC sell prices</b>: the shipped client content database (<code>client.json</code>, <code>native_items</code>).</li>
+        <li><b>Names for monsters and maps</b>: the official locale files. <b>Icons</b>: the game&rsquo;s public UI assets.</li>
+      </ul>
+      <h3>How to read EV</h3>
+      <ul>
+        <li>Drop rates are per kill, out of 10,000 (72.00% = 7200). Each drop rolls independently, so EV simply adds up.</li>
+        <li>Sell price is what a shop pays you for the item, not market price. A rare item nobody can sell is worth the same as its shop price.</li>
+        <li>Cards are included via the <b>Card</b> toggle - turn them off to see &ldquo;steady income&rdquo; EV without jackpot items.</li>
+        <li>Special drops are rare extras tied to certain maps; the monster page lists the maps it can occur on.</li>
+        <li>Buying/selling to the Central Market or players can beat these numbers, but NPC sell value is the guaranteed floor.</li>
+      </ul>
+      <h3>Refreshing the data</h3>
+      <pre>cd rova-wiki
+npm run fetch    # download raw data (through Tor)
+npm run build    # rebuild public/data/rova-db.json
+npm start        # serve on http://127.0.0.1:4321</pre>
+      <p id="about-meta" class="dim"></p>
+    </div>
+  </section>
+</main>
+
+<aside id="detail" class="detail off">
+  <div class="detail-head">
+    <span id="detail-title">-</span>
+    <button id="detail-close" title="Close">&times;</button>
+  </div>
+  <div class="detail-body" id="detail-body"></div>
+</aside>
+
+<datalist id="mobs-list"></datalist>
+
+<script type="module" src="js/engine.js"></script>
+<script type="module" src="js/ui.js"></script>
+</body>
+</html>
