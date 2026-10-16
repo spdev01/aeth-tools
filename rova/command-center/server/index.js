@@ -10,6 +10,7 @@ import { BotManager } from './bots.js';
 import { info as torInfo, ensureTorrc, startAllDaemons, daemonStatus, listPorts } from './tor.js';
 import { portFor } from './tor-const.mjs';
 import { importAccounts, removeAccount, registerAccounts, createPlaceholderAccounts } from './accounts.js';
+import { collectQueue, collectorsView, setCollectorCaps, shopQueue, fleetView, plans } from './queues.js';
 import { previewNames, characterName } from './namegen.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -34,6 +35,11 @@ function stateView() {
     characters: store.data.characters.map((c) => ({ ...c })),
     bots: store.data.bots.map((b) => ({ ...b, runtime: manager.runtimeView(b.id) })),
     tor: { health: manager.torHealth, daemons: daemonSnap, info: { ...torInfo(), ports: listPorts().length } },
+    collect: collectQueue.view(),
+    collectors: collectorsView(),
+    shop: shopQueue.view(),
+    fleet: fleetView(),
+    plans: plans.list(),
     settings: store.getSettings(),
     jobs: { active: null, history: [] },
   };
@@ -62,6 +68,8 @@ const readBody = (req) => new Promise((resolve) => {
   req.on('end', () => { try { resolve(JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}')); } catch { resolve({}); } });
 });
 const json = (res, code, obj) => { const b = JSON.stringify(obj); res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8', 'Content-Length': Buffer.byteLength(b) }); res.end(b); };
+// json + immediate state broadcast — queue/plan/account mutations must show up in the UI at once
+const jb = (res, code, obj) => { broadcastStateDebounced(); return json(res, code, obj); };
 
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.png': 'image/png', '.svg': 'image/svg+xml' };
 
@@ -76,21 +84,21 @@ const server = http.createServer(async (req, res) => {
 
     if (p === '/api/accounts/import' && req.method === 'POST') {
       const b = await readBody(req);
-      return json(res, 200, { ok: true, added: importAccounts(b.lines || '', { label: b.label || 'imported' }) });
+      return jb(res, 200, { ok: true, added: importAccounts(b.lines || '', { label: b.label || 'imported' }) });
     }
     if (p === '/api/accounts/register' && req.method === 'POST') {
       const b = await readBody(req);
       const r = await registerAccounts(b.count || 1);
-      return json(res, 200, r);
+      return jb(res, 200, r);
     }
     if (p === '/api/accounts/placeholder' && req.method === 'POST') {
       const b = await readBody(req);
       const added = createPlaceholderAccounts(Math.max(1, Math.min(50, parseInt(b.count, 10) || 1)));
-      return json(res, 200, { ok: true, added });
+      return jb(res, 200, { ok: true, added });
     }
     if (p === '/api/accounts/delete' && req.method === 'POST') {
       const b = await readBody(req);
-      return json(res, 200, removeAccount(parseInt(b.id, 10)));
+      return jb(res, 200, removeAccount(parseInt(b.id, 10)));
     }
     let m = p.match(/^\/api\/accounts\/(\d+)\/password$/);
     if (m && req.method === 'GET') {
@@ -137,6 +145,75 @@ const server = http.createServer(async (req, res) => {
       await refreshDaemons();
       return json(res, 200, { health: manager.torHealth, daemons: daemonSnap, info: torInfo() });
     }
+
+    // ---- selection / group / bulk controls (dashboard action bar) ----
+    if (p === '/api/bots/config-many' && req.method === 'POST') {
+      const b = await readBody(req);
+      const ids = b.all ? store.data.bots.map((x) => x.id) : (Array.isArray(b.ids) ? b.ids.map(Number) : []);
+      let applied = 0;
+      for (const id of ids) { if (manager.applyConfig(id, b.cfg ?? {}).ok) applied++; }
+      return json(res, 200, { ok: true, applied });
+    }
+    if (p === '/api/bots/group' && req.method === 'POST') {
+      const b = await readBody(req);
+      const ids = Array.isArray(b.ids) ? b.ids.map(Number) : [];
+      const group = b.group == null || String(b.group).trim() === '' ? null : String(b.group).trim().slice(0, 40);
+      let updated = 0;
+      for (const id of ids) { const bot = store.findBot(id); if (!bot) continue; bot.group = group; bot.updatedAt = Date.now(); updated++; }
+      store.save();
+      broadcastStateDebounced();
+      return json(res, 200, { ok: true, updated, group });
+    }
+    if (p === '/api/bots/start-many' && req.method === 'POST') {
+      const b = await readBody(req);
+      const ids = Array.isArray(b.ids) ? b.ids.map(Number).filter(Number.isFinite) : [];
+      const rampMs = Math.max(0, Math.min(60000, parseInt(b.rampMs, 10) || 2000));
+      const results = [];
+      for (let i = 0; i < ids.length; i++) { const r = await manager.start(ids[i]); results.push({ id: ids[i], ...r }); if (i < ids.length - 1) await new Promise((rr) => setTimeout(rr, rampMs)); }
+      return json(res, 200, { ok: true, results });
+    }
+    if (p === '/api/bots/stop-many' && req.method === 'POST') {
+      const b = await readBody(req);
+      const ids = Array.isArray(b.ids) ? b.ids.map(Number) : [];
+      for (const id of ids) manager.stop(id);
+      return json(res, 200, { ok: true, stopped: ids.length });
+    }
+    if (p === '/api/bots/disconnect-all' && req.method === 'POST') return json(res, 200, await manager.disconnectAll());
+    m = p.match(/^\/api\/bots\/(\d+)\/disconnect$/);
+    if (m && req.method === 'POST') return json(res, 200, manager.disconnect(+m[1]));
+
+    // ---- collect queue ----
+    if (p === '/api/collect/queue-all' && req.method === 'POST') { const b = await readBody(req); return jb(res, 200, collectQueue.queueAll(Array.isArray(b.ids) ? b.ids.map(Number) : [])); }
+    if (p === '/api/collect/dequeue' && req.method === 'POST') { const b = await readBody(req); return jb(res, 200, collectQueue.dequeue(Array.isArray(b.ids) ? b.ids.map(Number) : [])); }
+    if (p === '/api/collect/clear-waiting' && req.method === 'POST') return jb(res, 200, collectQueue.clearWaiting());
+    if (p === '/api/collect/release' && req.method === 'POST') { const b = await readBody(req); return jb(res, 200, collectQueue.release(Array.isArray(b.ids) ? b.ids.map(Number) : null)); }
+    if (p === '/api/collect/hold' && req.method === 'POST') { const b = await readBody(req); return jb(res, 200, collectQueue.hold(Array.isArray(b.ids) ? b.ids.map(Number) : [], b.on !== false)); }
+    if (p === '/api/collect/grant' && req.method === 'POST') return jb(res, 200, collectQueue.grantNext());
+    if (p === '/api/collect/settings' && req.method === 'POST') { const b = await readBody(req); return jb(res, 200, collectQueue.setAuto(b)); }
+
+    // ---- collector pool ----
+    if (p === '/api/collectors/ensure' && req.method === 'POST') {
+      const made = manager.create({ count: 1, mode: 'collector' });
+      return jb(res, 200, { ok: true, bot: made[0] });
+    }
+    if (p === '/api/settings/collectors' && req.method === 'POST') { const b = await readBody(req); return jb(res, 200, setCollectorCaps(parseInt(b.botId, 10), b)); }
+
+    // ---- shopping (gear-up) queue ----
+    if (p === '/api/shop/queue' && req.method === 'POST') { const b = await readBody(req); return jb(res, 200, shopQueue.queue(Array.isArray(b.ids) ? b.ids.map(Number) : [], b.note || '')); }
+    if (p === '/api/shop/dequeue' && req.method === 'POST') { const b = await readBody(req); return jb(res, 200, shopQueue.dequeue(Array.isArray(b.ids) ? b.ids.map(Number) : [])); }
+    if (p === '/api/shop/clear' && req.method === 'POST') return jb(res, 200, shopQueue.clear());
+
+    // ---- plans ----
+    if (p === '/api/plans' && req.method === 'GET') return json(res, 200, { plans: plans.list() });
+    if (p === '/api/plans/save' && req.method === 'POST') { const b = await readBody(req); return jb(res, 200, plans.save(b.name, b.cfg ?? {})); }
+    if (p === '/api/plans/apply' && req.method === 'POST') {
+      const b = await readBody(req);
+      const ids = b.all ? store.data.bots.map((x) => x.id) : (Array.isArray(b.ids) ? b.ids.map(Number) : []);
+      return jb(res, 200, plans.apply(b.name, ids));
+    }
+    if (p === '/api/plans/delete' && req.method === 'POST') { const b = await readBody(req); return jb(res, 200, plans.remove(b.name)); }
+
+    if (p === '/api/fleet' && req.method === 'GET') return json(res, 200, fleetView());
 
     // ---------------- static ----------------
     let file = p === '/' ? '/index.html' : p;

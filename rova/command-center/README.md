@@ -32,7 +32,7 @@ npm install
 node cc.mjs tor-start        # bring both tor daemons up (uses Tor Browser's tor.exe by default)
 node cc.mjs tor-check 1      # prove bot 1's circuit: exit IP + IsTor verdict
 npm start                    # dashboard at http://127.0.0.1:4320
-#   → "+ เพิ่มบอท" then "▶ เริ่มทั้งหมด"
+#   → "+ Add bots" then tick the bots and hit "▶ Play selected"
 node cc.mjs state            # fleet overview from the CLI
 ```
 

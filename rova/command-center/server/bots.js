@@ -79,8 +79,10 @@ export class BotManager {
       const id = store.nextId('bot');
       const bot = {
         id,
-        name: (names && names[i]) || characterName(),
+        name: (names && names[i]) || (mode === 'collector' ? 'Treasurer' + id : characterName()),
         mode,
+        group: null,
+        cfg: { keepList: [], cards: false, storeWhitelist: false, collectAtPct: 70 },
         accountId: null, characterId: null, // game account/character wiring comes with the leveling plan
         createdAt: Date.now(),
         wantRun: false,
@@ -101,7 +103,7 @@ export class BotManager {
     // ---- Tor gate: no daemon, no bot. ----
     const d = daemonFor(botId);
     if (!(await isListening(housePortFor(d)))) {
-      return { ok: false, error: `Tor daemon ${d} is not listening on ${housePortFor(d)} — start Tor first (dashboard "เริ่ม Tor" or: node cc.mjs tor-start)` };
+      return { ok: false, error: `Tor daemon ${d} is not listening on ${housePortFor(d)} — start Tor first (or run: node cc.mjs tor-start)` };
     }
     const r = this.rt(botId);
     if (bot.wantRun !== true) { bot.wantRun = true; bot.updatedAt = Date.now(); store.save(); }
@@ -223,6 +225,45 @@ export class BotManager {
     store.data.bots = store.data.bots.filter((b) => b.id !== botId);
     store.save();
     return { ok: true };
+  }
+
+  // hard sever: kill the worker immediately (no graceful leave) — mirrors the aetheria DISCONNECT ALL
+  disconnect(botId) {
+    const bot = store.findBot(botId);
+    if (bot) bot.wantRun = false;
+    const r = this.rt(botId);
+    r.stopping = true;
+    this.control(botId, 'stop');
+    const pid = (r.proc && r.proc.pid) || this.runningPid(botId);
+    if (pid) { try { process.kill(pid, 'SIGKILL'); } catch {} }
+    r.state = 'stopped';
+    r.proc = null;
+
+    store.save();
+    this.onUpdate();
+    return { ok: true, killed: !!pid };
+  }
+
+  async disconnectAll() {
+    let killed = 0;
+    for (const b of store.data.bots) { const r = this.disconnect(b.id); if (r.killed) killed++; }
+    return { ok: true, count: store.data.bots.length, killed };
+  }
+
+  applyConfig(botId, cfg) {
+    const b = store.findBot(botId);
+    if (!b) return { ok: false, error: 'bot not found' };
+    const merged = { ...(b.cfg ?? {}) };
+    for (const [k, v] of Object.entries(cfg ?? {})) {
+      if (k === 'mode') continue; // mode lives on the bot itself
+      merged[k] = v;
+    }
+    b.cfg = merged;
+    if (cfg?.mode) b.mode = cfg.mode;
+    b.updatedAt = Date.now();
+    store.save();
+    this.onUpdate();
+    return { ok: true, bot: b };
   }
 
   // ---- polling: status.json + newest run log ----------------------------------------

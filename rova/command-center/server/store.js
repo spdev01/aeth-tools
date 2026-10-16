@@ -22,6 +22,16 @@ if (!state.accounts) state.accounts = [];
 if (!state.characters) state.characters = [];
 if (!state.bots) state.bots = [];
 if (!state.settings) state.settings = {};
+// dashboard state defaults (queues / collectors / plans) — mirrors the aetheria CC shapes
+if (!Array.isArray(state.settings.plans)) state.settings.plans = [];
+if (!state.settings.collectQueue) state.settings.collectQueue = { queue: [], actives: [], holds: [], at: 0 };
+if (!state.settings.autoCollect) state.settings.autoCollect = { enabled: false, everyMin: 240, lastAt: 0 };
+if (!Array.isArray(state.settings.collectors)) state.settings.collectors = [];
+if (!Array.isArray(state.settings.shopQueue)) state.settings.shopQueue = [];
+for (const b of state.bots) {
+  if (b.group == null) b.group = null;
+  if (!b.cfg) b.cfg = { keepList: [], cards: false, storeWhitelist: false, collectAtPct: 70 };
+}
 
 let writeQueued = false;
 function persist() {
