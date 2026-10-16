@@ -69,6 +69,8 @@ main { flex: 1; min-height: 0; display: flex; }
 .view.off { display: none; }
 
 /* ---------- monsters layout ---------- */
+/* .view stacks toolbar+scroll (items/maps); monsters is side-by-side */
+#view-monsters { flex-direction: row; }
 .side {
   width: 300px; min-width: 300px; overflow-y: auto;
   border-right: 1px solid var(--line);
@@ -220,4 +222,12 @@ select { background: var(--panel2); border: 1px solid var(--line); color: var(--
 @media (max-width: 900px) {
   .side { width: 240px; min-width: 240px; }
   #search { width: 180px; }
+}
+@media (max-width: 720px) {
+  /* very narrow (e.g. a small editor panel): stack, sidebar becomes a top strip */
+  #view-monsters { flex-direction: column; }
+  .side {
+    width: 100%; min-width: 0; max-height: 42vh;
+    border-right: none; border-bottom: 1px solid var(--line);
+  }
 }

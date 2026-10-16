@@ -36,6 +36,7 @@ async function init() {
   fillDatalist('#mobs-list', db.mobs.map((m) => m.n));
   wireEvents();
   applyCfgToInputs();
+  $('#search').value = state.cfg.search[activeTab] ?? '';
   renderAll();
 }
 
