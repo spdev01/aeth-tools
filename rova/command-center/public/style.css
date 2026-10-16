@@ -219,6 +219,15 @@ table#accounts-table { width: 100%; border-collapse: collapse; background: var(-
 .ln.e-tor_probe_fail .t2, .ln.e-error .t2 { color: var(--bad); }
 .ln.e-control .t2 { color: var(--sky); }
 .ln.e-ready .t2 { color: var(--gold); }
+.logfilters { display: flex; gap: 5px; flex-wrap: wrap; align-items: center; padding: 5px 14px; border-bottom: 1px solid var(--line); }
+.fchip { appearance: none; border: 1px solid var(--line-2); background: rgba(255, 255, 255, .04); color: var(--muted); font: 600 11px var(--mono); padding: 2px 11px; border-radius: 999px; cursor: pointer; transition: opacity .12s, color .12s, border-color .12s, background .12s; }
+.fchip:hover { background: rgba(255, 255, 255, .09); }
+.fchip.on { color: var(--acc); border-color: rgba(45, 212, 191, .4); background: rgba(45, 212, 191, .1); }
+.fchip.off { opacity: .4; text-decoration: line-through; }
+.fchip.on.e-proxy_exit { color: var(--ok); border-color: rgba(52, 211, 153, .4); background: rgba(52, 211, 153, .1); }
+.fchip.on.e-ready { color: var(--gold); border-color: rgba(251, 191, 36, .4); background: rgba(251, 191, 36, .1); }
+.fchip.on.e-control { color: var(--sky); border-color: rgba(56, 189, 248, .4); background: rgba(56, 189, 248, .1); }
+.fchip.on.e-error, .fchip.on.e-tor_probe_fail { color: var(--bad); border-color: rgba(251, 113, 133, .4); background: rgba(251, 113, 133, .1); }
 .bagwrap { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 .bag-h { color: var(--acc); font-weight: 700; margin: 6px 0; }
 table.bagt { width: 100%; border-collapse: collapse; font-size: 11.5px; }

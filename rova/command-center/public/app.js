@@ -18,6 +18,8 @@ const state = {
   collectorCollapsed: localStorage.getItem('rova.colcol') === '1',
   wsLive: false,
   groupDraft: '',
+  hiddenEvts: new Set(JSON.parse(localStorage.getItem('rova.loghide.v1') || '[]')),
+  seenEvts: new Set(),
 };
 const saveSel = () => localStorage.setItem('rova.sel.v1', JSON.stringify([...state.sel]));
 
@@ -253,11 +255,12 @@ function renderPlansList() {
 }
 
 function renderLog() {
+  renderLogFilters();
   if ($('logdrawer').classList.contains('hidden')) return;
   const body = $('log-body');
   if (state.drawerTab === 'bag') return renderBag();
   $('log-title').textContent = state.selectedLog ? `live log — bot #${state.selectedLog}` : 'live log — all bots';
-  const arr = state.selectedLog ? (state.logs.get(state.selectedLog) ?? []) : state.allLogs;
+  const arr = (state.selectedLog ? (state.logs.get(state.selectedLog) ?? []) : state.allLogs).filter((e) => !state.hiddenEvts.has(e.evt));
   body.innerHTML = arr.map((e) => {
     const t = String(e.t ?? '').slice(11, 19);
     let d = '';
@@ -265,6 +268,28 @@ function renderLog() {
     return `<div class="ln e-${esc(e.evt)}"><span class="t">${t}</span> <b>#${e.botId}</b> <span class="t2">${esc(e.evt)}</span> <span class="d">${esc(d.length > 200 ? d.slice(0, 200) + '…' : d)}</span></div>`;
   }).join('');
   if ($('log-follow').checked) body.scrollTop = body.scrollHeight;
+}
+
+// ---- message-type filter chips ----
+const EVT_TYPES = ['boot', 'ready', 'proxy_exit', 'tor_probe_fail', 'control', 'error', 'stopped'];
+function logTypes() {
+  const extra = new Set();
+  for (const e of state.allLogs) if (e.evt && !EVT_TYPES.includes(e.evt)) extra.add(e.evt);
+  for (const t of state.seenEvts) if (!EVT_TYPES.includes(t)) extra.add(t);
+  return [...EVT_TYPES, ...[...extra].sort()];
+}
+function renderLogFilters() {
+  const bar = $('log-filters');
+  if (state.drawerTab !== 'log') { bar.classList.add('hidden'); return; }
+  bar.classList.remove('hidden');
+  const sig = logTypes().join(',') + '|' + [...state.hiddenEvts].sort().join(',');
+  if (bar.dataset.sig === sig) return;
+  bar.dataset.sig = sig;
+  const chips = logTypes().map((t) => {
+    const off = state.hiddenEvts.has(t);
+    return `<button class="fchip e-${esc(t)} ${off ? 'off' : 'on'}" data-fevt="${esc(t)}" title="click to ${off ? 'show' : 'hide'} ${esc(t)} events">${esc(t)}</button>`;
+  }).join('');
+  bar.innerHTML = `<span class="muted small">show:</span>${chips}<button class="btn small" id="fevt-all" title="show every type again">all</button>`;
 }
 
 function renderBag() {
@@ -349,6 +374,7 @@ async function applyCfg(ids) {
 // ================================================================= events
 function pushEvent(m) {
   const e = { t: m.evt?.t, botId: m.botId, evt: m.evt?.evt, data: m.evt?.data ?? {} };
+  if (e.evt && !state.seenEvts.has(e.evt)) { state.seenEvts.add(e.evt); renderLogFilters(); }
   if (!state.logs.has(m.botId)) state.logs.set(m.botId, []);
   const arr = state.logs.get(m.botId);
   arr.push(e); if (arr.length > 300) arr.shift();
@@ -390,6 +416,20 @@ document.addEventListener('click', async (e) => {
   if (t.closest('#drawer-tab-bag')) { state.drawerTab = 'bag'; $('drawer-tab-bag').classList.add('on'); $('drawer-tab-log').classList.remove('on'); renderLog(); return; }
   if (t.closest('#log-clear')) { state.allLogs = []; state.logs.clear(); renderLog(); return; }
   if (t.closest('#log-close')) { $('logdrawer').classList.add('hidden'); return; }
+  const fevt = t.closest('[data-fevt]');
+  if (fevt) {
+    const k = fevt.dataset.fevt;
+    state.hiddenEvts.has(k) ? state.hiddenEvts.delete(k) : state.hiddenEvts.add(k);
+    localStorage.setItem('rova.loghide.v1', JSON.stringify([...state.hiddenEvts]));
+    renderLogFilters(); renderLog();
+    return;
+  }
+  if (t.closest('#fevt-all')) {
+    state.hiddenEvts.clear();
+    localStorage.setItem('rova.loghide.v1', '[]');
+    renderLogFilters(); renderLog();
+    return;
+  }
   // ---- bot row select (log focus) ----
   const row = t.closest('[data-row]');
   if (row && !t.closest('button') && !t.closest('input')) {
