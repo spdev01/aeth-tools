@@ -16,6 +16,8 @@ aetheria/testbot/out/session.json
 **/session.json
 # command-center server state: bot accounts + passwords (store.json), bots/*, cc.log:
 aetheria/command-center/data/
+# rova command-center state (same rules — standalone app):
+rova/command-center/data/
 
 # ── Node ────────────────────────────────────────────────────
 node_modules/

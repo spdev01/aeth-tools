@@ -1,0 +1,13 @@
+{
+  "name": "rova-command-center",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Standalone command center for ROVA fleet testing — accounts, bots, live state. Tor-only: no game connection without a proven per-bot Tor circuit.",
+  "scripts": {
+    "start": "node server/index.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

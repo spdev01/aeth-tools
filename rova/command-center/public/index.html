@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ROVA Command Center</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="hdr">
+    <div class="brand">
+      <span class="logo">◆</span>
+      <span class="title">ROVA Command Center</span>
+      <span class="ver" id="ver">v—</span>
+    </div>
+    <div class="torbar">
+      <span class="tor-chip" id="tor-d1">D1 —</span>
+      <span class="tor-chip" id="tor-d2">D2 —</span>
+      <span class="tor-chip" id="tor-ports">ports 0</span>
+      <button class="btn small" id="btn-tor-start" title="เริ่ม tor daemon ทั้งสองตัว">เริ่ม Tor</button>
+    </div>
+    <div class="kpis" id="kpis"></div>
+  </header>
+
+  <main>
+    <section class="panel">
+      <div class="panel-head">
+        <b>บอท</b>
+        <span class="muted" id="bots-count"></span>
+        <span class="spacer"></span>
+        <input class="inp num" id="new-count" type="number" min="1" max="50" value="3">
+        <button class="btn" id="btn-create">+ เพิ่มบอท</button>
+        <button class="btn gold" id="btn-start-all">▶ เริ่มทั้งหมด (ramp 3s)</button>
+        <button class="btn" id="btn-stop-all">⏹ หยุดทั้งหมด</button>
+      </div>
+      <div class="grid" id="bots"></div>
+    </section>
+
+    <section class="panel side">
+      <div class="panel-head"><b>Live log</b><span class="spacer"></span><button class="btn small" id="btn-clear-log">ล้าง</button></div>
+      <div class="log" id="log"></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <b>บัญชี</b>
+        <span class="muted" id="acc-count"></span>
+        <span class="spacer"></span>
+        <input class="inp num" id="ph-count" type="number" min="1" max="50" value="5">
+        <button class="btn" id="btn-placeholder" title="สร้างบัญชีรอลงทะเบียน (credentials สุ่ม ยังไม่ขึ้นกับเกม)">+ สุ่มบัญชี (placeholder)</button>
+      </div>
+      <div class="acc-grid" id="acc-list"></div>
+      <div class="import">
+        <textarea id="import-lines" rows="3" placeholder="นำเข้าบัญชี — userId:password บรรทัดละบัญชี"></textarea>
+        <button class="btn" id="btn-import">นำเข้า</button>
+      </div>
+      <div class="note">⚠ ลงทะเบียนอัตโนมัติกับ ROVA ยังไม่เปิด (ต้องยืนยัน auth flow ก่อน) — ใช้ import หรือ placeholder ไปพลางก่อน</div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+  <script src="/app.js"></script>
+</body>
+</html>
