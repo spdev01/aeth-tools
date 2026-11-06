@@ -84,6 +84,11 @@
       .lv .nm { color: #e8eef6; font-weight: 600; max-width: 92px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
       .lv .sep { color: #3a4457; }
       .lv b { color: #9fe3b8; font-weight: 600; }
+      .sess { display: flex; align-items: center; gap: 5px; margin-bottom: 4px; padding: 2px 6px;
+              background: #141a24; border-radius: 6px; color: #9fb0c5; }
+      .sess .t { color: #cfe3ff; font-weight: 600; font-variant-numeric: tabular-nums; }
+      .sess .grow { flex: 1; }
+      .sess .r b { color: #9fe3b8; font-weight: 600; font-variant-numeric: tabular-nums; }
       @keyframes axpulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
     </style>
     <div class="pill" data-act="expand" hidden>💰 <b class="pill-rate">—</b>/h</div>
@@ -94,6 +99,7 @@
         <button class="ico" data-act="min" title="Collapse">–</button>
       </div>
       <div class="lv" id="lv" hidden><span class="dot" id="lvDot"></span><span class="nm" id="lvNm">—</span><span class="sep">·</span><span><b id="lvK">0</b> kills</span><span class="sep">·</span><span>loot <b id="lvV">0</b></span></div>
+      <div class="sess" id="sessRow" hidden title=""><span>⏱</span><span class="t" id="sessT">00:00:00</span><span class="grow"></span><span class="r">≈ <b id="sessR">—</b>/h</span></div>
       <div class="kpis">
         <div class="kpi"><i>3h ≈/h</i><b id="k3">—</b></div>
         <div class="kpi"><i>24h ≈/h</i><b id="k24">—</b></div>
@@ -133,6 +139,9 @@
   const elLvNm = srGet('lvNm');
   const elLvK = srGet('lvK');
   const elLvV = srGet('lvV');
+  const elSess = srGet('sessRow');
+  const elSessT = srGet('sessT');
+  const elSessR = srGet('sessR');
   let lastHs = [];
 
   // ---------- state ----------
@@ -388,6 +397,32 @@
     }
   };
 
+  // ---- live session clock + extrapolated rate (left: hh:mm:ss · right: ≈ value/h) ----
+  const fmtDur = (ms) => {
+    const t = Math.max(0, Math.floor(ms / 1000));
+    const pp = (x) => String(x).padStart(2, '0');
+    return pp(Math.floor(t / 3600)) + ':' + pp(Math.floor((t % 3600) / 60)) + ':' + pp(t % 60);
+  };
+  let sessSince = null;
+  let sessV = 0;
+  let sessK = 0;
+  function renderSess() {
+    if (sel !== 'session' || collapsed || !sessSince) {
+      elSess.hidden = true;
+      return;
+    }
+    const elapsed = Date.now() - sessSince;
+    const h = elapsed / 3600e3;
+    elSess.hidden = false;
+    elSessT.textContent = fmtDur(elapsed);
+    elSessR.textContent = sessV > 0 && h > 0 ? fmtC(sessV / h) : '—';
+    elSess.title =
+      'this session: ' + fmtC(sessV) + ' over ' + fmtDur(elapsed) +
+      ' · kills ' + sessK + (h > 0 && sessK > 0 ? ' (≈' + Math.round(sessK / h) + '/h)' : '') +
+      ' · rate = session total ÷ elapsed time, extrapolated to 1h';
+  }
+  setInterval(renderSess, 1000); // ticks only this row; no-ops when hidden
+
   function renderBotOptions() {
     elSel.textContent = '';
     const so = document.createElement('option');
@@ -418,6 +453,7 @@
     }
     elSctls.hidden = true;
     elLv.hidden = true;
+    elSess.hidden = true;
     renderData(r.data || {}, (bots.find((b) => b.id === sel) || {}).name || '#' + sel);
   }
 
@@ -425,6 +461,7 @@
   function updateLive(idn, ss) {
     if (sel !== 'session') {
       elLv.hidden = true;
+      elSess.hidden = true;
       return;
     }
     let id = idn || null;
@@ -438,6 +475,7 @@
     } catch {}
     if (!id || (id.characterId == null && id.zeny == null)) {
       elLv.hidden = true;
+      elSess.hidden = true;
       return;
     }
     elLv.hidden = false;
@@ -445,6 +483,13 @@
     elLvK.textContent = String((st && st.k) || 0);
     elLvV.textContent = st && st.v ? fmtC(st.v) : '0';
     elLvDot.classList.toggle('warn', !!id.paused);
+    // feed the session clock/rate row (sess.since resets on join / character switch)
+    if (st && st.since) {
+      sessSince = st.since;
+      sessV = st.v || 0;
+      sessK = st.k || 0;
+    }
+    renderSess();
   }
 
   async function refreshSession() {

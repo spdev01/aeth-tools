@@ -18,6 +18,9 @@ In-game earnings charts with two data sources:
 ## Use
 
 - **Source dropdown**: `🌟 this session` = your live gameplay · other entries = fleet bots (CC mode).
+- **⏱ session row** (above the 4 stat boxes): how long the current session has been running
+  (`hh:mm:ss`) and the **extrapolated ≈/h rate** = session loot value ÷ exact elapsed time × 1h —
+  accurate immediately, no waiting for a full clock hour. Hover it for kills/h detail.
 - **6h / 12h / 24h** switches the chart range; **drag** the header to move (position is remembered);
   **–** collapses to a 💰 pill (toolbar icon toggles too); hover a bar for kills/drops.
 - **⏸ pause / ▶ resume** — stops capture completely (zero decode cost while paused). The state persists.
