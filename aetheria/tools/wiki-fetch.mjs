@@ -57,6 +57,7 @@ fs.mkdirSync(MAPS_DIR, { recursive: true });
 console.log('wiki-fetch: GET /wiki-data …');
 const wiki = await getJson(`${BASE}/wiki-data`);
 fs.writeFileSync(path.join(OUT, 'wiki-data.json'), JSON.stringify(wiki));
+const mobLvl = new Map((wiki.monsters || []).map((mm) => [mm.id, mm.level]));
 console.log(`wiki-fetch: wiki-data snapshot saved (${wiki.monsters?.length ?? '?'} monsters, ${wiki.maps?.length ?? '?'} maps)`);
 
 // every map that has at least one monster spawn row
@@ -116,12 +117,15 @@ for (const id of [...mapIds].sort()) {
         errors.push(`${id} minimap: ${e.message}`);
       }
     }
+    let lo = Infinity, hi = -Infinity;
+    for (const z of zones) for (const x of z.mobs) { const L = mobLvl.get(x.id); if (Number.isFinite(L)) { lo = Math.min(lo, L); hi = Math.max(hi, L); } }
     areas.maps[id] = {
       name: mprops.displayName || id,
       width: Number(tm.width || 0),
       height: Number(tm.height || 0),
       tileW: Number(tm.tilewidth || 32),
       tileH: Number(tm.tileheight || 32),
+      levels: Number.isFinite(lo) ? [lo, hi] : null,
       mini,
       areas: zones,
     };
@@ -129,6 +133,29 @@ for (const id of [...mapIds].sort()) {
   } catch (e) {
     errors.push(`${id}: ${e.message}`);
   }
+}
+
+// world atlas (for the world-map selector)
+try {
+  const atlas = await getJson(`${BASE}/world/atlas`);
+  const slim = {
+    image: null,
+    zones: (atlas.zones || []).map((z) => ({ id: z.id, name: z.name, type: z.type, level: z.level || null, mapId: z.mapId || null, x: z.x, y: z.y })),
+  };
+  if (atlas.image) {
+    try {
+      const buf = await getBin(BASE + atlas.image);
+      fs.writeFileSync(path.join(OUT, 'world-atlas.webp'), buf);
+      slim.image = 'world-atlas.webp';
+    } catch (e) {
+      slim.image = BASE + atlas.image;
+      errors.push('atlas image: ' + e.message);
+    }
+  }
+  fs.writeFileSync(path.join(OUT, 'atlas.json'), JSON.stringify(slim));
+  console.log(`wiki-fetch: world atlas saved (${slim.zones.length} zones${slim.image === 'world-atlas.webp' ? ' + image' : ''})`);
+} catch (e) {
+  errors.push('atlas: ' + e.message);
 }
 
 areas.stats = {

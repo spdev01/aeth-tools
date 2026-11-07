@@ -63,6 +63,27 @@
   .star{background:#4a3410;color:#ffd479}
   .fixed{background:#40203a;color:#f0a0d8}
   .err{background:#3a1a1a;color:#ffb4a8;padding:8px 12px;border-radius:8px;margin:10px}
+  .tabs{display:flex;gap:6px;padding:8px 8px 0}
+  .tabs button{flex:1;background:#0f141c;border:1px solid #2b3342;color:#9fb0c5;border-radius:8px;padding:5px 6px;font:inherit;font-size:12px;cursor:pointer}
+  .tabs button.on{background:#1d2b40;color:#cfe3ff;border-color:#35608f}
+  #listPane{display:flex;flex-direction:column;flex:1;min-height:0}
+  #worldPane{display:flex;flex-direction:column;flex:1;min-height:0;padding:8px}
+  .worldwrap{position:relative;border-radius:10px;overflow:hidden;background:#0b0f15;border:1px solid #232b38}
+  .worldwrap img{display:block;width:100%;height:auto;user-select:none;-webkit-user-drag:none}
+  #worldZones{position:absolute;inset:0}
+  .wz{position:absolute;transform:translate(-50%,-50%);display:flex;align-items:center;gap:4px;cursor:pointer;border:0;background:none;padding:2px;z-index:2}
+  .wz .dot{width:10px;height:10px;border-radius:50%;background:#7fe0a3;box-shadow:0 0 6px #7fe0a3aa;flex:none}
+  .wz.off .dot{background:#5a6474;box-shadow:none;opacity:.7}
+  .wz.on .dot{background:#ffd479;box-shadow:0 0 9px #ffd479cc;width:12px;height:12px}
+  .wz .lbl{display:none;background:#0d1117ee;border:1px solid #2b3342;color:#dfe8f3;padding:1px 6px;border-radius:6px;font-size:11px;white-space:nowrap}
+  .wz:hover .lbl,.wz.on .lbl{display:block}
+  .worldhint{padding:8px 4px 2px;color:#8fa2bd;font-size:11.5px}
+  .tgl{display:flex;align-items:center;gap:6px;font-size:12px;color:#9fb0c5;padding:2px 6px 6px;cursor:pointer;user-select:none}
+  .tgl input{accent-color:#35608f;width:14px;height:14px}
+  .rowline.two{align-items:flex-start}
+  .rowline .sub2{font-size:11px;color:#8fa2bd;margin-top:1px;font-weight:400}
+  .backbtn{border:1px solid #2b3342;background:#1c2330;color:#9fc3ff;border-radius:7px;padding:2px 9px;font:inherit;font-size:12px;cursor:pointer;margin-bottom:6px}
+  .backbtn:hover{background:#24304a;color:#d6e6ff}
 </style>
 </head>
 <body>
@@ -73,10 +94,17 @@
 
     <div id="mm">
       <aside class="side">
-        <input id="q" class="search" placeholder="ค้นหามอนสเตอร์ (ชื่อ / ไอดี)…" autocomplete="off" />
-        <div id="results" class="results" hidden></div>
-        <div class="sideTitle">แผนที่ <span id="mapCount" class="dim"></span></div>
-        <div id="mapList" class="maplist"></div>
+        <div class="tabs"><button id="tabList" data-t="list" class="on">📋 รายชื่อ</button><button id="tabWorld" data-t="world">🌍 แผนที่โลก</button></div>
+        <div id="listPane">
+          <input id="q" class="search" placeholder="ค้นหามอนสเตอร์ (ชื่อ / ไอดี)…" autocomplete="off" />
+          <div id="results" class="results" hidden></div>
+          <div class="sideTitle">แผนที่ <span id="mapCount" class="dim"></span> <span class="dim">· เรียงตามเลเวลมอน</span></div>
+          <div id="mapList" class="maplist"></div>
+        </div>
+        <div id="worldPane" hidden>
+          <div class="worldwrap"><img id="worldImg" alt="" /><div id="worldZones"></div></div>
+          <div class="worldhint">คลิกจุดเพื่อเปิดแผนที่ · จุดเทา = โซนที่ไม่มีข้อมูลสปอว์น · เลื่อนเมาส์เพื่อดูชื่อ/เลเวล</div>
+        </div>
       </aside>
       <section class="viewer">
         <div class="viewHead"><b id="mapTitle">—</b><span id="mapMeta" class="dim"></span></div>
@@ -95,7 +123,7 @@
 (() => {
   'use strict';
   const $ = (s) => document.querySelector(s);
-  const S = { wd: null, live: false, areas: null, byMob: new Map(), byItem: new Map(), mapId: null, area: null, mob: null };
+  const S = { wd: null, live: false, areas: null, atlas: null, byMob: new Map(), byItem: new Map(), mapId: null, area: null, mob: null, showStats: (() => { try { return localStorage.getItem('mm.showStats') === '1'; } catch { return false; } })() };
   const fmt = (n) => (Number.isFinite(+n) ? (+n).toLocaleString('en-US') : '—');
   const pct = (c) => {
     const p = (+c || 0) * 100;
@@ -110,12 +138,41 @@
   const el = (t, cls, html) => { const e = document.createElement(t); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
   const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
+  let suppressHash = false;
   function setHash() {
+    if (suppressHash) return;
     const p = new URLSearchParams();
     if (S.mapId) p.set('map', S.mapId);
     if (S.area) p.set('area', S.area.i);
     if (S.mob) p.set('mob', S.mob);
-    try { history.replaceState(null, '', '#' + p.toString()); } catch {}
+    try { location.hash = p.toString(); } catch {}
+  }
+  function onHash() {
+    const h = new URLSearchParams(location.hash.slice(1));
+    const id = h.get('map');
+    if (!id || !S.areas || !S.areas.maps[id]) return;
+    suppressHash = true;
+    try { selectMap(id, +h.get('area') || null, +h.get('mob') || null); } finally { suppressHash = false; }
+  }
+  function clearDetail() {
+    $('#detail').replaceChildren(el('div', 'dbody dim', 'เลือกพื้นที่บนแผนที่ หรือค้นหามอนสเตอร์เพื่อดูรายละเอียด (สถานะ, สกิล, ของดรอป, จุดเกิด)'));
+  }
+  function goBack() {
+    // hierarchical back: mob detail → area view → map view (works even on deep links)
+    if (S.mob) {
+      S.mob = null;
+      if (S.area) showArea(S.area);
+      else {
+        clearDetail();
+        if (S.mapId) drawZones(S.areas.maps[S.mapId], $('#mapImg'));
+        setHash();
+      }
+    } else if (S.area) {
+      S.area = null;
+      clearDetail();
+      if (S.mapId) drawZones(S.areas.maps[S.mapId], $('#mapImg'));
+      setHash();
+    }
   }
 
   // ---------- boot ----------
@@ -148,31 +205,57 @@
     b.textContent = (S.live ? 'ข้อมูลสด (live)' : 'สำเนา snapshot') + ' · สร้างเมื่อ ' + gen;
     b.classList.toggle('off', !S.live);
 
+    try { S.atlas = await fetch('wiki/data/atlas.json', { cache: 'no-cache' }).then((r) => r.json()); } catch {}
     buildMapList();
     buildSearch();
+    buildWorld();
+    wireTabs();
+    window.addEventListener('hashchange', onHash);
     const h = new URLSearchParams(location.hash.slice(1));
     const wanted = h.get('map');
-    if (wanted && S.areas.maps[wanted]) selectMap(wanted, +h.get('area') || null, +h.get('mob') || null);
-    else {
+    if (wanted && S.areas.maps[wanted]) {
+      suppressHash = true;
+      try { selectMap(wanted, +h.get('area') || null, +h.get('mob') || null); } finally { suppressHash = false; }
+    } else {
       // default: map with the most spawn-zones+mobs, so the page isn't empty
       const best = Object.entries(S.areas.maps)
         .map(([id, m]) => [id, m.areas.reduce((n, a) => n + a.count, 0)])
         .sort((a, b) => b[1] - a[1])[0];
-      if (best) selectMap(best[0], null, null);
+      if (best) {
+        suppressHash = true;
+        try { selectMap(best[0], null, null); } finally { suppressHash = false; }
+      }
     }
   }
 
   // ---------- side: map list + search ----------
+  function levelRange(m) {
+    let lo = Infinity, hi = -Infinity;
+    for (const a of m.areas) for (const x of a.mobs) {
+      const mv = S.byMob.get(x.id);
+      if (mv && Number.isFinite(mv.level)) { lo = Math.min(lo, mv.level); hi = Math.max(hi, mv.level); }
+    }
+    if (Number.isFinite(lo)) return [lo, hi];
+    return Array.isArray(m.levels) ? m.levels : null;
+  }
   function buildMapList() {
     const list = $('#mapList');
     list.textContent = '';
-    const ms = Object.entries(S.areas.maps).sort((a, b) => String(a[1].name).localeCompare(String(b[1].name), 'th'));
+    const ms = Object.entries(S.areas.maps).map(([id, m]) => [id, m, levelRange(m)]);
+    ms.sort((a, b) => {
+      const la = a[2] ? a[2][0] : Infinity, lb = b[2] ? b[2][0] : Infinity;
+      if (la !== lb) return la - lb;
+      const ha = a[2] ? a[2][1] : Infinity, hb = b[2] ? b[2][1] : Infinity;
+      if (ha !== hb) return ha - hb;
+      return String(a[1].name).localeCompare(String(b[1].name), 'th');
+    });
     $('#mapCount').textContent = '· ' + ms.length;
-    for (const [id, m] of ms) {
-      const r = el('div', 'm', `<span class="n">${esc(m.name)}</span><span class="a">${m.areas.length} พื้นที่</span>`);
-      r.dataset.id = id;
-      r.onclick = () => selectMap(id, null, null);
-      list.appendChild(r);
+    for (const [id, m, r] of ms) {
+      const lv = r ? `Lv ${fmt(r[0])}–${fmt(r[1])}` : 'Lv ?';
+      const row = el('div', 'm', `<span class="n">${esc(m.name)}</span><span class="a" title="${m.areas.length} พื้นที่">${lv}</span>`);
+      row.dataset.id = id;
+      row.onclick = () => selectMap(id, null, null);
+      list.appendChild(row);
     }
   }
   function selectMap(id, areaI, mobId) {
@@ -180,8 +263,10 @@
     if (!m) return;
     S.mapId = id; S.area = null; S.mob = mobId || null;
     for (const r of document.querySelectorAll('.maplist .m')) r.classList.toggle('on', r.dataset.id === id);
+    for (const w of document.querySelectorAll('.wz')) w.classList.toggle('on', w.dataset.map === id);
     $('#mapTitle').textContent = m.name;
-    $('#mapMeta').textContent = `${m.areas.length} พื้นที่ · ${m.width}×${m.height} tiles`;
+    const lr = levelRange(m);
+    $('#mapMeta').textContent = `${m.areas.length} พื้นที่ · ${m.width}×${m.height} tiles${lr ? ` · Lv ${lr[0]}–${lr[1]}` : ''}`;
     $('#mapHint').hidden = true;
     const img = $('#mapImg');
     if (m.mini) {
@@ -194,8 +279,13 @@
       $('#mapHint').hidden = false;
       $('#mapHint').textContent = 'ไม่มีภาพแผนที่สำหรับโซนนี้ — ดูรายการพื้นที่ได้จากรายชื่อมอนสเตอร์';
     }
-    if (areaI) { const a = m.areas.find((x) => x.i === areaI); if (a) showArea(a); }
-    else if (mobId && S.byMob.has(mobId)) showMob(mobId);
+    if (areaI) {
+      const a = m.areas.find((x) => x.i === areaI);
+      if (a) {
+        showArea(a);
+        if (mobId && S.byMob.has(mobId)) showMob(mobId);
+      }
+    } else if (mobId && S.byMob.has(mobId)) showMob(mobId);
     else if (!S.mob) $('#detail').replaceChildren(el('div', 'dbody dim', 'เลือกพื้นที่ (สี) บนแผนที่เพื่อดูมอนในโซนนั้น'));
     setHash();
   }
@@ -222,7 +312,7 @@
       rect.setAttribute('fill', color);
       rect.setAttribute('stroke', color);
       const tip = document.createElementNS(svg.namespaceURI, 'title');
-      const names = a.mobs.slice(0, 4).map((x) => (S.byMob.get(x.id)?.name || '#' + x.id) + '×' + x.n).join(', ');
+      const names = a.mobs.slice(0, 4).map((x) => (S.byMob.get(x.id)?.name || '#' + x.id) + (x.n ? '×' + x.n : '')).join(', ');
       tip.textContent = `พื้นที่ ${a.i} · ${a.count} ตัว${names ? ' · ' + names : ''}`;
       g.appendChild(rect);
       g.appendChild(tip);
@@ -261,6 +351,49 @@
     document.addEventListener('click', (e) => { if (!box.contains(e.target) && e.target !== q) box.hidden = true; });
   }
 
+  // ---------- world map selector ----------
+  function buildWorld() {
+    const pane = $('#worldPane');
+    if (!pane) return;
+    if (!S.atlas || !Array.isArray(S.atlas.zones)) {
+      pane.replaceChildren(el('div', 'worldhint dim', 'ยังไม่มีข้อมูลแผนที่โลก — จะอัปเดตให้ใน deploy รอบถัดไป'));
+      return;
+    }
+    const img = $('#worldImg');
+    if (S.atlas.image) { img.src = 'wiki/data/' + S.atlas.image; img.style.display = ''; } else img.style.display = 'none';
+    const box = $('#worldZones');
+    box.replaceChildren();
+    for (const z of S.atlas.zones) {
+      const target = z.mapId && S.areas.maps[z.mapId] ? z.mapId : S.areas.maps[z.id] ? z.id : null;
+      const b = el('button', 'wz' + (target ? '' : ' off'));
+      b.style.left = (Number(z.x) || 0) + '%';
+      b.style.top = (Number(z.y) || 0) + '%';
+      b.dataset.map = target || '';
+      b.title = `${z.name}${z.level ? ` · Lv ${z.level[0]}–${z.level[1]}` : ''}${target ? '' : ' · ไม่มีข้อมูลสปอว์น'}`;
+      b.appendChild(el('span', 'dot'));
+      b.appendChild(el('span', 'lbl', `${esc(z.name)}${z.level ? ` · Lv ${z.level[0]}–${z.level[1]}` : ''}`));
+      if (target) b.onclick = () => selectMap(target, null, null);
+      box.appendChild(b);
+    }
+    for (const w of document.querySelectorAll('.wz')) w.classList.toggle('on', w.dataset.map === S.mapId);
+  }
+  function wireTabs() {
+    const t1 = $('#tabList'), t2 = $('#tabWorld');
+    if (!t1 || !t2) return;
+    const setMode = (m) => {
+      $('#listPane').hidden = m !== 'list';
+      $('#worldPane').hidden = m !== 'world';
+      t1.classList.toggle('on', m === 'list');
+      t2.classList.toggle('on', m === 'world');
+      try { localStorage.setItem('mm.mode', m); } catch {}
+    };
+    t1.onclick = () => setMode('list');
+    t2.onclick = () => setMode('world');
+    let m0 = 'list';
+    try { m0 = localStorage.getItem('mm.mode') || 'list'; } catch {}
+    setMode(m0);
+  }
+
   // ---------- detail panels ----------
   function areaName(i) { return 'พื้นที่ ' + i; }
   function showArea(a) {
@@ -268,15 +401,36 @@
     for (const g of document.querySelectorAll('.zone')) g.classList.toggle('on', +g.dataset.i === a.i);
     const d = $('#detail');
     d.replaceChildren();
-    const head = el('div', 'dhead', `<h2>${areaName(a.i)} — ${esc(S.areas.maps[S.mapId].name)}</h2>
-      <div class="sub">${fmt(a.count)} ตัว · ${a.mobs.length} ชนิด · โซน ${esc(a.name)}</div>`);
+    const head = el('div', 'dhead');
+    const back = el('button', 'backbtn', '← กลับไปแผนที่');
+    back.onclick = () => goBack();
+    head.appendChild(back);
+    head.appendChild(el('h2', null, `${areaName(a.i)} — ${esc(S.areas.maps[S.mapId].name)}`));
+    head.appendChild(el('div', 'sub', `${fmt(a.count)} ตัว · ${a.mobs.length} ชนิด · โซน ${esc(a.name)}`));
     d.appendChild(head);
     const body = el('div', 'dbody');
+    const tgl = el('label', 'tgl');
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = !!S.showStats;
+    cb.onchange = () => {
+      S.showStats = cb.checked;
+      try { localStorage.setItem('mm.showStats', cb.checked ? '1' : '0'); } catch {}
+      showArea(S.area);
+    };
+    tgl.appendChild(cb);
+    tgl.appendChild(el('span', null, 'แสดงสถานะมอน (HP · ธาตุ · เผ่า/ขนาด)'));
+    body.appendChild(tgl);
     body.appendChild(el('div', 'sec', 'มอนสเตอร์ในพื้นที่นี้'));
     const sorted = [...a.mobs].sort((x, y) => y.n - x.n);
     for (const x of sorted) {
       const mon = S.byMob.get(x.id);
-      const r = el('div', 'rowline', `<span class="n">${esc(mon?.name || '#' + x.id)} <span class="dim">Lv ${mon?.level ?? '?'}</span></span><span class="x">×${x.n}</span>`);
+      let sub = '';
+      if (S.showStats && mon) {
+        const elc = EL[mon.element] || '#b0bec5';
+        sub = `<div class="sub2">HP ${fmt(mon.hp)} · <span style="color:${elc}">${esc(mon.element || '?')}${mon.elementLevel ? ' ' + mon.elementLevel : ''}</span> · ${esc(mon.race || '?')} / ${esc(mon.size || '?')}</div>`;
+      }
+      const r = el('div', 'rowline' + (S.showStats ? ' two' : ''), `<span class="n">${esc(mon?.name || '#' + x.id)} <span class="dim">Lv ${mon?.level ?? '?'}</span>${sub}</span>${x.n ? `<span class="x">×${x.n}</span>` : ''}`);
       r.onclick = () => { S.mob = x.id; showMob(x.id); setHash(); };
       body.appendChild(r);
     }
@@ -290,6 +444,11 @@
     const d = $('#detail');
     d.replaceChildren();
     if (!m) { d.appendChild(el('div', 'dbody dim', 'ไม่พบมอนสเตอร์#' + esc(id))); return; }
+    const bh = el('div', 'dhead');
+    const bb = el('button', 'backbtn', S.area ? `← กลับไป${areaName(S.area.i)}` : '← กลับไปแผนที่');
+    bb.onclick = () => goBack();
+    bh.appendChild(bb);
+    d.appendChild(bh);
     const star = m.star ? `<span class="chip star">⭐ STAR ×${m.star.hpMultiplier ?? '?'} HP</span>` : '';
     const elc = EL[m.element] || '#b0bec5';
     d.appendChild(el('div', 'dhead', `<h2>${esc(m.name)} ${star}</h2>
