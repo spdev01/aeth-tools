@@ -78,6 +78,13 @@
   .wz .lbl{display:none;background:#0d1117ee;border:1px solid #2b3342;color:#dfe8f3;padding:1px 6px;border-radius:6px;font-size:11px;white-space:nowrap}
   .wz:hover .lbl,.wz.on .lbl{display:block}
   .worldhint{padding:8px 4px 2px;color:#8fa2bd;font-size:11.5px}
+  .wtabs{display:flex;gap:5px;flex-wrap:wrap;padding:0 0 8px}
+  .wtabs button{background:#0f141c;border:1px solid #2b3342;color:#9fb0c5;border-radius:7px;padding:3px 8px;font:inherit;font-size:11.5px;cursor:pointer;white-space:nowrap}
+  .wtabs button.on{background:#1d2b40;color:#cfe3ff;border-color:#35608f}
+  .wtabs button.soon{opacity:.65}
+  .worldsoon{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:#080c12cc;color:#cfe3ff;font-size:13px;text-align:center;padding:12px;z-index:3}
+  .worldsoon[hidden]{display:none}
+  .worldsoon small{color:#8fa2bd;font-size:11px}
   .tgl{display:flex;align-items:center;gap:6px;font-size:12px;color:#9fb0c5;padding:2px 6px 6px;cursor:pointer;user-select:none}
   .tgl input{accent-color:#35608f;width:14px;height:14px}
   .rowline.two{align-items:flex-start}
@@ -102,7 +109,8 @@
           <div id="mapList" class="maplist"></div>
         </div>
         <div id="worldPane" hidden>
-          <div class="worldwrap"><img id="worldImg" alt="" /><div id="worldZones"></div></div>
+          <div class="wtabs" id="worldTabs"></div>
+          <div class="worldwrap"><img id="worldImg" alt="" /><div id="worldZones"></div><div id="worldSoon" class="worldsoon" hidden></div></div>
           <div class="worldhint">คลิกจุดเพื่อเปิดแผนที่ · จุดเทา = โซนที่ไม่มีข้อมูลสปอว์น · เลื่อนเมาส์เพื่อดูชื่อ/เลเวล</div>
         </div>
       </aside>
@@ -123,7 +131,7 @@
 (() => {
   'use strict';
   const $ = (s) => document.querySelector(s);
-  const S = { wd: null, live: false, areas: null, atlas: null, byMob: new Map(), byItem: new Map(), mapId: null, area: null, mob: null, showStats: (() => { try { return localStorage.getItem('mm.showStats') === '1'; } catch { return false; } })() };
+  const S = { wd: null, live: false, areas: null, atlas: null, byMob: new Map(), byItem: new Map(), mapId: null, area: null, mob: null, world: (() => { try { return +localStorage.getItem('mm.world') || 1; } catch { return 1; } })(), showStats: (() => { try { return localStorage.getItem('mm.showStats') === '1'; } catch { return false; } })() };
   const fmt = (n) => (Number.isFinite(+n) ? (+n).toLocaleString('en-US') : '—');
   const pct = (c) => {
     const p = (+c || 0) * 100;
@@ -252,7 +260,10 @@
     $('#mapCount').textContent = '· ' + ms.length;
     for (const [id, m, r] of ms) {
       const lv = r ? `Lv ${fmt(r[0])}–${fmt(r[1])}` : 'Lv ?';
-      const row = el('div', 'm', `<span class="n">${esc(m.name)}</span><span class="a" title="${m.areas.length} พื้นที่">${lv}</span>`);
+      const wz = worldZoneOf(id);
+      const wn = wz ? Number(wz.world) || 1 : 1;
+      const wtag = wn > 1 ? ` <span class="dim">· โลก ${wn}</span>` : '';
+      const row = el('div', 'm', `<span class="n">${esc(m.name)}${wtag}</span><span class="a" title="${m.areas.length} พื้นที่">${lv}</span>`);
       row.dataset.id = id;
       row.onclick = () => selectMap(id, null, null);
       list.appendChild(row);
@@ -266,7 +277,16 @@
     for (const w of document.querySelectorAll('.wz')) w.classList.toggle('on', w.dataset.map === id);
     $('#mapTitle').textContent = m.name;
     const lr = levelRange(m);
-    $('#mapMeta').textContent = `${m.areas.length} พื้นที่ · ${m.width}×${m.height} tiles${lr ? ` · Lv ${lr[0]}–${lr[1]}` : ''}`;
+    const zHere = worldZoneOf(id);
+    const wHere = zHere ? Number(zHere.world) || 1 : 1;
+    if (wHere !== S.world) {
+      S.world = wHere;
+      try { localStorage.setItem('mm.world', String(wHere)); } catch {}
+      if ($('#worldPane') && !$('#worldPane').hidden) buildWorld();
+      else renderWorldTabs();
+    }
+    const wMeta = wHere > 1 ? ` · โลกที่ ${wHere} ${worldName(wHere)}` : '';
+    $('#mapMeta').textContent = `${m.areas.length} พื้นที่ · ${m.width}×${m.height} tiles${lr ? ` · Lv ${lr[0]}–${lr[1]}` : ''}${wMeta}`;
     $('#mapHint').hidden = true;
     const img = $('#mapImg');
     if (m.mini) {
@@ -352,18 +372,59 @@
   }
 
   // ---------- world map selector ----------
+  function atlasWorlds() {
+    if (!S.atlas) return [];
+    if (Array.isArray(S.atlas.worlds) && S.atlas.worlds.length) return S.atlas.worlds;
+    return [{ n: 1, name: 'Aetheria', image: S.atlas.image, zones: (S.atlas.zones || []).length }];
+  }
+  function worldZoneOf(id) {
+    return (S.atlas?.zones || []).find((z) => (z.mapId || z.id) === id && S.areas?.maps[z.mapId || z.id]);
+  }
+  function worldName(n) { return (atlasWorlds().find((w) => w.n === n) || {}).name || ''; }
+  function renderWorldTabs() {
+    const bar = $('#worldTabs');
+    if (!bar) return;
+    bar.replaceChildren();
+    for (const w of atlasWorlds()) {
+      const b = el('button', 'wt' + (w.n === S.world ? ' on' : '') + (w.zones ? '' : ' soon'), `${w.n === 1 ? '🌍' : '🗺️'} โลกที่ ${w.n} · ${esc(w.name)}`);
+      b.dataset.w = w.n;
+      b.title = w.zones ? `${w.zones} โซน` : 'ยังไม่เปิดให้เดินทาง';
+      b.onclick = () => setWorld(w.n);
+      bar.appendChild(b);
+    }
+  }
+  function setWorld(n) {
+    S.world = n;
+    try { localStorage.setItem('mm.world', String(n)); } catch {}
+    if ($('#worldPane') && !$('#worldPane').hidden) buildWorld();
+    else renderWorldTabs();
+  }
   function buildWorld() {
     const pane = $('#worldPane');
     if (!pane) return;
+    const soon = $('#worldSoon');
     if (!S.atlas || !Array.isArray(S.atlas.zones)) {
-      pane.replaceChildren(el('div', 'worldhint dim', 'ยังไม่มีข้อมูลแผนที่โลก — จะอัปเดตให้ใน deploy รอบถัดไป'));
+      const bar = $('#worldTabs');
+      if (bar) bar.replaceChildren();
+      $('#worldImg').style.display = 'none';
+      $('#worldZones').replaceChildren();
+      soon.hidden = false;
+      soon.textContent = 'ยังไม่มีข้อมูลแผนที่โลก — จะอัปเดตให้ใน deploy รอบถัดไป';
       return;
     }
+    const worlds = atlasWorlds();
+    if (!worlds.some((w) => w.n === S.world)) S.world = worlds[0]?.n || 1;
+    renderWorldTabs();
+    const w = worlds.find((x) => x.n === S.world) || worlds[0] || {};
     const img = $('#worldImg');
-    if (S.atlas.image) { img.src = 'wiki/data/' + S.atlas.image; img.style.display = ''; } else img.style.display = 'none';
+    if (w.image) {
+      img.src = /^https?:/.test(w.image) ? w.image : 'wiki/data/' + w.image;
+      img.style.display = '';
+    } else img.style.display = 'none';
     const box = $('#worldZones');
     box.replaceChildren();
-    for (const z of S.atlas.zones) {
+    const zones = S.atlas.zones.filter((z) => (Number(z.world) || 1) === S.world);
+    for (const z of zones) {
       const target = z.mapId && S.areas.maps[z.mapId] ? z.mapId : S.areas.maps[z.id] ? z.id : null;
       const b = el('button', 'wz' + (target ? '' : ' off'));
       b.style.left = (Number(z.x) || 0) + '%';
@@ -375,7 +436,11 @@
       if (target) b.onclick = () => selectMap(target, null, null);
       box.appendChild(b);
     }
-    for (const w of document.querySelectorAll('.wz')) w.classList.toggle('on', w.dataset.map === S.mapId);
+    if (!zones.length) {
+      soon.hidden = false;
+      soon.replaceChildren(el('b', '', `โลกที่ ${w.n || S.world} — ${w.name || ''}`), el('small', '', 'ยังไม่เปิดให้เดินทาง · มอนสเตอร์เลเวลสูง เร็วๆ นี้'));
+    } else soon.hidden = true;
+    for (const b of document.querySelectorAll('.wz')) b.classList.toggle('on', b.dataset.map === S.mapId);
   }
   function wireTabs() {
     const t1 = $('#tabList'), t2 = $('#tabWorld');
@@ -385,6 +450,7 @@
       $('#worldPane').hidden = m !== 'world';
       t1.classList.toggle('on', m === 'list');
       t2.classList.toggle('on', m === 'world');
+      if (m === 'world') buildWorld();
       try { localStorage.setItem('mm.mode', m); } catch {}
     };
     t1.onclick = () => setMode('list');

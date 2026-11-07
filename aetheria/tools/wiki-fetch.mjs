@@ -136,24 +136,41 @@ for (const id of [...mapIds].sort()) {
 }
 
 // world atlas (for the world-map selector)
+// Aetheria has 4 worlds; the game client draws world 1 from atlas.json's `image` and
+// worlds N>1 from /art/world/atlas-world<N>.webp, filtering zones by `z.world === N`.
+const WORLD_NAMES = { 1: 'Aetheria', 2: 'ดินแดนรูน', 3: 'อาณาจักรฟ้าแตก', 4: 'แดนปีศาจ' };
 try {
   const atlas = await getJson(`${BASE}/world/atlas`);
-  const slim = {
-    image: null,
-    zones: (atlas.zones || []).map((z) => ({ id: z.id, name: z.name, type: z.type, level: z.level || null, mapId: z.mapId || null, x: z.x, y: z.y })),
-  };
-  if (atlas.image) {
-    try {
-      const buf = await getBin(BASE + atlas.image);
-      fs.writeFileSync(path.join(OUT, 'world-atlas.webp'), buf);
-      slim.image = 'world-atlas.webp';
-    } catch (e) {
-      slim.image = BASE + atlas.image;
-      errors.push('atlas image: ' + e.message);
+  const zones = (atlas.zones || []).map((z) => ({
+    id: z.id,
+    name: z.name,
+    type: z.type,
+    world: Number(z.world) || 1,
+    level: z.level || null,
+    mapId: z.mapId || null,
+    x: z.x,
+    y: z.y,
+  }));
+  const worlds = [];
+  for (const n of Object.keys(WORLD_NAMES).map(Number)) {
+    const src = n === 1 ? atlas.image : `/art/world/atlas-world${n}.webp`;
+    const file = n === 1 ? 'world-atlas.webp' : `world-atlas-${n}.webp`;
+    let image = null;
+    if (src) {
+      try {
+        fs.writeFileSync(path.join(OUT, file), await getBin(BASE + src));
+        image = file;
+      } catch (e) {
+        image = BASE + src; // fall back to hotlinking if the mirror failed
+        errors.push(`atlas image world${n}: ${e.message}`);
+      }
     }
+    const count = zones.filter((z) => z.world === n).length;
+    worlds.push({ n, name: WORLD_NAMES[n], image, zones: count });
+    if (count) console.log(`wiki-fetch: world ${n} (${WORLD_NAMES[n]}) — ${count} zones${image ? ' + atlas image' : ''}`);
   }
-  fs.writeFileSync(path.join(OUT, 'atlas.json'), JSON.stringify(slim));
-  console.log(`wiki-fetch: world atlas saved (${slim.zones.length} zones${slim.image === 'world-atlas.webp' ? ' + image' : ''})`);
+  fs.writeFileSync(path.join(OUT, 'atlas.json'), JSON.stringify({ image: worlds[0].image, worlds, zones }));
+  console.log(`wiki-fetch: world atlas saved (${worlds.length} worlds / ${zones.length} zones)`);
 } catch (e) {
   errors.push('atlas: ' + e.message);
 }
