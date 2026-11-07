@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Aetheria Tools — แผนที่มอนสเตอร์ (Mob Map)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/site.css" />
+<script src="assets/gate.js"></script>
+<style>
+  .wrap.wide{max-width:1460px}
+  .crumbs .badge{display:inline-block;padding:1px 8px;border-radius:99px;background:#14351f;color:#7fe6a3;font-size:11px}
+  .crumbs .badge.off{background:#3a2a14;color:#e0b96a}
+  #mm{display:grid;grid-template-columns:250px minmax(0,1fr) 370px;gap:14px;margin-top:10px}
+  @media (max-width:1180px){ #mm{grid-template-columns:250px minmax(0,1fr)} #mm .detail{grid-column:1 / -1} }
+  @media (max-width:820px){ #mm{grid-template-columns:1fr} }
+  .side,.viewer,.detail{background:#131820;border:1px solid #232b38;border-radius:12px;overflow:hidden}
+  .side{display:flex;flex-direction:column;max-height:78vh}
+  .search{margin:10px;padding:7px 10px;border-radius:8px;border:1px solid #2b3342;background:#0f141c;color:#d7dee8;font:inherit;font-size:13px;outline:none}
+  .search:focus{border-color:#3a4a63}
+  .results{border-bottom:1px solid #232b38;max-height:260px;overflow:auto}
+  .results .r{padding:6px 10px;border-bottom:1px solid #1b2230;cursor:pointer;font-size:12.5px;display:flex;justify-content:space-between;gap:8px}
+  .results .r:hover{background:#1a2130}
+  .results .r .lv{color:#8fa2bd}
+  .sideTitle{padding:8px 10px 4px;font-size:12px;color:#8fa2bd}
+  .maplist{overflow:auto;flex:1}
+  .maplist .m{padding:6px 10px;border-top:1px solid #1b2230;cursor:pointer;font-size:12.5px;display:flex;justify-content:space-between;gap:8px}
+  .maplist .m:hover{background:#1a2130}
+  .maplist .m.on{background:#1d2b40;border-left:3px solid #6ea8ff;padding-left:7px}
+  .maplist .m .a{color:#7fe0a3;white-space:nowrap}
+  .viewer{display:flex;flex-direction:column;min-height:420px}
+  .viewHead{display:flex;align-items:baseline;gap:10px;padding:10px 12px;border-bottom:1px solid #232b38}
+  .viewHead b{font-size:15px}
+  .dim{color:#8fa2bd;font-size:12px}
+  .mapwrap{position:relative;margin:10px;border-radius:10px;overflow:hidden;background:#0b0f15}
+  .mapwrap img{display:block;width:100%;height:auto;user-select:none;-webkit-user-drag:none}
+  .mapwrap svg{position:absolute;inset:0;width:100%;height:100%}
+  .zone rect{fill-opacity:.16;stroke-width:2.5;cursor:pointer;transition:fill-opacity .12s}
+  .zone:hover rect{fill-opacity:.30}
+  .zone.on rect{fill-opacity:.34;stroke-width:4}
+  .zone text{pointer-events:none;font-weight:700;fill:#fff;paint-order:stroke;stroke:#0009;stroke-width:3px}
+  .hint{padding:12px;color:#8fa2bd;font-size:13px}
+  .detail{max-height:78vh;overflow:auto}
+  .dhead{padding:12px 14px;border-bottom:1px solid #232b38;background:#151c27}
+  .dhead h2{margin:0;font-size:17px}
+  .dhead .sub{margin-top:4px;color:#9fb0c5;font-size:12px}
+  .chip{display:inline-block;padding:1px 8px;border-radius:99px;font-size:11px;margin-right:6px;vertical-align:1px}
+  .dbody{padding:12px 14px}
+  .kv{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;font-size:12.5px;margin-bottom:10px}
+  .kv .k{color:#8fa2bd}
+  .kv .v{color:#dfe8f3;text-align:right;font-variant-numeric:tabular-nums}
+  .sec{margin:10px 0 6px;font-size:12px;color:#8fa2bd;border-top:1px solid #232b38;padding-top:8px}
+  .rowline{display:flex;justify-content:space-between;gap:8px;padding:5px 6px;border-radius:6px;font-size:12.5px;cursor:pointer}
+  .rowline:hover{background:#1a2130}
+  .rowline .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rowline .x{color:#8fa2bd;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .drop{display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:3px 6px}
+  .drop .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .drop .rt{color:#7fe0a3;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .back{display:inline-block;margin:0 0 8px;font-size:12px;color:#8fb8ff;cursor:pointer}
+  .star{background:#4a3410;color:#ffd479}
+  .fixed{background:#40203a;color:#f0a0d8}
+  .err{background:#3a1a1a;color:#ffb4a8;padding:8px 12px;border-radius:8px;margin:10px}
+</style>
+</head>
+<body>
+<div id="page">
+  <div class="wrap wide">
+    <div class="top"><span class="logo">⌘</span><h1>แผนที่มอนสเตอร์ — Mob Map</h1></div>
+    <div class="crumbs"><a href="index.html">← กลับศูนย์ดาวน์โหลด</a> · พื้นที่สปอว์นจากไฟล์แผนที่ + รายละเอียดมอนจาก wiki · <span id="srcBadge" class="badge">กำลังโหลด…</span></div>
+
+    <div id="mm">
+      <aside class="side">
+        <input id="q" class="search" placeholder="ค้นหามอนสเตอร์ (ชื่อ / ไอดี)…" autocomplete="off" />
+        <div id="results" class="results" hidden></div>
+        <div class="sideTitle">แผนที่ <span id="mapCount" class="dim"></span></div>
+        <div id="mapList" class="maplist"></div>
+      </aside>
+      <section class="viewer">
+        <div class="viewHead"><b id="mapTitle">—</b><span id="mapMeta" class="dim"></span></div>
+        <div id="mapWrap" class="mapwrap"><img id="mapImg" alt="" /><svg id="mapSvg" xmlns="http://www.w3.org/2000/svg"></svg></div>
+        <div id="mapHint" class="hint">เลือกแผนที่จากรายการด้านซ้าย แล้วคลิก “พื้นที่” บนแผนที่เพื่อดูมอนในโซนนั้น — หรือค้นหามอนสเตอร์เพื่อดูรายละเอียด</div>
+      </section>
+      <section class="detail" id="detail">
+        <div class="dbody dim">เลือกพื้นที่บนแผนที่ หรือค้นหามอนสเตอร์เพื่อดูรายละเอียด (สถานะ, สกิล, ของดรอป, จุดเกิด)</div>
+      </section>
+    </div>
+
+    <div class="footer">Aetheria Tools — ข้อมูลพื้นที่จาก <code>/maps/*.json</code> (สาธารณะ) · รายละเอียดมอนจาก <code>/wiki-data</code> <span id="footMeta"></span></div>
+  </div>
+</div>
+<script>
+(() => {
+  'use strict';
+  const $ = (s) => document.querySelector(s);
+  const S = { wd: null, live: false, areas: null, byMob: new Map(), byItem: new Map(), mapId: null, area: null, mob: null };
+  const fmt = (n) => (Number.isFinite(+n) ? (+n).toLocaleString('en-US') : '—');
+  const pct = (c) => {
+    const p = (+c || 0) * 100;
+    if (p >= 10) return p.toFixed(0) + '%';
+    if (p >= 1) return p.toFixed(1) + '%';
+    if (p >= 0.1) return p.toFixed(2) + '%';
+    if (p >= 0.01) return p.toFixed(3) + '%';
+    return p.toFixed(4) + '%';
+  };
+  const EL = { fire: '#ff8a65', water: '#64b5f6', wind: '#81c784', earth: '#bcaaa4', undead: '#b39ddb', shadow: '#9575cd', holy: '#fff176', neutral: '#b0bec5', poison: '#aed581', ghost: '#90a4ae' };
+  const PALETTE = ['#7fb2ff', '#8ee6a3', '#ffd479', '#ff9f9f', '#c9a7ff', '#7fe0e6', '#f2a3d0', '#b9d77f'];
+  const el = (t, cls, html) => { const e = document.createElement(t); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  function setHash() {
+    const p = new URLSearchParams();
+    if (S.mapId) p.set('map', S.mapId);
+    if (S.area) p.set('area', S.area.i);
+    if (S.mob) p.set('mob', S.mob);
+    try { history.replaceState(null, '', '#' + p.toString()); } catch {}
+  }
+
+  // ---------- boot ----------
+  async function boot() {
+    fetch('wiki/data/version.json').then((r) => r.json()).then((v) => {
+      if (v && v.fetchedAt) $('#footMeta').textContent = ' · ข้อมูลแผนที่อัปเดต: ' + new Date(v.fetchedAt).toLocaleString('th-TH');
+    }).catch(() => {});
+    try {
+      S.areas = await fetch('wiki/data/areas.json', { cache: 'no-cache' }).then((r) => r.json());
+    } catch (e) {
+      $('#detail').replaceChildren(el('div', 'err', 'โหลดข้อมูลแผนที่ไม่สำเร็จ (wiki/data/areas.json) — รอ deploy รอบถัดไป'));
+      return;
+    }
+    try {
+      const ctl = new AbortController();
+      const tid = setTimeout(() => ctl.abort(), 9000);
+      const r = await fetch('https://www.aetheria-online.in.th/wiki-data', { mode: 'cors', cache: 'no-cache', signal: ctl.signal });
+      clearTimeout(tid);
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      S.wd = await r.json();
+      S.live = true;
+    } catch (e) {
+      S.wd = await fetch('wiki/data/wiki-data.json', { cache: 'no-cache' }).then((r) => r.json());
+      S.live = false;
+    }
+    for (const it of [...(S.wd.ragnarokItems || []), ...(S.wd.items || [])]) S.byItem.set(it.id, it);
+    for (const m of S.wd.monsters || []) S.byMob.set(m.id, m);
+    const gen = S.wd.generatedAt ? new Date(S.wd.generatedAt).toLocaleString('th-TH') : '?';
+    const b = $('#srcBadge');
+    b.textContent = (S.live ? 'ข้อมูลสด (live)' : 'สำเนา snapshot') + ' · สร้างเมื่อ ' + gen;
+    b.classList.toggle('off', !S.live);
+
+    buildMapList();
+    buildSearch();
+    const h = new URLSearchParams(location.hash.slice(1));
+    const wanted = h.get('map');
+    if (wanted && S.areas.maps[wanted]) selectMap(wanted, +h.get('area') || null, +h.get('mob') || null);
+    else {
+      // default: map with the most spawn-zones+mobs, so the page isn't empty
+      const best = Object.entries(S.areas.maps)
+        .map(([id, m]) => [id, m.areas.reduce((n, a) => n + a.count, 0)])
+        .sort((a, b) => b[1] - a[1])[0];
+      if (best) selectMap(best[0], null, null);
+    }
+  }
+
+  // ---------- side: map list + search ----------
+  function buildMapList() {
+    const list = $('#mapList');
+    list.textContent = '';
+    const ms = Object.entries(S.areas.maps).sort((a, b) => String(a[1].name).localeCompare(String(b[1].name), 'th'));
+    $('#mapCount').textContent = '· ' + ms.length;
+    for (const [id, m] of ms) {
+      const r = el('div', 'm', `<span class="n">${esc(m.name)}</span><span class="a">${m.areas.length} พื้นที่</span>`);
+      r.dataset.id = id;
+      r.onclick = () => selectMap(id, null, null);
+      list.appendChild(r);
+    }
+  }
+  function selectMap(id, areaI, mobId) {
+    const m = S.areas.maps[id];
+    if (!m) return;
+    S.mapId = id; S.area = null; S.mob = mobId || null;
+    for (const r of document.querySelectorAll('.maplist .m')) r.classList.toggle('on', r.dataset.id === id);
+    $('#mapTitle').textContent = m.name;
+    $('#mapMeta').textContent = `${m.areas.length} พื้นที่ · ${m.width}×${m.height} tiles`;
+    $('#mapHint').hidden = true;
+    const img = $('#mapImg');
+    if (m.mini) {
+      img.style.display = '';
+      img.onload = () => drawZones(m, img);
+      img.src = 'wiki/data/' + m.mini;
+    } else {
+      img.style.display = 'none';
+      $('#mapSvg').replaceChildren();
+      $('#mapHint').hidden = false;
+      $('#mapHint').textContent = 'ไม่มีภาพแผนที่สำหรับโซนนี้ — ดูรายการพื้นที่ได้จากรายชื่อมอนสเตอร์';
+    }
+    if (areaI) { const a = m.areas.find((x) => x.i === areaI); if (a) showArea(a); }
+    else if (mobId && S.byMob.has(mobId)) showMob(mobId);
+    else if (!S.mob) $('#detail').replaceChildren(el('div', 'dbody dim', 'เลือกพื้นที่ (สี) บนแผนที่เพื่อดูมอนในโซนนั้น'));
+    setHash();
+  }
+  function drawZones(m, img) {
+    const svg = $('#mapSvg');
+    const W = img.naturalWidth || 1000;
+    const H = img.naturalHeight || 1000;
+    const scale = W / ((m.width || 1) * (m.tileW || 32));
+    const fs = Math.max(11, Math.round(W / 42));
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    svg.setAttribute('preserveAspectRatio', 'none');
+    svg.replaceChildren();
+    for (const a of m.areas) {
+      const g = document.createElementNS(svg.namespaceURI, 'g');
+      g.setAttribute('class', 'zone' + (S.area && S.area.i === a.i ? ' on' : ''));
+      g.dataset.i = a.i;
+      const color = PALETTE[(a.i - 1) % PALETTE.length];
+      const rect = document.createElementNS(svg.namespaceURI, 'rect');
+      rect.setAttribute('x', a.x * scale);
+      rect.setAttribute('y', a.y * scale);
+      rect.setAttribute('width', a.w * scale);
+      rect.setAttribute('height', a.h * scale);
+      rect.setAttribute('rx', 8);
+      rect.setAttribute('fill', color);
+      rect.setAttribute('stroke', color);
+      const tip = document.createElementNS(svg.namespaceURI, 'title');
+      const names = a.mobs.slice(0, 4).map((x) => (S.byMob.get(x.id)?.name || '#' + x.id) + '×' + x.n).join(', ');
+      tip.textContent = `พื้นที่ ${a.i} · ${a.count} ตัว${names ? ' · ' + names : ''}`;
+      g.appendChild(rect);
+      g.appendChild(tip);
+      const t = document.createElementNS(svg.namespaceURI, 'text');
+      t.setAttribute('x', a.x * scale + (a.w * scale) / 2);
+      t.setAttribute('y', a.y * scale + (a.h * scale) / 2);
+      t.setAttribute('text-anchor', 'middle');
+      t.setAttribute('dominant-baseline', 'middle');
+      t.setAttribute('font-size', fs);
+      t.textContent = `พื้นที่ ${a.i}`;
+      g.appendChild(t);
+      g.addEventListener('click', () => showArea(a));
+      svg.appendChild(g);
+    }
+  }
+
+  function buildSearch() {
+    const q = $('#q');
+    const box = $('#results');
+    q.addEventListener('input', () => {
+      const v = q.value.trim().toLowerCase();
+      if (v.length < 2) { box.hidden = true; box.replaceChildren(); return; }
+      const hits = [];
+      for (const m of S.byMob.values()) {
+        if (String(m.name || '').toLowerCase().includes(v) || String(m.id) === v) hits.push(m);
+        if (hits.length >= 30) break;
+      }
+      box.replaceChildren();
+      for (const m of hits) {
+        const r = el('div', 'r', `<span>${esc(m.name)} <span class="lv">#${m.id}</span></span><span class="lv">Lv ${m.level ?? '?'}</span>`);
+        r.onclick = () => { box.hidden = true; S.mob = m.id; showMob(m.id); setHash(); };
+        box.appendChild(r);
+      }
+      box.hidden = hits.length === 0;
+    });
+    document.addEventListener('click', (e) => { if (!box.contains(e.target) && e.target !== q) box.hidden = true; });
+  }
+
+  // ---------- detail panels ----------
+  function areaName(i) { return 'พื้นที่ ' + i; }
+  function showArea(a) {
+    S.area = a;
+    for (const g of document.querySelectorAll('.zone')) g.classList.toggle('on', +g.dataset.i === a.i);
+    const d = $('#detail');
+    d.replaceChildren();
+    const head = el('div', 'dhead', `<h2>${areaName(a.i)} — ${esc(S.areas.maps[S.mapId].name)}</h2>
+      <div class="sub">${fmt(a.count)} ตัว · ${a.mobs.length} ชนิด · โซน ${esc(a.name)}</div>`);
+    d.appendChild(head);
+    const body = el('div', 'dbody');
+    body.appendChild(el('div', 'sec', 'มอนสเตอร์ในพื้นที่นี้'));
+    const sorted = [...a.mobs].sort((x, y) => y.n - x.n);
+    for (const x of sorted) {
+      const mon = S.byMob.get(x.id);
+      const r = el('div', 'rowline', `<span class="n">${esc(mon?.name || '#' + x.id)} <span class="dim">Lv ${mon?.level ?? '?'}</span></span><span class="x">×${x.n}</span>`);
+      r.onclick = () => { S.mob = x.id; showMob(x.id); setHash(); };
+      body.appendChild(r);
+    }
+    d.appendChild(body);
+    setHash();
+  }
+
+  function showMob(id) {
+    const m = S.byMob.get(Number(id));
+    S.mob = Number(id);
+    const d = $('#detail');
+    d.replaceChildren();
+    if (!m) { d.appendChild(el('div', 'dbody dim', 'ไม่พบมอนสเตอร์#' + esc(id))); return; }
+    const star = m.star ? `<span class="chip star">⭐ STAR ×${m.star.hpMultiplier ?? '?'} HP</span>` : '';
+    const elc = EL[m.element] || '#b0bec5';
+    d.appendChild(el('div', 'dhead', `<h2>${esc(m.name)} ${star}</h2>
+      <div class="sub">#${m.id} · Lv ${m.level ?? '?'} · <span class="chip" style="background:${elc}22;color:${elc}">${esc(m.element || '?')}${m.elementLevel ? ' ' + m.elementLevel : ''}</span>
+      <span class="chip" style="background:#2a3448;color:#aebdd6">${esc(m.race || '?')} / ${esc(m.size || '?')}</span></div>`));
+    const body = el('div', 'dbody');
+
+    const kv = el('div', 'kv');
+    const add = (k, v) => { kv.appendChild(el('div', 'k', k)); kv.appendChild(el('div', 'v', v)); };
+    add('HP', fmt(m.hp));
+    add('EXP (Base / Job)', `${fmt(m.exp)} / ${fmt(m.jobExp)}`);
+    add('ATK', `${fmt(m.atk)}–${fmt(m.atkMax)}`);
+    add('MATK', `${fmt(m.matk)}–${fmt(m.matkMax)}`);
+    add('DEF / MDEF', `${fmt(m.def)} / ${fmt(m.mdef)}`);
+    add('HIT / FLEE', `${fmt(m.hit)} / ${fmt(m.flee)}`);
+    add('Range / Chase', `${m.attackRangeTiles ?? '?'} / ${m.chaseRangeTiles ?? '?'} tiles`);
+    add('ASPD (delay)', m.attackDelayMs ? `${m.attackDelayMs} ms` : '—');
+    add('Walk speed', m.walkSpeed ?? '—');
+    add('Stun/knock', m.canAttack ? 'โจมตีได้' : 'ไม่โจมตี');
+    if (m.stats) {
+      const st = m.stats;
+      add('STR/AGI/VIT', `${st.STR} / ${st.AGI} / ${st.VIT}`);
+      add('INT/DEX/LUK', `${st.INT} / ${st.DEX} / ${st.LUK}`);
+    }
+    if (m.penetration != null) add('Pen / BlockPierce / DR', `${m.penetration} / ${m.blockPierce ?? '—'} / ${m.damageReduction ?? '—'}`);
+    if (m.star) add('STAR', `HP ×${m.star.hpMultiplier} · baseHp ${fmt(m.star.baseHp)} · DR ${m.star.reduction} · drainCap ${m.star.drainCap}`);
+    body.appendChild(kv);
+
+    if (Array.isArray(m.skills) && m.skills.length) {
+      body.appendChild(el('div', 'sec', 'สกิลของมอน'));
+      for (const sk of m.skills) {
+        body.appendChild(el('div', 'drop', `<span class="nm">${esc(sk.name)} <span class="dim">[${esc(sk.kind || '')}${sk.element ? '/' + esc(sk.element) : ''} · ${sk.area || ''}${sk.rangeTiles ? ' · range ' + sk.rangeTiles : ''}${sk.cdMs || sk.cooldownMs ? ' · cd ' + ((sk.cooldownMs || sk.cdMs) / 1000) + 's' : ''}]</span></span><span class="rt" style="color:#9fb0c5">${sk.hitPercent ? sk.hitPercent + '%×' + (sk.hits || 1) : ''}</span>`));
+      }
+    }
+
+    if (Array.isArray(m.drops) && m.drops.length) {
+      body.appendChild(el('div', 'sec', 'ของดรอป'));
+      for (const dr of [...m.drops].sort((a, b) => b.chance - a.chance)) {
+        const it = S.byItem.get(dr.itemId);
+        const nm = it ? it.name : 'item #' + dr.itemId;
+        const qty = dr.min !== dr.max ? ` ×${dr.min}–${dr.max}` : dr.max > 1 ? ` ×${dr.max}` : '';
+        const price = it && it.sellPrice ? ` <span class="dim">· ขาย ${fmt(it.sellPrice)}z</span>` : '';
+        body.appendChild(el('div', 'drop', `<span class="nm">${esc(nm)}${qty}${price}</span><span class="rt">${pct(dr.chance)}</span>`));
+      }
+    }
+
+    if (Array.isArray(m.spawns) && m.spawns.length) {
+      body.appendChild(el('div', 'sec', 'จุดเกิด (จาก wiki-data)'));
+      for (const sp of m.spawns) {
+        const areaI = parseInt(String(sp.area || '').replace(/\D+/g, ''), 10) || null;
+        const fixed = /จุดตายตัว/.test(sp.area || '') || sp.fixed;
+        const r = el('div', 'rowline', `<span class="n">${esc(sp.map || sp.mapId)} <span class="dim">· ${esc(sp.area || '')}</span> ${fixed ? '<span class="chip fixed">fixed</span>' : ''}</span><span class="x">${fmt(sp.count)} ตัว / ${sp.kinds} ชนิด</span>`);
+        r.onclick = () => { if (S.areas.maps[sp.mapId]) selectMap(sp.mapId, areaI, m.id); };
+        body.appendChild(r);
+      }
+    }
+
+    d.appendChild(body);
+    setHash();
+  }
+
+  boot();
+})();
+</script>
+</body>
+</html>

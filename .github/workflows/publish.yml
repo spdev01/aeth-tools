@@ -99,6 +99,10 @@ jobs:
           XPI_DIR: aetheria/market-tool/web-ext-artifacts
         run: node aetheria/tools/assemble-site.mjs
 
+      - name: Fetch wiki data (mob map)
+        continue-on-error: true
+        run: node aetheria/tools/wiki-fetch.mjs
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
